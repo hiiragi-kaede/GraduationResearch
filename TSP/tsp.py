@@ -6,8 +6,8 @@ fname="rand100.txt"
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
 
-def NN_Method(data,size):
-    idx=random.randint(0,9)
+def nn_method(data,size):
+    idx=random.randint(0,size-1)
     visited=[idx]
     ans=[[data[idx][0],data[idx][1]]]
 
@@ -27,7 +27,24 @@ def NN_Method(data,size):
                 min=dis(ans[-1],data[id])
         
         visited.append(minid)
-        ans.append([data[minid][0],data[minid][1]])    
+        ans.append([data[minid][0],data[minid][1]])
+    
+    ans.append([data[idx][0],data[idx][1]])
+    return ans
+
+def insertion_method(data,size):
+    data.sort(key=lambda x: x[0])
+    ans=[[data[0][0],data[0][1]],[data[0][0],data[0][1]]]
+    
+    for i in range(size-1):
+        minid=0
+        min=1e9
+        for j in range(len(ans)-1):
+            if min > dis(data[j],data[i+1])+dis(data[j+1],data[i+1]):
+                minid=j
+                min=dis(data[j],data[i+1])
+        ans.insert(minid+1,[data[i+1][0],data[i+1][1]])
+    
     return ans
 
 def show_data(data):
@@ -38,12 +55,11 @@ with open(fname) as f:
     data=[list(map(float,i.split())) for i in f.readlines()]
     size=len(data)
 
-    ans=NN_Method(data,size)
+    #ans=nn_method(data,size)
+    ans=insertion_method(data,size)
 
     x=[i[0] for i in ans]
     y=[i[1] for i in ans]
-    x.append(ans[0][0])
-    y.append(ans[0][1])
     plt.plot(x,y,label="city")
 
     plt.scatter(ans[0][0],ans[0][1],label="start")
