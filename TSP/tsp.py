@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import random
 
-fname="rand100.txt"
+fname="rand10.txt"
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -42,7 +42,7 @@ def insertion_method(data,size):
         for j in range(len(ans)-1):
             if min > dis(data[j],data[i+1])+dis(data[j+1],data[i+1]):
                 minid=j
-                min=dis(data[j],data[i+1])
+                min=dis(data[j],data[i+1])+dis(data[j+1],data[i+1])
         ans.insert(minid+1,[data[i+1][0],data[i+1][1]])
     
     return ans
