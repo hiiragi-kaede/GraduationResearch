@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import random
 
-fname="rand10.txt"
+#fname="rand100.txt"
+fname="a280_use.txt"
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -32,8 +33,8 @@ def nn_method(data,size):
     ans.append([data[idx][0],data[idx][1]])
     return ans
 
-def insertion_method(data,size):
-    data.sort(key=lambda x: x[0])
+def insertion_method(data,size,is_sort=False):
+    if is_sort: data.sort(key=lambda x: x[1])
     ans=[[data[0][0],data[0][1]],[data[0][0],data[0][1]]]
     
     for i in range(size-1):
@@ -51,17 +52,74 @@ def show_data(data):
     for i,d in enumerate(data):
         print(i,":",d)
 
-with open(fname) as f:
-    data=[list(map(float,i.split())) for i in f.readlines()]
-    size=len(data)
+def two_opt_method(data,size):
+    total=0
+    while True:
+        count = 0
+        for i in range(size-2):
+            i_next=i+1
+            for j in range(i+2,size):
+                if j==size-1:
+                    j_next=0
+                else:
+                    j_next=j+1
 
-    #ans=nn_method(data,size)
-    ans=insertion_method(data,size)
+                if i!=0 or j_next!=0:
+                    l1 = dis(data[i],data[i_next])
+                    l2 = dis(data[j],data[j_next])
+                    l3 = dis(data[i],data[j])
+                    l4 = dis(data[i_next],data[j_next])
 
+                    if l1+l2 > l3+l4:
+                        new_root = data[i_next:j+1]
+                        data[i_next:j+1]=new_root[::-1]
+                        count+=1
+        total+=count
+        if count==0: break
+    
+    return data
+
+def random_route(data,size):
+    tmp=[[data[i][0],data[i][1]] for i in range(size)]
+    tmp.append([data[0][0],data[0][1]])
+    return tmp
+
+def draw_graph(ans,title="default_title"):
     x=[i[0] for i in ans]
     y=[i[1] for i in ans]
     plt.plot(x,y,label="city")
 
     plt.scatter(ans[0][0],ans[0][1],label="start")
+    plt.title(title)
     plt.legend()
     plt.show()
+
+def total_move_cost(ans):
+    total=0
+    for i in range(len(ans)-1):
+        total+=dis(ans[i],ans[i+1])
+    return total
+
+
+###main function###
+with open(fname) as f:
+    if fname!="a280_use.txt":
+        data=[list(map(float,i.split())) for i in f.readlines()]
+    else:
+        data=[list(map(float,i.split()[1:])) for i in f.readlines()]
+        # tmp=[]
+        # for v in data:  tmp.append(v[1:])
+        # data=tmp
+    size=len(data)
+
+    #ans=nn_method(data,size)
+    ans=insertion_method(data,size,True)
+    #ans=random_route(data,size)
+
+    draw_graph(ans,"before")
+    print("before_cost:",total_move_cost(ans))
+
+    ans=two_opt_method(ans,size)
+
+    draw_graph(ans,"after")
+    print("after_cost:",total_move_cost(ans))

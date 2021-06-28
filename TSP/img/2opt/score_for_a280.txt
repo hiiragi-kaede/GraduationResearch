@@ -1,0 +1,25 @@
+optimum:2580
+
+nearest neighbor & 2opt
+before_cost: 3224.3162172010957
+after_cost: 2824.274163615912
+
+
+random(添字通り) & 2opt
+before_cost: 2818.621642239474
+after_cost: 2775.163838302319
+
+
+insertion(random(添字通り)) & 2opt
+before_cost: 2825.360833514928
+after_cost: 2778.9037962362163
+
+
+insertion(xorder) & 2opt
+before_cost: 9767.365672711889
+after_cost: 2963.37170004094
+
+
+insertion(yorder) & 2opt
+before_cost: 25698.111334010548
+after_cost: 3027.2094019741003
