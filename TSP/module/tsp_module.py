@@ -30,8 +30,14 @@ def nn_method(data,size):
     ans.append([data[idx][0],data[idx][1]])
     return ans
 
-def insertion_method(data,size,is_sort=False):
-    if is_sort: data.sort(key=lambda x: x[1])
+def insertion_method(data,size,ins_state=0):
+    if ins_state==0:
+        pass
+    elif ins_state==1:
+        data.sort(key=lambda x: x[0])
+    elif ins_state==2:
+        data.sort(key=lambda x: x[1])
+    
     ans=[[data[0][0],data[0][1]],[data[0][0],data[0][1]]]
     
     for i in range(size-1):
