@@ -21,3 +21,7 @@ after_cost: 82.71624898900568
 insertion(yorder) & 2opt
 before_cost: 285.80920383189283
 after_cost: 81.91115581312447
+
+
+SA初回
+final cost: 532.227291136054

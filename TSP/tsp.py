@@ -1,7 +1,7 @@
 import module.tsp_module as mod
 
-#fname="rand100.txt"
-fname="a280_use.txt"
+fname="rand100.txt"
+#fname="a280_use.txt"
 
 ###main function###
 with open(fname) as f:
@@ -15,6 +15,7 @@ with open(fname) as f:
     print("0:ランダムルート(入力データの添字順)")
     print("1:nearest neighbor法で解く")
     print("2:挿入法")
+    print("3:焼きなまし法")
     
     print("type:",end="")
     state=int(input())
@@ -35,6 +36,8 @@ with open(fname) as f:
             ins_state=0
         
         ans=mod.insertion_method(data,size,ins_state)
+    elif state==3:
+        ans=mod.sa_method(data,size)
     else:
         print("指定された数値の範囲で入力してください")
         exit(1)

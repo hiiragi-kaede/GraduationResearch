@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import math
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -50,6 +51,40 @@ def insertion_method(data,size,ins_state=0):
         ans.insert(minid+1,[data[i+1][0],data[i+1][1]])
     
     return ans
+
+def sa_method(data,size):
+    ans=random_route(data,size)
+    ini_temp=500 #初期温度
+    end_temp=0.1 #終了温度
+    cool=0.9 #冷却スケジュール
+    loop=10 #反復回数
+
+    for _ in range(loop):
+        temp=ini_temp
+        while temp > end_temp:
+            from_idx = random.randint(0,size-1)
+            to_idx = random.randint(0,size-1)
+            while from_idx==to_idx:
+                to_idx = random.randint(0,size-1)
+            
+            new_ans=ans[:]
+            dif_score = total_move_cost(ans)
+            new_ans[from_idx],new_ans[to_idx]=new_ans[to_idx],new_ans[from_idx]
+            dif_score -= total_move_cost(new_ans)
+            #変更後の方が経路長が短くなっていればdif_score<0になる
+
+            if dif_score < 0:
+                ans=new_ans
+            else:
+                #Metropolis法を採用
+                A=math.exp(-dif_score/temp)
+                if random.random() < A:
+                    ans=new_ans
+            
+            temp-=cool
+    
+    return ans
+
 
 def show_data(data):
     for i,d in enumerate(data):
