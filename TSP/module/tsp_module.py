@@ -58,36 +58,37 @@ def insertion_method(data,ins_state=0):
 def sa_method(data):
     #ans=random_route(data,size)
     ans=nn_method(data)
-    ini_temp=500000 #初期温度
-    cool=0.999995 #冷却スケジュール
-    loop=5 #反復回数
+    ini_temp=50000 #初期温度
+    cool=0.9995 #冷却スケジュール
     unchanged=0 #解の更新がなかった回数
-    unchange_threshold=20 #反復を終了する解の更新がなかった回数
+    unchange_threshold=10 #反復を終了する解の更新がなかった回数
+    time_threshold=100 #反復を終了するまでの経過時間
 
-    for i in range(loop):
-        temp=ini_temp
-        print("loop:",i,end="",flush=True)
-        unchanged=0
-        st=time.time()
-        while unchanged<unchange_threshold:
-            #変更後の方が経路長が短くなっていればdif_score<0になる
-            dif_score,new_ans=sa_exchange_neighbor(ans)
+    draw_graph(ans)
+    temp=ini_temp
+    unchanged=0
+    st=time.time()
+    while unchanged<unchange_threshold:
+        if time.time()-st>time_threshold: break
+        #変更後の方が経路長が短くなっていればdif_score<0になる
+        #dif_score,new_ans=sa_exchange_neighbor(ans)
+        dif_score,new_ans=sa_two_opt_exchange(ans)
 
-            if dif_score <=0:
+        if dif_score <=0:
+            ans=new_ans
+            unchanged=0
+        else:
+            #Metropolis法を採用
+            A=math.exp(-dif_score/temp)
+            if random.random() < A:
                 ans=new_ans
-                unchanged=0
             else:
-                #Metropolis法を採用
-                A=math.exp(-dif_score/temp)
-                if random.random() < A:
-                    ans=new_ans
-                else:
-                    unchanged+=1
-            
-            temp*=cool
+                unchanged+=1
         
-        elapsed=time.time()-st
-        print(" - - > elapsed time:{0}".format(elapsed)+"[sec]")
+        temp*=cool
+        
+    elapsed=time.time()-st
+    print(" - - > elapsed time:{0}".format(elapsed)+"[sec]")
     
     return ans
 
@@ -117,6 +118,36 @@ def sa_exchange_neighbor(ans):
     dif_score=score_after-score_before
     return [dif_score,new_ans]
 
+def sa_two_opt_exchange(ans):
+    """焼きなまし用の2-opt近傍操作を行う
+
+    Args:
+        ans (list[list]): 都市の訪問順のリスト
+    
+    Returns:
+        [list]: dif_score,new_ansの順で構成されたリスト
+    """
+    #戻ってくる順番も足されているため、-1しないといけない
+    size=len(ans)-1
+    for i in range(1,size-2):
+        i_next=i+1
+        for j in range(i+2,size-1):
+            j_next=(j+1)%size
+
+            l1 = dis(ans[i],ans[i_next])
+            l2 = dis(ans[j],ans[j_next])
+            l3 = dis(ans[i],ans[j])
+            l4 = dis(ans[i_next],ans[j_next])
+
+            cost_before = l1+l2
+            cost_after = l3+l4
+            dif_score = cost_after - cost_before
+
+            new_root = ans[i_next:j+1]
+            ans[i_next:j+1]=new_root[::-1]
+    
+    return [dif_score,ans]
+
 def show_data(data):
     """
     ルートの内容を表示させる
@@ -128,24 +159,21 @@ def two_opt_method(data):
     size=len(data)
     while True:
         count = 0
-        for i in range(size-2):
+        for i in range(1,size-2):
             i_next=i+1
-            for j in range(i+2,size):
-                if j==size-1:
-                    j_next=0
-                else:
-                    j_next=j+1
+            for j in range(i+2,size-1):
+                j_next=(j+1)%size
 
-                if i!=0 or j_next!=0:
-                    l1 = dis(data[i],data[i_next])
-                    l2 = dis(data[j],data[j_next])
-                    l3 = dis(data[i],data[j])
-                    l4 = dis(data[i_next],data[j_next])
+                l1 = dis(data[i],data[i_next])
+                l2 = dis(data[j],data[j_next])
+                l3 = dis(data[i],data[j])
+                l4 = dis(data[i_next],data[j_next])
 
-                    if l1+l2 > l3+l4:
-                        new_root = data[i_next:j+1]
-                        data[i_next:j+1]=new_root[::-1]
-                        count+=1
+                if l1+l2 > l3+l4:
+                    new_root = data[i_next:j+1]
+                    data[i_next:j+1]=new_root[::-1]
+                    count+=1
+
         if count==0: break
     
     return data
