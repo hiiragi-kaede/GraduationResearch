@@ -6,11 +6,9 @@ import time
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
 
-def nn_method(data):
-    size=len(data)
+def nn_method(size,dis_mat):
     idx=random.randint(0,size-1)
     visited=[idx]
-    ans=[[data[idx][0],data[idx][1]]]
 
     for i in range(size-1):#次に行く都市を(size-1)回選ぶ
         #とりあえず次に訪れるのは訪れていない街の内、一番添字が小さい都市とする
@@ -21,67 +19,71 @@ def nn_method(data):
             exit(1)
         
         minid=idxs[0]
-        min=dis(ans[-1],data[minid])
+        min=dis_mat[visited[-1]][minid]
         for id in idxs:
-            if min>dis(ans[-1],data[id]):
+            if min>dis_mat[visited[-1]][id]:
                 minid=id
-                min=dis(ans[-1],data[id])
+                min=dis_mat[visited[-1]][id]
         
         visited.append(minid)
-        ans.append([data[minid][0],data[minid][1]])
     
-    ans.append([data[idx][0],data[idx][1]])
-    return ans
+    #スタートに戻ってくる
+    visited.append(idx)
+    return visited
 
-def insertion_method(data,ins_state=0):
+def insertion_method(data,dis_mat,ins_state=0):
+    order=random_route(len(data))
+    ziped=zip(data,order)
     if ins_state==0:
         pass
     elif ins_state==1:
-        data.sort(key=lambda x: x[0])
+        zip_sort = sorted(ziped,key=lambda x: x[0][0])
     elif ins_state==2:
-        data.sort(key=lambda x: x[1])
+        zip_sort = sorted(ziped,key=lambda x: x[0][1])
 
+    data, order = zip(*zip_sort)
     size=len(data) 
-    ans=[[data[0][0],data[0][1]],[data[0][0],data[0][1]]]
+    ans=[order[0],order[0]]
     
     for i in range(size-1):
         minid=0
         min=1e9
         for j in range(len(ans)-1):
-            if min > dis(data[j],data[i+1])+dis(data[j+1],data[i+1]):
+            if min > dis_mat[order[j]][order[i+1]]+dis_mat[order[j+1]][order[i+1]]:
                 minid=j
-                min=dis(data[j],data[i+1])+dis(data[j+1],data[i+1])
-        ans.insert(minid+1,[data[i+1][0],data[i+1][1]])
+                min=dis_mat[order[j]][order[i+1]]+dis_mat[order[j+1]][order[i+1]]
+        ans.insert(minid+1,order[i+1])
     
     return ans
 
-def sa_method(data):
+def sa_method(data,size,dis_mat):
     #ans=random_route(data,size)
-    ans=nn_method(data)
-    ini_temp=50000 #初期温度
-    cool=0.9995 #冷却スケジュール
+    order=nn_method(size,dis_mat)
+    ini_temp=500000 #初期温度
+    cool=0.9 #冷却スケジュール
     unchanged=0 #解の更新がなかった回数
-    unchange_threshold=10 #反復を終了する解の更新がなかった回数
+    unchange_threshold=50 #反復を終了する解の更新がなかった回数
     time_threshold=100 #反復を終了するまでの経過時間
 
-    draw_graph(ans)
+    draw_graph(data,order)
     temp=ini_temp
     unchanged=0
     st=time.time()
+    timeout=False
     while unchanged<unchange_threshold:
         if time.time()-st>time_threshold: break
         #変更後の方が経路長が短くなっていればdif_score<0になる
-        #dif_score,new_ans=sa_exchange_neighbor(ans)
-        dif_score,new_ans=sa_two_opt_exchange(ans)
+        dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
+        #dif_score,new_order=sa_two_opt_exchange(order,dis_mat)
 
         if dif_score <=0:
-            ans=new_ans
+            order=new_order
             unchanged=0
         else:
             #Metropolis法を採用
             A=math.exp(-dif_score/temp)
             if random.random() < A:
-                ans=new_ans
+                order=new_order
             else:
                 unchanged+=1
         
@@ -89,34 +91,51 @@ def sa_method(data):
         
     elapsed=time.time()-st
     print(" - - > elapsed time:{0}".format(elapsed)+"[sec]")
-    
-    return ans
 
-def sa_exchange_neighbor(ans):
+    
+    return order
+
+def sa_exchange_neighbor(order,dis_mat):
     """焼きなまし用の交換近傍操作を行う
 
     Args:
-        ans (list[list]): 都市の訪問順のリスト
+        order ([list]): 都市の訪問順のリスト
+        dis_mat ([list[list]]): 各都市間の距離行列
 
     Returns:
         [list]: dif_score,new_ansの順で構成されたリスト
     """  
     #戻ってくる順番も足されているため、-1しないといけない  
-    size=len(ans)-1
+    size=len(order)-1
     from_idx = random.randint(1,size-1)
     to_idx = random.randint(1,size-1)
     while from_idx==to_idx:
         to_idx = random.randint(1,size-1)
     
-    new_ans=ans[:]
-    score_before = dis(ans[from_idx-1],ans[from_idx])+dis(ans[from_idx],ans[from_idx+1])
-    score_before += dis(ans[to_idx-1],ans[to_idx])+dis(ans[to_idx],ans[to_idx+1])
-    new_ans[from_idx],new_ans[to_idx]=new_ans[to_idx],new_ans[from_idx]
-    score_after = dis(new_ans[from_idx-1],new_ans[from_idx])+dis(new_ans[from_idx],new_ans[from_idx+1])
-    score_after += dis(new_ans[to_idx-1],new_ans[to_idx])+dis(new_ans[to_idx],new_ans[to_idx+1])
+    new_order=order[:]
+    from_prev=order[from_idx-1]
+    from_curr=order[from_idx]
+    from_next=order[from_idx+1]
+    to_prev=order[to_idx-1]
+    to_curr=order[to_idx]
+    to_next=order[to_idx+1]
+
+    score_before = dis_mat[from_prev][from_curr]+dis_mat[from_curr][from_next]
+    score_before += dis_mat[to_prev][to_curr]+dis_mat[to_curr][to_next]
+    new_order[from_idx],new_order[to_idx]=new_order[to_idx],new_order[from_idx]
+
+    from_prev=new_order[from_idx-1]
+    from_curr=new_order[from_idx]
+    from_next=new_order[from_idx+1]
+    to_prev=new_order[to_idx-1]
+    to_curr=new_order[to_idx]
+    to_next=new_order[to_idx+1]
+
+    score_after = dis_mat[from_prev][from_curr]+dis_mat[from_curr][from_next]
+    score_after += dis_mat[to_prev][to_curr]+dis_mat[to_curr][to_next]
 
     dif_score=score_after-score_before
-    return [dif_score,new_ans]
+    return [dif_score,new_order]
 
 def sa_two_opt_exchange(ans):
     """焼きなまし用の2-opt近傍操作を行う
@@ -155,47 +174,47 @@ def show_data(data):
     for i,d in enumerate(data):
         print(i,":",d)
 
-def two_opt_method(data):
-    size=len(data)
+def two_opt_method(dis_mat,order):
+    #スタートに戻ってくる手続きのだけsizeを調整
+    size=len(order)
     while True:
         count = 0
-        for i in range(1,size-2):
+        for i in range(size-2):
             i_next=i+1
             for j in range(i+2,size-1):
                 j_next=(j+1)%size
 
-                l1 = dis(data[i],data[i_next])
-                l2 = dis(data[j],data[j_next])
-                l3 = dis(data[i],data[j])
-                l4 = dis(data[i_next],data[j_next])
+                l1 = dis_mat[order[i]][order[i_next]]
+                l2 = dis_mat[order[j]][order[j_next]]
+                l3 = dis_mat[order[i]][order[j]]
+                l4 = dis_mat[order[i_next]][order[j_next]]
 
                 if l1+l2 > l3+l4:
-                    new_root = data[i_next:j+1]
-                    data[i_next:j+1]=new_root[::-1]
+                    new_root = order[i_next:j+1]
+                    order[i_next:j+1]=new_root[::-1]
                     count+=1
 
         if count==0: break
     
-    return data
+    return order
 
-def random_route(data):
-    size=len(data)
-    tmp=[[data[i][0],data[i][1]] for i in range(size)]
-    tmp.append([data[0][0],data[0][1]])
-    return tmp
+def random_route(size):
+    order=[i for i in range(size)]
+    order.append(order[0])
+    return order
 
-def draw_graph(ans,title="default_title"):
-    x=[i[0] for i in ans]
-    y=[i[1] for i in ans]
+def draw_graph(data,order,title="default_title"):
+    x=[data[i][0] for i in order]
+    y=[data[i][1] for i in order]
     plt.plot(x,y,label="city")
 
-    plt.scatter(ans[0][0],ans[0][1],label="start")
+    plt.scatter(data[order[0]][0],data[order[0]][1],label="start")
     plt.title(title)
     plt.legend()
     plt.show()
 
-def total_move_cost(ans):
+def total_move_cost(order,dis_mat):
     total=0
-    for i in range(len(ans)-1):
-        total+=dis(ans[i],ans[i+1])
+    for i in range(len(order)-1):
+        total+=dis_mat[order[i]][order[i+1]]
     return total

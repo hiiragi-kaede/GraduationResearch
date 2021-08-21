@@ -1,4 +1,5 @@
 import module.tsp_module as mod
+from pprint import pprint
 
 fname="rand100.txt"
 #fname="a280_use.txt"
@@ -10,6 +11,9 @@ with open(fname) as f:
     else:
         data=[list(map(float,i.split()[1:])) for i in f.readlines()]
 
+    dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
+    size=len(data)
+
     print("解法タイプを入力してください")
     print("0:ランダムルート(入力データの添字順)")
     print("1:nearest neighbor法で解く")
@@ -18,11 +22,11 @@ with open(fname) as f:
     
     print("type:",end="")
     state=int(input())
-    ans = mod.random_route(data)
+    order = mod.random_route(size)
     if state==0:
         pass
     elif state==1:
-        ans=mod.nn_method(data)
+        order=mod.nn_method(size,dis_mat)
     elif state==2:
         print("挿入順タイプを入力してください")
         print("0:添字順")
@@ -34,17 +38,17 @@ with open(fname) as f:
         if ins_state<0 or ins_state>2:
             ins_state=0
         
-        ans=mod.insertion_method(data,ins_state)
+        order=mod.insertion_method(data,dis_mat,ins_state)
     elif state==3:
-        ans=mod.sa_method(data)
+        order=mod.sa_method(data,size,dis_mat)
     else:
         print("指定された数値の範囲で入力してください")
         exit(1)
     
-    mod.draw_graph(ans,"before")
-    print("before_cost:",mod.total_move_cost(ans))
+    mod.draw_graph(data,order,"before")
+    print("before_cost:",mod.total_move_cost(order,dis_mat))
 
-    ans=mod.two_opt_method(ans)
+    order=mod.two_opt_method(dis_mat,order)
 
-    mod.draw_graph(ans,"after")
-    print("after_cost:",mod.total_move_cost(ans))
+    mod.draw_graph(data,order,"after")
+    print("after_cost:",mod.total_move_cost(order,dis_mat))
