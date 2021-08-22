@@ -57,8 +57,8 @@ def insertion_method(data,dis_mat,ins_state=0):
     return ans
 
 def sa_method(data,size,dis_mat):
-    #ans=random_route(data,size)
-    order=nn_method(size,dis_mat)
+    order=random_route(size)
+    #order=nn_method(size,dis_mat)
     ini_temp=500000 #初期温度
     cool=0.9 #冷却スケジュール
     unchanged=0 #解の更新がなかった回数
@@ -68,13 +68,19 @@ def sa_method(data,size,dis_mat):
     draw_graph(data,order)
     temp=ini_temp
     unchanged=0
+    print("近傍操作を選択してください")
+    print("0:交換近傍(2都市を交換)")
+    print("1:2-opt近傍(2つの辺を交換)")
+    type=int(input("neighbor type:"))
     st=time.time()
     timeout=False
     while unchanged<unchange_threshold:
         if time.time()-st>time_threshold: break
         #変更後の方が経路長が短くなっていればdif_score<0になる
-        dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
-        #dif_score,new_order=sa_two_opt_exchange(order,dis_mat)
+        if type==0:
+            dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
+        else:
+            dif_score,new_order=sa_two_opt_exchange(order,dis_mat)
 
         if dif_score <=0:
             order=new_order
@@ -137,35 +143,35 @@ def sa_exchange_neighbor(order,dis_mat):
     dif_score=score_after-score_before
     return [dif_score,new_order]
 
-def sa_two_opt_exchange(ans):
+def sa_two_opt_exchange(order,dis_mat):
     """焼きなまし用の2-opt近傍操作を行う
 
     Args:
-        ans (list[list]): 都市の訪問順のリスト
+        order ([list]): 都市の訪問順のリスト
+        dis_mat ([list[list]]): 各都市間の距離行列
     
     Returns:
         [list]: dif_score,new_ansの順で構成されたリスト
     """
-    #戻ってくる順番も足されているため、-1しないといけない
-    size=len(ans)-1
-    for i in range(1,size-2):
-        i_next=i+1
-        for j in range(i+2,size-1):
-            j_next=(j+1)%size
+    size = len(order)
+    i = random.randint(0,size-4)
+    i_next = i+1
+    j = random.randint(i+2,size-2)
+    j_next = (j+1)%size
 
-            l1 = dis(ans[i],ans[i_next])
-            l2 = dis(ans[j],ans[j_next])
-            l3 = dis(ans[i],ans[j])
-            l4 = dis(ans[i_next],ans[j_next])
+    l1 = dis_mat[order[i]][order[i_next]]
+    l2 = dis_mat[order[j]][order[j_next]]
+    l3 = dis_mat[order[i]][order[j]]
+    l4 = dis_mat[order[i_next]][order[j_next]]
 
-            cost_before = l1+l2
-            cost_after = l3+l4
-            dif_score = cost_after - cost_before
+    cost_before = l1+l2
+    cost_after = l3+l4
+    dif_score = cost_after - cost_before
 
-            new_root = ans[i_next:j+1]
-            ans[i_next:j+1]=new_root[::-1]
+    new_root = order[i_next:j+1]
+    order[i_next:j+1]=new_root[::-1]
     
-    return [dif_score,ans]
+    return [dif_score,order]
 
 def show_data(data):
     """
