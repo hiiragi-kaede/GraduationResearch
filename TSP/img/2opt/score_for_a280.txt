@@ -23,3 +23,11 @@ after_cost: 2963.37170004094
 insertion(yorder) & 2opt
 before_cost: 25698.111334010548
 after_cost: 3027.2094019741003
+
+SA交換近傍(100s制限に引っかかってる)
+before_cost: 4230.048153204908
+after_cost: 3046.929529692869
+
+SA2opt近傍(100s制限に引っかかってる)
+before_cost: 33453.13682108915
+after_cost: 2984.1855883753146

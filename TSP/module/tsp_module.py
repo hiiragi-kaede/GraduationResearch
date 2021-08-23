@@ -2,6 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import math
 import time
+import sys
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -59,11 +60,10 @@ def insertion_method(data,dis_mat,ins_state=0):
 def sa_method(data,size,dis_mat):
     order=random_route(size)
     #order=nn_method(size,dis_mat)
-    ini_temp=500000 #初期温度
+    ini_temp=50000 #初期温度
     cool=0.9 #冷却スケジュール
-    unchanged=0 #解の更新がなかった回数
-    unchange_threshold=50 #反復を終了する解の更新がなかった回数
-    time_threshold=100 #反復を終了するまでの経過時間
+    unchanged=0 #解の更新幅が小さかった回数
+    time_threshold=100 #反復を終了するまでの経過時間(s)
 
     draw_graph(data,order)
     temp=ini_temp
@@ -73,9 +73,20 @@ def sa_method(data,size,dis_mat):
     print("1:2-opt近傍(2つの辺を交換)")
     type=int(input("neighbor type:"))
     st=time.time()
-    timeout=False
-    while unchanged<unchange_threshold:
+    accept=0
+    trial=0
+    while unchanged<300*size:
         if time.time()-st>time_threshold: break
+        #その温度で周辺をある程度探索してから冷却を行う
+        if accept>=10*size or trial>=100*size:
+            temp*=cool
+            accept=0
+            trial=0
+        
+        # sys.stdout.write("\033[2K\033[G current temp:%s" % str(temp))
+        # sys.stdout.flush()
+        print("\rcurrent temp:"+str(temp),end="")
+        trial+=1
         #変更後の方が経路長が短くなっていればdif_score<0になる
         if type==0:
             dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
@@ -84,16 +95,18 @@ def sa_method(data,size,dis_mat):
 
         if dif_score <=0:
             order=new_order
-            unchanged=0
+            accept+=1
         else:
             #Metropolis法を採用
             A=math.exp(-dif_score/temp)
             if random.random() < A:
                 order=new_order
-            else:
-                unchanged+=1
+                accept+=1
         
-        temp*=cool
+        if abs(dif_score)<10:
+            unchanged+=1
+        else:
+            unchanged=0
         
     elapsed=time.time()-st
     print(" - - > elapsed time:{0}".format(elapsed)+"[sec]")
