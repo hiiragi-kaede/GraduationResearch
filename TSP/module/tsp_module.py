@@ -60,28 +60,36 @@ def insertion_method(data,dis_mat,ins_state=0):
 def sa_method(data,size,dis_mat):
     order=random_route(size)
     #order=nn_method(size,dis_mat)
+    
     ini_temp=50000 #初期温度
     cool=0.9 #冷却スケジュール
     unchanged=0 #解の更新幅が小さかった回数
     time_threshold=100 #反復を終了するまでの経過時間(s)
-
-    draw_graph(data,order)
+    count=0
     temp=ini_temp
     unchanged=0
+    accept=0
+    trial=0
+
     print("近傍操作を選択してください")
     print("0:交換近傍(2都市を交換)")
     print("1:2-opt近傍(2つの辺を交換)")
     type=int(input("neighbor type:"))
+    
+    sa_counts=[count]
+    sa_costs=[total_move_cost(order,dis_mat)]
+    
     st=time.time()
-    accept=0
-    trial=0
     while unchanged<300*size:
+        count+=1
         if time.time()-st>time_threshold: break
         #その温度で周辺をある程度探索してから冷却を行う
         if accept>=10*size or trial>=100*size:
             temp*=cool
             accept=0
             trial=0
+            sa_counts.append(count)
+            sa_costs.append(total_move_cost(order,dis_mat))
         
         # sys.stdout.write("\033[2K\033[G current temp:%s" % str(temp))
         # sys.stdout.flush()
@@ -111,8 +119,16 @@ def sa_method(data,size,dis_mat):
     elapsed=time.time()-st
     print(" - - > elapsed time:{0}".format(elapsed)+"[sec]")
 
-    
+    sa_draw_score_graph(x=sa_counts,y=sa_costs)
+
     return order
+
+def sa_draw_score_graph(x,y):
+    plt.plot(x,y)
+    plt.title("SA scores")
+    plt.xlabel("SA trial")
+    plt.ylabel("Score")
+    plt.show()
 
 def sa_exchange_neighbor(order,dis_mat):
     """焼きなまし用の交換近傍操作を行う
