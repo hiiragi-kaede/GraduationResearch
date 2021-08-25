@@ -64,7 +64,7 @@ def sa_method(data,size,dis_mat):
     ini_temp=50000 #初期温度
     cool=0.9 #冷却スケジュール
     unchanged=0 #解の更新幅が小さかった回数
-    time_threshold=100 #反復を終了するまでの経過時間(s)
+    time_threshold=50 #反復を終了するまでの経過時間(s)
     count=0
     temp=ini_temp
     unchanged=0
@@ -79,6 +79,7 @@ def sa_method(data,size,dis_mat):
     sa_counts=[count]
     sa_costs=[total_move_cost(order,dis_mat)]
     
+    i = random.randint(0,size-2)
     st=time.time()
     while unchanged<300*size:
         count+=1
@@ -90,16 +91,16 @@ def sa_method(data,size,dis_mat):
             trial=0
             sa_counts.append(count)
             sa_costs.append(total_move_cost(order,dis_mat))
+            #冷却時に2optで交換する前半の辺を変更する
+            i=(i+1)%(size-1)
         
-        # sys.stdout.write("\033[2K\033[G current temp:%s" % str(temp))
-        # sys.stdout.flush()
         print("\rcurrent temp:"+str(temp),end="")
         trial+=1
         #変更後の方が経路長が短くなっていればdif_score<0になる
         if type==0:
             dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
         else:
-            dif_score,new_order=sa_two_opt_exchange(order,dis_mat)
+            dif_score,new_order=sa_two_opt_exchange(order,dis_mat,i)
 
         if dif_score <=0:
             order=new_order
@@ -172,21 +173,27 @@ def sa_exchange_neighbor(order,dis_mat):
     dif_score=score_after-score_before
     return [dif_score,new_order]
 
-def sa_two_opt_exchange(order,dis_mat):
+def sa_two_opt_exchange(order,dis_mat,i):
     """焼きなまし用の2-opt近傍操作を行う
 
     Args:
         order ([list]): 都市の訪問順のリスト
         dis_mat ([list[list]]): 各都市間の距離行列
+        i ([int]): 交換するための1本目の辺の前者の都市の添字
     
     Returns:
         [list]: dif_score,new_ansの順で構成されたリスト
     """
     size = len(order)
-    i = random.randint(0,size-4)
     i_next = i+1
-    j = random.randint(i+2,size-2)
-    j_next = (j+1)%size
+    while True:
+        j = random.randint(0,size-2)
+        #jで選んだ辺がiで選んだ辺と隣り合っている場合、もう一度ランダムにjを選ぶ
+        if j==i or j==i_next or j==i-1:
+            continue
+        else:
+            j_next=(j+1)%size
+            break
 
     l1 = dis_mat[order[i]][order[i_next]]
     l2 = dis_mat[order[j]][order[j_next]]
