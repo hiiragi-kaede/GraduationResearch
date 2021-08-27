@@ -1,8 +1,8 @@
 import module.tsp_module as mod
 from pprint import pprint
 
-fname="rand100.txt"
-#fname="a280_use.txt"
+#fname="rand100.txt"
+fname="a280_use.txt"
 
 ###main function###
 with open(fname) as f:
@@ -52,3 +52,5 @@ with open(fname) as f:
 
     mod.draw_graph(data,order,"after")
     print("after_cost:",mod.total_move_cost(order,dis_mat))
+
+    mod.draw_nx_graphs(data,order)

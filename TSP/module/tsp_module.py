@@ -4,6 +4,11 @@ import math
 import time
 import sys
 
+from scipy.spatial import distance
+import matplotlib.pyplot as plt
+import pandas as pd
+import networkx as nx
+
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
 
@@ -260,3 +265,35 @@ def total_move_cost(order,dis_mat):
     for i in range(len(order)-1):
         total+=dis_mat[order[i]][order[i+1]]
     return total
+
+def draw_nx_graphs(data,order):
+
+    df = pd.DataFrame({ 'x_position' : [i[0] for i in data],
+                            'y_position' : [i[1] for i in data]})
+    plt.scatter(x=df.x_position, y=df.y_position)
+
+    mat = df[['x_position', 'y_position']].values
+    dist_mat = distance.cdist(mat, mat, metric='euclidean') # ユークリッド距離
+
+    # 各点間の距離ディクショナリーを作成
+    dic_xy2dist = {}
+    for i in df.index:
+        if i not in dic_xy2dist.keys():
+            dic_xy2dist[i] = {}
+        for j in df.index:
+            dic_xy2dist[i][j] = dist_mat[i][j]
+
+    node_labels = df.index
+    # 各ノード（点）のx,y座標をdictionaryとして作成します。最後に描画する際に必要になります。
+    pos = {k : (v.x_position,v.y_position) for k,v in df.iterrows()}
+    # グラフオブジェクトを生成しています。
+    G = nx.Graph()
+    # ノード（点）をグラフに一括登録しています。ノード名はindexIDとしています。
+    G.add_nodes_from(node_labels)
+
+    for i in range(len(order)-1):
+        G.add_edge(order[i],order[i+1])
+
+    # 最終的にネットワークを描画します。pos引数に先ほど作ったposを渡すとx,y座標が反映されます。
+    nx.draw_networkx(G, node_color="c", pos=pos, node_size=10)
+    plt.show()
