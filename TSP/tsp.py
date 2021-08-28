@@ -53,4 +53,4 @@ with open(fname) as f:
     mod.draw_graph(data,order,"after")
     print("after_cost:",mod.total_move_cost(order,dis_mat))
 
-    mod.draw_nx_graphs(data,order)
+    #mod.draw_nx_graphs(data,order)

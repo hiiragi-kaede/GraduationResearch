@@ -78,7 +78,7 @@ def sa_method(data,size,dis_mat):
 
     print("近傍操作を選択してください")
     print("0:交換近傍(2都市を交換)")
-    print("1:2-opt近傍(2つの辺を交換)")
+    print("1:3都市近傍(3都市をランダムな順に交換)")
     type=int(input("neighbor type:"))
     
     sa_counts=[count]
@@ -96,8 +96,6 @@ def sa_method(data,size,dis_mat):
             trial=0
             sa_counts.append(count)
             sa_costs.append(total_move_cost(order,dis_mat))
-            #冷却時に2optで交換する前半の辺を変更する
-            i=(i+1)%(size-1)
         
         print("\rcurrent temp:"+str(temp),end="")
         trial+=1
@@ -105,7 +103,7 @@ def sa_method(data,size,dis_mat):
         if type==0:
             dif_score,new_order=sa_exchange_neighbor(order,dis_mat)
         else:
-            dif_score,new_order=sa_two_opt_exchange(order,dis_mat,i)
+            dif_score,new_order=sa_triple_exchange(order,dis_mat)
 
         if dif_score <=0:
             order=new_order
@@ -178,41 +176,42 @@ def sa_exchange_neighbor(order,dis_mat):
     dif_score=score_after-score_before
     return [dif_score,new_order]
 
-def sa_two_opt_exchange(order,dis_mat,i):
-    """焼きなまし用の2-opt近傍操作を行う
+def sa_triple_exchange(order,dis_mat):
+    """焼きなまし用の3つの都市の交換操作を行う
 
     Args:
         order ([list]): 都市の訪問順のリスト
         dis_mat ([list[list]]): 各都市間の距離行列
-        i ([int]): 交換するための1本目の辺の前者の都市の添字
     
     Returns:
         [list]: dif_score,new_ansの順で構成されたリスト
     """
-    size = len(order)
-    i_next = i+1
-    while True:
-        j = random.randint(0,size-2)
-        #jで選んだ辺がiで選んだ辺と隣り合っている場合、もう一度ランダムにjを選ぶ
-        if j==i or j==i_next or j==i-1:
-            continue
-        else:
-            j_next=(j+1)%size
-            break
+    size=len(order)
+    a_idx=random.randint(1,size-4)
+    b_idx=random.randint(a_idx+1,size-3)
+    c_idx=random.randint(b_idx+1,size-2)
+    a_ids=[order[a_idx-1],order[a_idx],order[a_idx+1]]
+    b_ids=[order[b_idx-1],order[b_idx],order[b_idx+1]]
+    c_ids=[order[c_idx-1],order[c_idx],order[c_idx+1]]
 
-    l1 = dis_mat[order[i]][order[i_next]]
-    l2 = dis_mat[order[j]][order[j_next]]
-    l3 = dis_mat[order[i]][order[j]]
-    l4 = dis_mat[order[i_next]][order[j_next]]
+    new_order=order[:]
+    score_before=dis_mat[a_ids[0]][a_ids[1]]+dis_mat[a_ids[1]][a_ids[2]]
+    score_before+=dis_mat[b_ids[0]][b_ids[1]]+dis_mat[b_ids[1]][b_ids[2]]
+    score_before+=dis_mat[c_ids[0]][c_ids[1]]+dis_mat[c_ids[1]][c_ids[2]]
 
-    cost_before = l1+l2
-    cost_after = l3+l4
-    dif_score = cost_after - cost_before
+    tmp=[order[a_idx],order[b_idx],order[c_idx]]
+    random.shuffle(tmp)
+    new_order[a_idx],new_order[b_idx],new_order[c_idx]=tmp
 
-    new_root = order[i_next:j+1]
-    order[i_next:j+1]=new_root[::-1]
-    
-    return [dif_score,order]
+    a_ids=[new_order[a_idx-1],new_order[a_idx],new_order[a_idx+1]]
+    b_ids=[new_order[b_idx-1],new_order[b_idx],new_order[b_idx+1]]
+    c_ids=[new_order[c_idx-1],new_order[c_idx],new_order[c_idx+1]]
+    score_after=dis_mat[a_ids[0]][a_ids[1]]+dis_mat[a_ids[1]][a_ids[2]]
+    score_after+=dis_mat[b_ids[0]][b_ids[1]]+dis_mat[b_ids[1]][b_ids[2]]
+    score_after+=dis_mat[c_ids[0]][c_ids[1]]+dis_mat[c_ids[1]][c_ids[2]]
+
+    dif_score=score_after-score_before
+    return [dif_score,new_order]
 
 def show_data(data):
     """
