@@ -1,4 +1,6 @@
-import module.tsp_module as mod
+import sys
+sys.path.append("../")
+from module import tsp_module as mod
 from pprint import pprint
 
 #fname="rand100.txt"
