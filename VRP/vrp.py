@@ -15,7 +15,12 @@ with open(fname) as f:
     dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
 
-    order=[i for i in range(size)]
-    order.append(0)
+    orders=[[0] for _ in range(5)]
+    for i in range(size):
+        orders[i%5].append(i)
 
-    mod.draw_graph(data,order)
+    for i in range(5):
+        orders[i].append(orders[i][0])
+        mod.two_opt_method(dis_mat,orders[i])
+    
+    mod.draw_nx_graphs(data,orders)

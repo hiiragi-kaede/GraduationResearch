@@ -221,7 +221,6 @@ def show_data(data):
         print(i,":",d)
 
 def two_opt_method(dis_mat,order):
-    #スタートに戻ってくる手続きのだけsizeを調整
     size=len(order)
     while True:
         count = 0
