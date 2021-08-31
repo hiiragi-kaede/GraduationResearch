@@ -44,7 +44,7 @@ def draw_nx_graphs(data,orders):
     plt.show()
 
 def two_opt_method(dis_mat,order):
-    #スタートに戻ってくる手続きのだけsizeを調整
+    #この時点でデポに帰ってくるルートも含まれている前提で実装されている
     size=len(order)
     while True:
         count = 0
@@ -66,3 +66,22 @@ def two_opt_method(dis_mat,order):
         if count==0: break
     
     return order
+
+def insert_construct(dis_mat,orders,size):
+    truck_size=len(orders)
+    for i in range(1,size):
+        truck_id=0
+        #insertは0を渡すと先頭に追加するので挿入位置は1で初期化
+        ins_id=1
+        min_dis=dis_mat[orders[truck_id][ins_id-1]][i]+dis_mat[i][orders[truck_id][ins_id]]
+        for truck in range(truck_size):
+            for order in range(1,len(orders[truck])):
+                cur_dis=dis_mat[orders[truck][order-1]][i]+dis_mat[i][orders[truck][order]]
+                if cur_dis<min_dis:
+                    min_dis=cur_dis
+                    ins_id=order
+                    truck_id=truck
+        
+        orders[truck_id].insert(ins_id,i)
+    
+    return orders
