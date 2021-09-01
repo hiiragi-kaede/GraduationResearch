@@ -1,23 +1,10 @@
 import matplotlib.pyplot as plt
-import pandas as pd
-import networkx as nx
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
 
-def draw_graph(data,order,title="default_title"):
-    x=[data[i][0] for i in order]
-    y=[data[i][1] for i in order]
-    plt.plot(x,y)
-    plt.scatter(x,y)
-
-    plt.scatter(data[order[0]][0],data[order[0]][1],label="depo")
-    plt.title(title)
-    plt.legend()
-    plt.show()
-
-def draw_nx_graphs(data,orders):
-    """networkxを利用した各トラックの経路表示
+def draw_graphs(data,orders):
+    """各トラックの経路表示
 
     Args:
         data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
@@ -26,6 +13,10 @@ def draw_nx_graphs(data,orders):
     ※トラック数の上限は6
     """    
 
+    if len(orders)>6:
+        print("too many trucks")
+        exit(1)
+    
     xs=[i[0] for i in data]
     ys=[i[1] for i in data]
     plt.scatter(xs,ys)
@@ -37,7 +28,8 @@ def draw_nx_graphs(data,orders):
         xs.append(xs[0])
         ys.append(ys[0])
 
-        plt.plot(xs,ys,color=colors[idx],label="truck"+str(idx+1))
+        label="truck"+str(idx+1)
+        plt.plot(xs,ys,color=colors[idx],label=label)
     
     plt.scatter(data[0][0],data[0][1],label="depo")
     plt.legend()
@@ -69,7 +61,11 @@ def two_opt_method(dis_mat,order):
 
 def insert_construct(dis_mat,orders,size):
     truck_size=len(orders)
-    for i in range(1,size):
+    #とりあえず添え字順に各トラックの種顧客を設定
+    for i in range(truck_size):
+        orders[i].insert(1,i)
+    
+    for i in range(truck_size,size):
         truck_id=0
         #insertは0を渡すと先頭に追加するので挿入位置は1で初期化
         ins_id=1
