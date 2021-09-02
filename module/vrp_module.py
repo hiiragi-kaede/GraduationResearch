@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import itertools
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -59,13 +60,17 @@ def two_opt_method(dis_mat,order):
     
     return order
 
-def insert_construct(dis_mat,orders,size):
-    truck_size=len(orders)
+def insert_construct(dis_mat,truck_size,size):
+    #デポから出発して戻ってくるルートを初期化しておく
+    orders=[[0,0] for _ in range(truck_size)]
+    
     #とりあえず添え字順に各トラックの種顧客を設定
     for i in range(truck_size):
-        orders[i].insert(1,i)
+        #デポの分だけ添字をずらしておく
+        orders[i].insert(1,i+1)
     
-    for i in range(truck_size,size):
+    #デポの分だけ添字がずれているので、トラックが5台なら添字の始まりは6になる
+    for i in range(truck_size+1,size):
         truck_id=0
         #insertは0を渡すと先頭に追加するので挿入位置は1で初期化
         ins_id=1
@@ -81,3 +86,40 @@ def insert_construct(dis_mat,orders,size):
         orders[truck_id].insert(ins_id,i)
     
     return orders
+
+def saving_construct(dis_mat,truck_size,size):
+    #デポから顧客1人だけを訪問するルートで初期化
+    orders=[[0,i,0] for i in range(1,size)]
+
+    #他のルートに繋げられていないトラックの添字集合
+    firsts=[i for i in range(1,size)]
+    ends=[i for i in range(1,size)]
+    #繋げられてルートの最初もしくは最後でなくなった添字の集合
+    not_first=[]
+    not_end=[]
+    #トラックの台数が限度の台数に減るまで繰り返し
+    while len(firsts)>truck_size:
+        firsts=[i for i in range(1,size) if i not in not_first]
+        ends=[i for i in range(1,size) if i not in not_end]
+        #print(firsts,ends)
+        i,j=ends[0],firsts[0]
+        max_dis=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
+        max_ids=[i,j]
+
+        for i in ends:
+            for j in firsts:
+                if i==j: continue
+                distance=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
+                if distance>max_dis:
+                    max_dis=distance
+                    max_ids=[i,j]
+        
+        i,j=max_ids
+        #iを訪問してからデポに帰るルートとjを最初に訪問するルートを併合
+        #print(orders[i],orders[j])
+        orders[i][:-1].extend(orders[j][1:])
+        not_first.append(j+1)
+        not_end.append(i+1)
+        #print(not_first,not_end)
+    
+    return [orders[i] for i in firsts]
