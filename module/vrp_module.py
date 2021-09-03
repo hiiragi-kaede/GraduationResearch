@@ -92,34 +92,30 @@ def saving_construct(dis_mat,truck_size,size):
     orders=[[0,i,0] for i in range(1,size)]
 
     #他のルートに繋げられていないトラックの添字集合
-    firsts=[i for i in range(1,size)]
-    ends=[i for i in range(1,size)]
-    #繋げられてルートの最初もしくは最後でなくなった添字の集合
-    not_first=[]
-    not_end=[]
+    valid=[i for i in range(1,size)]
+    #繋げられてルートの最初でなくなった添字の集合
+    invalid=[]
+
     #トラックの台数が限度の台数に減るまで繰り返し
-    while len(firsts)>truck_size:
-        firsts=[i for i in range(1,size) if i not in not_first]
-        ends=[i for i in range(1,size) if i not in not_end]
-        #print(firsts,ends)
-        i,j=ends[0],firsts[0]
+    while True:
+        valid=[i for i in range(1,size) if i not in invalid]
+        if len(valid)==truck_size: break
+
+        i,j=valid[0],valid[1]
         max_dis=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
         max_ids=[i,j]
 
-        for i in ends:
-            for j in firsts:
-                if i==j: continue
-                distance=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
-                if distance>max_dis:
-                    max_dis=distance
-                    max_ids=[i,j]
+        for v in list(itertools.combinations(valid,2)):
+            i,j=v
+            distance=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
+            if distance>max_dis:
+                max_dis=distance
+                max_ids=[i,j]
         
         i,j=max_ids
         #iを訪問してからデポに帰るルートとjを最初に訪問するルートを併合
-        #print(orders[i],orders[j])
-        orders[i][:-1].extend(orders[j][1:])
-        not_first.append(j+1)
-        not_end.append(i+1)
-        #print(not_first,not_end)
+        orders[i-1]=orders[i-1][:-1]+orders[j-1][1:]
+        invalid.append(j)
     
-    return [orders[i] for i in firsts]
+    #for i,v in enumerate([orders[i-1] for i in valid]): print(i,":",v)
+    return [orders[i-1] for i in valid]
