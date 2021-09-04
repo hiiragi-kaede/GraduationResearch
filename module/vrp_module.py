@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import itertools
+from sklearn.cluster import KMeans
+import numpy as np
 
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
@@ -119,3 +121,26 @@ def saving_construct(dis_mat,truck_size,size):
     
     #for i,v in enumerate([orders[i-1] for i in valid]): print(i,":",v)
     return [orders[i-1] for i in valid]
+
+def kmeans(data,truck_size):
+    """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す
+
+    Args:
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
+        truck_size ([int]): トラックの台数
+
+    Returns:
+        orders ([list[list]]): 各クラスターに含まれる顧客の添字のリスト
+    """
+    x = np.array(data[1:])
+    model = KMeans(n_clusters=truck_size).fit(x)
+    labels = model.labels_
+
+    orders=[[0] for _ in range(truck_size)]
+    for i in range(len(labels)):
+        orders[labels[i]].append(i+1)
+    for i in orders:
+        i.append(0)
+    
+    #print(orders)
+    return orders

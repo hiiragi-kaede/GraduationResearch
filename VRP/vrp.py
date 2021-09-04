@@ -20,11 +20,14 @@ with open(fname) as f:
     print("初期解構築法を選択してください")
     print("0:挿入法")
     print("1:セービング法")
+    print("2:k-means法 + random-2opt")
     state=int(input())
     if state==0:
         orders=mod.insert_construct(dis_mat,TRUCK_SIZE,size)
     elif state==1:
         orders=mod.saving_construct(dis_mat,TRUCK_SIZE,size)
+    elif state==2:
+        orders=mod.kmeans(data,TRUCK_SIZE)
     else:
         print("正しい数字を入力してください")
         exit(1)
