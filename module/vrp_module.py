@@ -39,6 +39,15 @@ def draw_graphs(data,orders):
     plt.show()
 
 def two_opt_method(dis_mat,order):
+    """orderに渡されたルートを2opt法を用いて最適化する
+
+    Args:
+        dis_mat ([list[list]]): 各都市間の距離行列
+        order ([list]): 都市の訪問順のリスト
+
+    Returns:
+        [list]: 2optによって最適化されたorder
+    """    
     #この時点でデポに帰ってくるルートも含まれている前提で実装されている
     size=len(order)
     while True:
@@ -63,6 +72,16 @@ def two_opt_method(dis_mat,order):
     return order
 
 def insert_construct(dis_mat,truck_size,size):
+    """挿入法による初期解構築
+
+    Args:
+        dis_mat ([list[list]]): 各都市間の距離行列
+        truck_size ([int]): トラックの台数
+        size ([int]): デポを含んだ都市の大きさ
+
+    Returns:
+        [list[list]]: 各トラックの訪問する都市の順番のリスト
+    """    
     #デポから出発して戻ってくるルートを初期化しておく
     orders=[[0,0] for _ in range(truck_size)]
     
@@ -90,6 +109,16 @@ def insert_construct(dis_mat,truck_size,size):
     return orders
 
 def saving_construct(dis_mat,truck_size,size):
+    """セービング法による初期解構築
+
+    Args:
+        dis_mat ([list[list]]): 各都市間の距離行列
+        truck_size ([int]): トラックの台数
+        size ([int]): デポを含んだ都市の大きさ
+
+    Returns:
+        [list[list]]: 各トラックの訪問する都市の順番のリスト
+    """    
     #デポから顧客1人だけを訪問するルートで初期化
     orders=[[0,i,0] for i in range(1,size)]
 
@@ -116,6 +145,7 @@ def saving_construct(dis_mat,truck_size,size):
         
         i,j=max_ids
         #iを訪問してからデポに帰るルートとjを最初に訪問するルートを併合
+        #デポ分添字がずれてしまっているので、ordersに対しては添字を-1する必要がある
         orders[i-1]=orders[i-1][:-1]+orders[j-1][1:]
         invalid.append(j)
     
