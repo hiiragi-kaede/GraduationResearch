@@ -3,7 +3,8 @@ sys.path.append("../")
 from module import vrp_module as mod
 import pprint
 
-fname="rand100.txt"
+#fname="rand100.txt"
+fname="rand100_weight.txt"
 
 ###main function###
 with open(fname) as f:

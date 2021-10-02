@@ -162,7 +162,10 @@ def kmeans(data,truck_size):
     Returns:
         orders ([list[list]]): 各クラスターに含まれる顧客の添字のリスト
     """
-    x = np.array(data[1:])
+    
+    #重さ情報はクラスタリング作業に影響を与えてしまうため取り去ってしまう
+    tmp_data=[[i[0],i[1]] for i in data]
+    x = np.array(tmp_data[1:])
     model = KMeans(n_clusters=truck_size).fit(x)
     labels = model.labels_
 
