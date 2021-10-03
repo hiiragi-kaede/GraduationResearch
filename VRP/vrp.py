@@ -17,6 +17,8 @@ with open(fname) as f:
     size=len(data)
     #トラックの台数
     TRUCK_SIZE=5
+    #トラック1台の容量
+    TRUCK_CAPACITY=300
 
     print("初期解構築法を選択してください")
     print("0:挿入法")
@@ -24,11 +26,11 @@ with open(fname) as f:
     print("2:k-means法 + random-2opt")
     state=int(input())
     if state==0:
-        orders=mod.insert_construct(dis_mat,TRUCK_SIZE,size)
+        orders=mod.insert_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==1:
-        orders=mod.saving_construct(dis_mat,TRUCK_SIZE,size)
+        orders=mod.saving_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==2:
-        orders=mod.kmeans(data,TRUCK_SIZE)
+        orders=mod.kmeans(data,TRUCK_SIZE,TRUCK_CAPACITY)
     else:
         print("正しい数字を入力してください")
         exit(1)
@@ -36,4 +38,9 @@ with open(fname) as f:
     for i in range(TRUCK_SIZE):
         mod.two_opt_method(dis_mat,orders[i])
     
-    mod.draw_graphs(data,orders)
+    if state==0:
+        mod.draw_graphs(data,orders,title="挿入法構築")
+    elif state==1:
+        mod.draw_graphs(data,orders,title="セービング法構築")
+    elif state==2:
+        mod.draw_graphs(data,orders,title="k-means法構築")

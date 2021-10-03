@@ -6,7 +6,7 @@ import numpy as np
 def dis(a,b):
     return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
 
-def draw_graphs(data,orders):
+def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
 
     Args:
@@ -35,6 +35,7 @@ def draw_graphs(data,orders):
         plt.plot(xs,ys,color=colors[idx],label=label)
     
     plt.scatter(data[0][0],data[0][1],label="depo")
+    plt.title(title,fontname="MS Gothic")
     plt.legend()
     plt.show()
 
@@ -71,7 +72,7 @@ def two_opt_method(dis_mat,order):
     
     return order
 
-def insert_construct(dis_mat,truck_size,size):
+def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
 
     Args:
@@ -84,11 +85,13 @@ def insert_construct(dis_mat,truck_size,size):
     """    
     #デポから出発して戻ってくるルートを初期化しておく
     orders=[[0,0] for _ in range(truck_size)]
+    weights=[0 for _ in range(truck_size)]
     
     #とりあえず添え字順に各トラックの種顧客を設定
     for i in range(truck_size):
         #デポの分だけ添字をずらしておく
         orders[i].insert(1,i+1)
+        weights[i]+=data[i+1][2]
     
     #デポの分だけ添字がずれているので、トラックが5台なら添字の始まりは6になる
     for i in range(truck_size+1,size):
@@ -97,6 +100,10 @@ def insert_construct(dis_mat,truck_size,size):
         ins_id=1
         min_dis=dis_mat[orders[truck_id][ins_id-1]][i]+dis_mat[i][orders[truck_id][ins_id]]
         for truck in range(truck_size):
+            #トラックの容量を超えているならば挿入位置を調べることはしない
+            if weights[truck]+data[i][2]>TRUCK_CAPACITY:
+                continue
+
             for order in range(1,len(orders[truck])):
                 cur_dis=dis_mat[orders[truck][order-1]][i]+dis_mat[i][orders[truck][order]]
                 if cur_dis<min_dis:
@@ -105,10 +112,14 @@ def insert_construct(dis_mat,truck_size,size):
                     truck_id=truck
         
         orders[truck_id].insert(ins_id,i)
+        weights[truck_id]+=data[i][2]
     
+    print("Truck Capacity:",TRUCK_CAPACITY)
+    for i in range(len(weights)):
+        print("weight",i+1,":",weights[i])
     return orders
 
-def saving_construct(dis_mat,truck_size,size):
+def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """セービング法による初期解構築
 
     Args:
@@ -121,6 +132,7 @@ def saving_construct(dis_mat,truck_size,size):
     """    
     #デポから顧客1人だけを訪問するルートで初期化
     orders=[[0,i,0] for i in range(1,size)]
+    weights=[i[2] for i in data]
 
     #他のルートに繋げられていないトラックの添字集合
     valid=[i for i in range(1,size)]
@@ -138,6 +150,8 @@ def saving_construct(dis_mat,truck_size,size):
 
         for v in list(itertools.combinations(valid,2)):
             i,j=v
+            if weights[i]+weights[j]>TRUCK_CAPACITY:
+                continue
             distance=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
             if distance>max_dis:
                 max_dis=distance
@@ -148,11 +162,15 @@ def saving_construct(dis_mat,truck_size,size):
         #デポ分添字がずれてしまっているので、ordersに対しては添字を-1する必要がある
         orders[i-1]=orders[i-1][:-1]+orders[j-1][1:]
         invalid.append(j)
+        weights[i]+=weights[j]
     
+    print("Truck Capacity:",TRUCK_CAPACITY)
+    for i,valid_i in enumerate(valid):
+        print("weight",i+1,":",weights[valid_i])
     #for i,v in enumerate([orders[i-1] for i in valid]): print(i,":",v)
     return [orders[i-1] for i in valid]
 
-def kmeans(data,truck_size):
+def kmeans(data,truck_size,TRUCK_CAPACITY):
     """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す
 
     Args:
@@ -162,7 +180,7 @@ def kmeans(data,truck_size):
     Returns:
         orders ([list[list]]): 各クラスターに含まれる顧客の添字のリスト
     """
-    
+
     #重さ情報はクラスタリング作業に影響を与えてしまうため取り去ってしまう
     tmp_data=[[i[0],i[1]] for i in data]
     x = np.array(tmp_data[1:])
@@ -170,10 +188,17 @@ def kmeans(data,truck_size):
     labels = model.labels_
 
     orders=[[0] for _ in range(truck_size)]
+    weights=[0 for _ in range(truck_size)]
     for i in range(len(labels)):
+        if weights[labels[i]]+data[i+1][2]>TRUCK_CAPACITY:
+            continue
         orders[labels[i]].append(i+1)
+        weights[labels[i]]+=data[i+1][2]
     for i in orders:
         i.append(0)
     
+    print("Truck Capacity:",TRUCK_CAPACITY)
+    for i in range(len(weights)):
+        print("weight",i+1,":",weights[i])
     #print(orders)
     return orders
