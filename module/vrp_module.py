@@ -75,16 +75,51 @@ def two_opt_method(dis_mat,order):
 def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     idxs=[i for i in range(len(orders))]
     weights=[0 for _ in range(len(orders))]
+    #重さの初期化
     for i in range(len(orders)):
         for j in range(1,len(orders[i])-1):
             weights[i]+=data[orders[i][j]][2]
     
-    for i in range(len(weights)):
-        print("weight",i+1,":",weights[i])
-    # while True:
-    #     count = 0
-    #     for v in list(itertools.combinations(idxs,2)):
-    #         i,j=v
+    # for i in range(len(weights)):
+    #     print("weight",i+1,":",weights[i])
+    while True:
+        isBreak=False
+        #トラック番号をi,jで管理。iの一部をjに挿入する形
+        for v in itertools.combinations(idxs,2):
+            if isBreak: break
+            i,j=v
+            for b in range(1,len(orders[i])-2):
+                if isBreak: break
+                ord=orders[i]
+                bef_score=-dis_mat[ord[b-1]][ord[b]]-dis_mat[ord[b+1]][ord[b+2]]+dis_mat[ord[b-1]][ord[b+2]]
+                dec_weight=data[ord[b]][2]+data[ord[b+1]][2]
+                for e in range(len(orders[j])-1):
+                    if isBreak: break
+                    to_ord=orders[j]
+                    aft_score=dis_mat[to_ord[e]][ord[b]]+dis_mat[to_ord[e+1]][ord[b+1]]-dis_mat[to_ord[e]][to_ord[e+1]]
+                    inc_weight=data[to_ord[e]][2]+data[to_ord[e+1]][2]
+
+                    #他のルートに挿入すると総移動距離が短くなるとき
+                    if bef_score+aft_score<0:
+                        #挿入先の容量成約を満たしているならば
+                        if weights[j]+inc_weight<TRUCK_CAPACITY:
+                            weights[i]-=dec_weight
+                            weights[j]+=inc_weight
+
+                            orders[j]=orders[j][0:e]+orders[i][b:b+1]+orders[j][e:]
+                            orders[i]=orders[i][0:b]+orders[i][b+2:]
+                            isBreak=True
+        
+        #一度or-optが終わるたびに2opt法を実行する
+        for i in range(len(orders)):
+            two_opt_method(dis_mat,orders[i])
+        
+        #変更がなくなったらループを終了
+        if not isBreak: break
+
+    print("end of or-opt")              
+    show_truck_cap(weights,TRUCK_CAPACITY)
+    return orders
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
@@ -131,9 +166,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         orders[truck_id].insert(ins_id,i)
         weights[truck_id]+=data[i][2]
     
-    print("Truck Capacity:",TRUCK_CAPACITY)
-    for i in range(len(weights)):
-        print("weight",i+1,":",weights[i])
+    show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
 def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -181,10 +214,8 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         invalid.append(j)
         weights[i]+=weights[j]
     
-    print("Truck Capacity:",TRUCK_CAPACITY)
-    for i,valid_i in enumerate(valid):
-        print("weight",i+1,":",weights[valid_i])
-    #for i,v in enumerate([orders[i-1] for i in valid]): print(i,":",v)
+    aft_weights=[weights[i] for i in valid]
+    show_truck_cap(aft_weights,TRUCK_CAPACITY)
     return [orders[i-1] for i in valid]
 
 def kmeans(data,truck_size,TRUCK_CAPACITY):
@@ -214,8 +245,11 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     for i in orders:
         i.append(0)
     
+    show_truck_cap(weights,TRUCK_CAPACITY)
+    #print(orders)
+    return orders
+
+def show_truck_cap(weights,TRUCK_CAPACITY):
     print("Truck Capacity:",TRUCK_CAPACITY)
     for i in range(len(weights)):
         print("weight",i+1,":",weights[i])
-    #print(orders)
-    return orders

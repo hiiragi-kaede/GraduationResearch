@@ -46,3 +46,5 @@ with open(fname) as f:
         mod.draw_graphs(data,orders,title="k-means法構築")
     
     mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)
+
+    mod.draw_graphs(data,orders,title="or-opt法実行後")
