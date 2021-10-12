@@ -44,3 +44,5 @@ with open(fname) as f:
         mod.draw_graphs(data,orders,title="セービング法構築")
     elif state==2:
         mod.draw_graphs(data,orders,title="k-means法構築")
+    
+    mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)

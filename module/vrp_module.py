@@ -72,17 +72,34 @@ def two_opt_method(dis_mat,order):
     
     return order
 
+def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
+    idxs=[i for i in range(len(orders))]
+    weights=[0 for _ in range(len(orders))]
+    for i in range(len(orders)):
+        for j in range(1,len(orders[i])-1):
+            weights[i]+=data[orders[i][j]][2]
+    
+    for i in range(len(weights)):
+        print("weight",i+1,":",weights[i])
+    # while True:
+    #     count = 0
+    #     for v in list(itertools.combinations(idxs,2)):
+    #         i,j=v
+
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
 
     Args:
         dis_mat ([list[list]]): 各都市間の距離行列
         truck_size ([int]): トラックの台数
+        TRUCK_CAPACITY ([int]): トラックの容量制限
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
         size ([int]): デポを含んだ都市の大きさ
 
     Returns:
         [list[list]]: 各トラックの訪問する都市の順番のリスト
-    """    
+    """
+
     #デポから出発して戻ってくるルートを初期化しておく
     orders=[[0,0] for _ in range(truck_size)]
     weights=[0 for _ in range(truck_size)]
