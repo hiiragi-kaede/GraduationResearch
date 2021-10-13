@@ -92,23 +92,23 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
                 if isBreak: break
                 ord=orders[i]
                 bef_score=-dis_mat[ord[b-1]][ord[b]]-dis_mat[ord[b+1]][ord[b+2]]+dis_mat[ord[b-1]][ord[b+2]]
-                dec_weight=data[ord[b]][2]+data[ord[b+1]][2]
+                change_weight=data[ord[b]][2]+data[ord[b+1]][2]
                 for e in range(len(orders[j])-1):
                     if isBreak: break
                     to_ord=orders[j]
                     aft_score=dis_mat[to_ord[e]][ord[b]]+dis_mat[to_ord[e+1]][ord[b+1]]-dis_mat[to_ord[e]][to_ord[e+1]]
-                    inc_weight=data[to_ord[e]][2]+data[to_ord[e+1]][2]
 
                     #他のルートに挿入すると総移動距離が短くなるとき
                     if bef_score+aft_score<0:
                         #挿入先の容量成約を満たしているならば
-                        if weights[j]+inc_weight<TRUCK_CAPACITY:
-                            weights[i]-=dec_weight
-                            weights[j]+=inc_weight
+                        if weights[j]+change_weight<TRUCK_CAPACITY:
+                            weights[i]-=change_weight
+                            weights[j]+=change_weight
 
-                            orders[j]=orders[j][0:e]+orders[i][b:b+1]+orders[j][e:]
+                            orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
                             orders[i]=orders[i][0:b]+orders[i][b+2:]
                             isBreak=True
+                            break
         
         #一度or-optが終わるたびに2opt法を実行する
         for i in range(len(orders)):
@@ -117,7 +117,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         #変更がなくなったらループを終了
         if not isBreak: break
 
-    print("end of or-opt")              
+    print("finish or-opt")              
     show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
@@ -167,6 +167,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         weights[truck_id]+=data[i][2]
     
     show_truck_cap(weights,TRUCK_CAPACITY)
+    #check_unvisit(data,orders)
     return orders
 
 def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -216,6 +217,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     
     aft_weights=[weights[i] for i in valid]
     show_truck_cap(aft_weights,TRUCK_CAPACITY)
+    #check_unvisit(data,orders)
     return [orders[i-1] for i in valid]
 
 def kmeans(data,truck_size,TRUCK_CAPACITY):
@@ -246,6 +248,7 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
         i.append(0)
     
     show_truck_cap(weights,TRUCK_CAPACITY)
+    #check_unvisit(data,orders)
     #print(orders)
     return orders
 
@@ -253,3 +256,11 @@ def show_truck_cap(weights,TRUCK_CAPACITY):
     print("Truck Capacity:",TRUCK_CAPACITY)
     for i in range(len(weights)):
         print("weight",i+1,":",weights[i])
+    print("total weight:",sum(weights))
+
+def check_unvisit(data,orders):
+    customers=[False for i in range(len(data))]
+    for order in orders:
+        for i in order:
+            customers[i]=True
+    print("unvisit:",[i for i in range(len(customers)) if not customers[i]])
