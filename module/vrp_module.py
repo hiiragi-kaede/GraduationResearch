@@ -117,7 +117,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         #変更がなくなったらループを終了
         if not isBreak: break
 
-    print("finish or-opt")              
+    print("finish or-opt\n")              
     show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
