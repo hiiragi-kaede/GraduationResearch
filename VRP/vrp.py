@@ -3,22 +3,32 @@ sys.path.append("../")
 from module import vrp_module as mod
 import pprint
 
-#fname="rand100.txt"
-fname="rand100_weight.txt"
+#fname="rand100_weight.txt"
+fname="CVRP_Data/eilD76.txt"
 
+#トラックの台数
+TRUCK_SIZE=5
+#トラック1台の容量
+TRUCK_CAPACITY=300
+
+data=[]
 ###main function###
 with open(fname) as f:
-    if fname!="a280_use.txt":
-        data=[list(map(float,i.split())) for i in f.readlines()]
-    else:
+    if fname=="rand100_weight.txt":
         data=[list(map(float,i.split()[1:])) for i in f.readlines()]
+    else:
+        TRUCK_CAPACITY=int(f.readline())
+        size=int(f.readline())
+        for i in range(size):
+            data.append(list(map(float,f.readline().split()[1:])))
+        #DEMAND_SECTIONの行を取り除く
+        _=f.readline()
+        for i in range(size):
+            buf=f.readline().split()
+            data[i].append(int(buf[1]))
 
     dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
-    #トラックの台数
-    TRUCK_SIZE=5
-    #トラック1台の容量
-    TRUCK_CAPACITY=300
 
     print("初期解構築法を選択してください")
     print("0:挿入法")
