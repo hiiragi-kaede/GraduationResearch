@@ -7,7 +7,9 @@ import pprint
 fname="CVRP_Data/eilD76.txt"
 
 #トラックの台数
-TRUCK_SIZE=5
+TRUCK_SIZE=10
+
+#データにこれらの情報がある場合は使われない
 #トラック1台の容量
 TRUCK_CAPACITY=300
 
@@ -15,18 +17,23 @@ data=[]
 ###main function###
 with open(fname) as f:
     if fname=="rand100_weight.txt":
-        data=[list(map(float,i.split()[1:])) for i in f.readlines()]
+        tmp=[list(map(float,i.split())) for i in f.readlines()]
+        data=[{"x":i[0],"y":i[1],"weight":i[2]} for i in tmp]
     else:
         TRUCK_CAPACITY=int(f.readline())
         size=int(f.readline())
         for i in range(size):
-            data.append(list(map(float,f.readline().split()[1:])))
+            tmp=list(map(float,f.readline().split()[1:]))
+            data.append({"x":tmp[0],"y":tmp[1]})
+        
         #DEMAND_SECTIONの行を取り除く
         _=f.readline()
         for i in range(size):
             buf=f.readline().split()
-            data[i].append(int(buf[1]))
+            data[i]["weight"]=int(buf[1])
 
+    total_weight=sum([i["weight"] for i in data])
+    print(total_weight)
     dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
 
@@ -55,6 +62,9 @@ with open(fname) as f:
     elif state==2:
         mod.draw_graphs(data,orders,title="k-means法構築")
     
+    old=orders[:]
     mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)
 
     mod.draw_graphs(data,orders,title="or-opt法実行後")
+
+    mod.route_dif(data,old,orders,TRUCK_CAPACITY)

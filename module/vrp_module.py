@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 
 def dis(a,b):
-    return ((a[0]-b[0])**2+(a[1]-b[1])**2)**.5
+    return ((a["x"]-b["x"])**2+(a["y"]-b["y"])**2)**.5
 
 def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
@@ -13,28 +13,29 @@ def draw_graphs(data,orders,title="default_title"):
         data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
         orders ([list[list]]): 各トラックの点の訪問順を示すリスト
     
-    ※トラック数の上限は6
+    ※トラック数の上限は10
     """    
 
-    if len(orders)>6:
+    colors=["k","b","y","c","r","m","g","lime","darkblue","aqua"]
+    if len(orders)>len(colors):
         print("too many trucks")
         exit(1)
     
-    xs=[i[0] for i in data]
-    ys=[i[1] for i in data]
+    xs=[i["x"] for i in data]
+    ys=[i["y"] for i in data]
     plt.scatter(xs,ys)
 
-    colors=["k","b","y","c","r","m"]
     for idx,order in enumerate(orders):
-        xs=[data[i][0] for i in order]
-        ys=[data[i][1] for i in order]
+        #print(len(order))
+        xs=[data[i]["x"] for i in order]
+        ys=[data[i]["y"] for i in order]
         xs.append(xs[0])
         ys.append(ys[0])
 
         label="truck"+str(idx+1)
         plt.plot(xs,ys,color=colors[idx],label=label)
     
-    plt.scatter(data[0][0],data[0][1],label="depo")
+    plt.scatter(data[0]["x"],data[0]["y"],label="depo")
     plt.title(title,fontname="MS Gothic")
     plt.legend()
     plt.show()
@@ -78,10 +79,8 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #重さの初期化
     for i in range(len(orders)):
         for j in range(1,len(orders[i])-1):
-            weights[i]+=data[orders[i][j]][2]
-    
-    # for i in range(len(weights)):
-    #     print("weight",i+1,":",weights[i])
+            weights[i]+=data[orders[i][j]]["weight"]
+
     while True:
         isBreak=False
         #トラック番号をi,jで管理。iの一部をjに挿入する形
@@ -92,7 +91,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
                 if isBreak: break
                 ord=orders[i]
                 bef_score=-dis_mat[ord[b-1]][ord[b]]-dis_mat[ord[b+1]][ord[b+2]]+dis_mat[ord[b-1]][ord[b+2]]
-                change_weight=data[ord[b]][2]+data[ord[b+1]][2]
+                change_weight=data[ord[b]]["weight"]+data[ord[b+1]]["weight"]
                 for e in range(len(orders[j])-1):
                     if isBreak: break
                     to_ord=orders[j]
@@ -117,8 +116,8 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         #変更がなくなったらループを終了
         if not isBreak: break
 
-    print("finish or-opt\n")              
-    show_truck_cap(weights,TRUCK_CAPACITY)
+    print("finish or-opt")              
+    #show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -143,7 +142,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     for i in range(truck_size):
         #デポの分だけ添字をずらしておく
         orders[i].insert(1,i+1)
-        weights[i]+=data[i+1][2]
+        weights[i]+=data[i+1]["weight"]
     
     #デポの分だけ添字がずれているので、トラックが5台なら添字の始まりは6になる
     for i in range(truck_size+1,size):
@@ -153,7 +152,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         min_dis=dis_mat[orders[truck_id][ins_id-1]][i]+dis_mat[i][orders[truck_id][ins_id]]
         for truck in range(truck_size):
             #トラックの容量を超えているならば挿入位置を調べることはしない
-            if weights[truck]+data[i][2]>TRUCK_CAPACITY:
+            if weights[truck]+data[i]["weight"]>TRUCK_CAPACITY:
                 continue
 
             for order in range(1,len(orders[truck])):
@@ -164,9 +163,9 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
                     truck_id=truck
         
         orders[truck_id].insert(ins_id,i)
-        weights[truck_id]+=data[i][2]
+        weights[truck_id]+=data[i]["weight"]
     
-    show_truck_cap(weights,TRUCK_CAPACITY)
+    #show_truck_cap(weights,TRUCK_CAPACITY)
     #check_unvisit(data,orders)
     return orders
 
@@ -183,7 +182,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """    
     #デポから顧客1人だけを訪問するルートで初期化
     orders=[[0,i,0] for i in range(1,size)]
-    weights=[i[2] for i in data]
+    weights=[i["weight"] for i in data]
 
     #他のルートに繋げられていないトラックの添字集合
     valid=[i for i in range(1,size)]
@@ -216,7 +215,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         weights[i]+=weights[j]
     
     aft_weights=[weights[i] for i in valid]
-    show_truck_cap(aft_weights,TRUCK_CAPACITY)
+    #show_truck_cap(aft_weights,TRUCK_CAPACITY)
     #check_unvisit(data,orders)
     return [orders[i-1] for i in valid]
 
@@ -232,7 +231,7 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     """
 
     #重さ情報はクラスタリング作業に影響を与えてしまうため取り去ってしまう
-    tmp_data=[[i[0],i[1]] for i in data]
+    tmp_data=[[i["x"],i["y"]] for i in data]
     x = np.array(tmp_data[1:])
     model = KMeans(n_clusters=truck_size).fit(x)
     labels = model.labels_
@@ -240,14 +239,14 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     orders=[[0] for _ in range(truck_size)]
     weights=[0 for _ in range(truck_size)]
     for i in range(len(labels)):
-        if weights[labels[i]]+data[i+1][2]>TRUCK_CAPACITY:
+        if weights[labels[i]]+data[i+1]["weight"]>TRUCK_CAPACITY:
             continue
         orders[labels[i]].append(i+1)
-        weights[labels[i]]+=data[i+1][2]
+        weights[labels[i]]+=data[i+1]["weight"]
     for i in orders:
         i.append(0)
     
-    show_truck_cap(weights,TRUCK_CAPACITY)
+    #show_truck_cap(weights,TRUCK_CAPACITY)
     #check_unvisit(data,orders)
     #print(orders)
     return orders
@@ -264,3 +263,14 @@ def check_unvisit(data,orders):
         for i in order:
             customers[i]=True
     print("unvisit:",[i for i in range(len(customers)) if not customers[i]])
+
+def route_dif(data,old,new,TRUCK_CAPACITY):
+    size=len(new)
+    for id in range(size):
+        old_weight=sum([data[i]["weight"] for i in old[id]])
+        old_size=len(old[id])
+
+        new_weight=sum([data[i]["weight"] for i in new[id]])
+        new_size=len(new[id])
+        print("truck "+str(id+1)+"  size:"+str(old_size)+" → "+str(new_size),end="    ")
+        print("weight:"+str(old_weight)+" → "+str(new_weight)+" /"+str(TRUCK_CAPACITY))
