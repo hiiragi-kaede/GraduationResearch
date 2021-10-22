@@ -2,9 +2,10 @@ import sys
 sys.path.append("../")
 from module import vrp_module as mod
 import pprint
+import math
 
 #fname="rand100_weight.txt"
-fname="CVRP_Data/eilD76.txt"
+fname="CVRP_Data/eilB101.txt"
 
 #トラックの台数
 TRUCK_SIZE=10
@@ -33,7 +34,9 @@ with open(fname) as f:
             data[i]["weight"]=int(buf[1])
 
     total_weight=sum([i["weight"] for i in data])
-    print(total_weight)
+    print("total weight:",total_weight)
+    TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)
+    print("truck size:",TRUCK_SIZE)
     dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
 

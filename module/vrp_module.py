@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import itertools
 from sklearn.cluster import KMeans
 import numpy as np
@@ -13,27 +14,25 @@ def draw_graphs(data,orders,title="default_title"):
         data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
         orders ([list[list]]): 各トラックの点の訪問順を示すリスト
     
-    ※トラック数の上限は10
+    ※トラック数の上限は15
     """    
 
-    colors=["k","b","y","c","r","m","g","lime","darkblue","aqua"]
-    if len(orders)>len(colors):
+    markers=[".",",","o","v","^","<",">","8","s","p","P","*","h","x","D"]
+    if len(orders)>len(markers):
         print("too many trucks")
         exit(1)
-    
-    xs=[i["x"] for i in data]
-    ys=[i["y"] for i in data]
-    plt.scatter(xs,ys)
 
+    
     for idx,order in enumerate(orders):
-        #print(len(order))
+        if len(order)<=2: continue
         xs=[data[i]["x"] for i in order]
         ys=[data[i]["y"] for i in order]
+        plt.scatter(xs,ys,marker=markers[idx])
         xs.append(xs[0])
         ys.append(ys[0])
 
         label="truck"+str(idx+1)
-        plt.plot(xs,ys,color=colors[idx],label=label)
+        plt.plot(xs,ys,label=label)
     
     plt.scatter(data[0]["x"],data[0]["y"],label="depo")
     plt.title(title,fontname="MS Gothic")
