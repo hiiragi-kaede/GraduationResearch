@@ -18,15 +18,14 @@ def draw_graphs(data,orders,title="default_title"):
     """    
 
     markers=[".",",","o","v","^","<",">","8","s","p","P","*","h","x","D"]
-    if len(orders)>len(markers):
-        print("too many trucks")
-        exit(1)
-
     for idx,order in enumerate(orders):
         if len(order)<=2: continue
         xs=[data[i]["x"] for i in order]
         ys=[data[i]["y"] for i in order]
-        plt.scatter(xs,ys,marker=markers[idx])
+        if len(orders)>len(markers):
+            plt.scatter(xs,ys)
+        else:
+            plt.scatter(xs,ys,marker=markers[idx])
         xs.append(xs[0])
         ys.append(ys[0])
 
@@ -118,6 +117,59 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
+def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
+    idxs=[i for i in range(len(orders))]
+    weights=[0 for _ in range(len(orders))]
+    #重さの初期化
+    for i in range(len(orders)):
+        weights[i]=calc_total_weight(data,orders[i])
+    
+    cnt=0
+    last=0
+    while True:
+        isBreak=False
+        #トラック番号をi,jで管理。iとjのある添字以降を交換する形。
+        for v in itertools.combinations(idxs,2):
+            if isBreak: break
+            i,j=v
+            for f_id in range(1,len(orders[i])-1):
+                if isBreak: break
+                fst_ord=orders[i]
+                fst_weight=calc_total_weight(data,fst_ord[f_id:])
+                
+                for s_id in range(1,len(orders[j])-1):
+                    if isBreak: break
+                    sec_ord=orders[j]
+                    sec_weight=calc_total_weight(data,sec_ord[s_id:])
+                    
+                    #ルートを交換した場合容量オーバーなら次のループへ
+                    if (calc_total_weight(data,fst_ord[:f_id])+sec_weight > TRUCK_CAPACITY\
+                    or calc_total_weight(data,sec_ord[:s_id])+fst_weight > TRUCK_CAPACITY):
+                        continue
+                    
+                    dif=-dis_mat[fst_ord[f_id-1]][fst_ord[f_id]]\
+                        -dis_mat[sec_ord[s_id-1]][sec_ord[s_id]]\
+                        +dis_mat[fst_ord[f_id-1]][sec_ord[s_id]]\
+                        +dis_mat[sec_ord[s_id-1]][fst_ord[f_id]]
+                    
+                    #ルートを交換する
+                    if dif<0 and abs(dif)>1e-4:
+                        tmp=fst_ord[f_id:]
+                        fst_ord[f_id:]=sec_ord[s_id:]
+                        sec_ord[s_id:]=tmp
+                        isBreak=True
+        
+        #一度2-opt*が終わるたびに各ルートに2opt法を実行する
+        for i in range(len(orders)):
+            two_opt_method(dis_mat,orders[i])
+        
+        #変更がなくなったらループを終了
+        if not isBreak: break        
+        
+        print("\r"+str(calc_total_dis(dis_mat,orders)),end="")
+    print("\nfinish 2-opt*")
+    return orders
+    
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
 
@@ -267,8 +319,16 @@ def show_route_dif(data,old,new,TRUCK_CAPACITY):
 
         new_weight=sum([data[i]["weight"] for i in new[id]])
         new_size=len(new[id])
-        print("truck "+str(id+1)+"  size:"+str(old_size)+" → "+str(new_size),end="    ")
+        print("truck "+str(id+1).zfill(2)+"  size:"+str(old_size).zfill(2)+\
+            " → "+str(new_size).zfill(2),end="    ")
         print("weight:"+str(old_weight)+" → "+str(new_weight)+" /"+str(TRUCK_CAPACITY))
 
 def calc_total_weight(data,order):
     return sum([data[i]["weight"] for i in order])
+
+def calc_total_dis(dis_mat,orders):
+    total=0
+    for ord in orders:
+        for i in range(len(ord)-1):
+            total+=dis_mat[ord[i]][ord[i+1]]
+    return total
