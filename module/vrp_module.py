@@ -22,7 +22,6 @@ def draw_graphs(data,orders,title="default_title"):
         print("too many trucks")
         exit(1)
 
-    
     for idx,order in enumerate(orders):
         if len(order)<=2: continue
         xs=[data[i]["x"] for i in order]
@@ -34,6 +33,7 @@ def draw_graphs(data,orders,title="default_title"):
         label="truck"+str(idx+1)
         plt.plot(xs,ys,label=label)
     
+    check_unvisit(data,orders)
     plt.scatter(data[0]["x"],data[0]["y"],label="depo")
     plt.title(title,fontname="MS Gothic")
     plt.legend()
@@ -77,8 +77,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     weights=[0 for _ in range(len(orders))]
     #重さの初期化
     for i in range(len(orders)):
-        for j in range(1,len(orders[i])-1):
-            weights[i]+=data[orders[i][j]]["weight"]
+        weights[i]=calc_total_weight(data,orders[i])
 
     while True:
         isBreak=False
@@ -148,7 +147,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         truck_id=0
         #insertは0を渡すと先頭に追加するので挿入位置は1で初期化
         ins_id=1
-        min_dis=dis_mat[orders[truck_id][ins_id-1]][i]+dis_mat[i][orders[truck_id][ins_id]]
+        min_dis=10**10
         for truck in range(truck_size):
             #トラックの容量を超えているならば挿入位置を調べることはしない
             if weights[truck]+data[i]["weight"]>TRUCK_CAPACITY:
@@ -180,13 +179,13 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         [list[list]]: 各トラックの訪問する都市の順番のリスト
     """    
     #デポから顧客1人だけを訪問するルートで初期化
-    orders=[[0,i,0] for i in range(1,size)]
+    orders=[[0,i,0] for i in range(size)]
     weights=[i["weight"] for i in data]
 
     #他のルートに繋げられていないトラックの添字集合
     valid=[i for i in range(1,size)]
     #繋げられてルートの最初でなくなった添字の集合
-    invalid=[]
+    invalid=[0]
 
     #トラックの台数が限度の台数に減るまで繰り返し
     while True:
@@ -194,7 +193,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         if len(valid)==truck_size: break
 
         i,j=valid[0],valid[1]
-        max_dis=dis_mat[i][0]+dis_mat[0][j]-dis_mat[i][j]
+        max_dis=-10**10
         max_ids=[i,j]
 
         for v in list(itertools.combinations(valid,2)):
@@ -207,16 +206,15 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
                 max_ids=[i,j]
         
         i,j=max_ids
+        if weights[i]+weights[j]>TRUCK_CAPACITY:
+            invalid.append(j)
+            continue
         #iを訪問してからデポに帰るルートとjを最初に訪問するルートを併合
-        #デポ分添字がずれてしまっているので、ordersに対しては添字を-1する必要がある
-        orders[i-1]=orders[i-1][:-1]+orders[j-1][1:]
+        orders[i]=orders[i][:-1]+orders[j][1:]
         invalid.append(j)
         weights[i]+=weights[j]
-    
-    aft_weights=[weights[i] for i in valid]
-    #show_truck_cap(aft_weights,TRUCK_CAPACITY)
-    #check_unvisit(data,orders)
-    return [orders[i-1] for i in valid]
+        
+    return [orders[i] for i in valid]
 
 def kmeans(data,truck_size,TRUCK_CAPACITY):
     """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す
@@ -250,20 +248,18 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     #print(orders)
     return orders
 
-def show_truck_cap(weights,TRUCK_CAPACITY):
-    print("Truck Capacity:",TRUCK_CAPACITY)
-    for i in range(len(weights)):
-        print("weight",i+1,":",weights[i])
-    print("total weight:",sum(weights))
-
 def check_unvisit(data,orders):
     customers=[False for i in range(len(data))]
     for order in orders:
         for i in order:
             customers[i]=True
-    print("unvisit:",[i for i in range(len(customers)) if not customers[i]])
+    
+    tmp=[i for i in range(len(customers)) if not customers[i]]
+    if len(tmp)==0: return
+    print("unvisit:",tmp,end="   ")
+    print("total weight:",sum([data[i]["weight"] for i in range(len(customers)) if not customers[i]]))
 
-def route_dif(data,old,new,TRUCK_CAPACITY):
+def show_route_dif(data,old,new,TRUCK_CAPACITY):
     size=len(new)
     for id in range(size):
         old_weight=sum([data[i]["weight"] for i in old[id]])
@@ -273,3 +269,6 @@ def route_dif(data,old,new,TRUCK_CAPACITY):
         new_size=len(new[id])
         print("truck "+str(id+1)+"  size:"+str(old_size)+" → "+str(new_size),end="    ")
         print("weight:"+str(old_weight)+" → "+str(new_weight)+" /"+str(TRUCK_CAPACITY))
+
+def calc_total_weight(data,order):
+    return sum([data[i]["weight"] for i in order])

@@ -5,7 +5,7 @@ import pprint
 import math
 
 #fname="rand100_weight.txt"
-fname="CVRP_Data/eilB101.txt"
+fname="CVRP_Data/eil51.txt"
 
 #トラックの台数
 TRUCK_SIZE=10
@@ -48,7 +48,7 @@ with open(fname) as f:
     if state==0:
         orders=mod.insert_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==1:
-        orders=mod.saving_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
+        orders=mod.saving_construct(dis_mat,TRUCK_SIZE+1,TRUCK_CAPACITY,data,size)
     elif state==2:
         orders=mod.kmeans(data,TRUCK_SIZE,TRUCK_CAPACITY)
     else:
@@ -70,4 +70,4 @@ with open(fname) as f:
 
     mod.draw_graphs(data,orders,title="or-opt法実行後")
 
-    mod.route_dif(data,old,orders,TRUCK_CAPACITY)
+    mod.show_route_dif(data,old,orders,TRUCK_CAPACITY)
