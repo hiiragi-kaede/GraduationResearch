@@ -6,7 +6,7 @@ import math
 import copy
 
 #fname="rand100_weight.txt"
-fname="CVRP_Data/gil262.txt"
+fname="CVRP_Data/eilA101.txt"
 
 #トラックの台数
 TRUCK_SIZE=10

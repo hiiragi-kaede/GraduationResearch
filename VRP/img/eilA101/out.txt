@@ -1,0 +1,44 @@
+total weight: 1458
+truck size: 8
+初期解構築法を選択してください
+0:挿入法
+1:セービング法
+2:k-means法 + random-2opt
+0
+局所探索法を選択してください
+0:Or-opt法
+1:2-opt*法
+0
+finish or-opt
+truck 01  size:13 → 09    weight:198 → 114 /200
+truck 02  size:13 → 13    weight:169 → 188 /200
+truck 03  size:18 → 18    weight:200 → 200 /200
+truck 04  size:15 → 15    weight:194 → 194 /200
+truck 05  size:08 → 12    weight:111 → 176 /200
+truck 06  size:20 → 20    weight:197 → 197 /200
+truck 07  size:15 → 15    weight:200 → 200 /200
+truck 08  size:14 → 14    weight:189 → 189 /200
+total move cost:1166.7080663438226 → 1123.0081479596324
+
+total weight: 1458
+truck size: 8
+初期解構築法を選択してください
+0:挿入法
+1:セービング法
+2:k-means法 + random-2opt
+0
+局所探索法を選択してください
+0:Or-opt法
+1:2-opt*法
+1
+1002.2849686343089
+finish 2-opt*
+truck 01  size:13 → 17    weight:198 → 190 /200
+truck 02  size:13 → 15    weight:169 → 197 /200
+truck 03  size:18 → 11    weight:200 → 153 /200
+truck 04  size:15 → 14    weight:194 → 195 /200
+truck 05  size:08 → 11    weight:111 → 155 /200
+truck 06  size:20 → 15    weight:197 → 173 /200
+truck 07  size:15 → 15    weight:200 → 200 /200
+truck 08  size:14 → 18    weight:189 → 195 /200
+total move cost:1166.7080663438226 → 1002.2849686343089
