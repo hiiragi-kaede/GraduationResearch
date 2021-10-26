@@ -11,10 +11,11 @@ def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
 
     Args:
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
-        orders ([list[list]]): 各トラックの点の訪問順を示すリスト
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        orders ([list[list]]): 各トラックの点の訪問順を示すリスト\\
+        title ([string]): グラフのタイトル。指定しなければ"default_title"になる。
     
-    ※トラック数の上限は15
+    ※トラック数が15を超えるとポイントの形状がすべて統一に
     """    
 
     markers=[".",",","o","v","^","<",">","8","s","p","P","*","h","x","D"]
@@ -72,6 +73,17 @@ def two_opt_method(dis_mat,order):
     return order
 
 def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
+    """Or-opt法による改善型解法
+
+    Args:
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        dis_mat ([list[list]]): 各都市間の距離行列\\
+        orders ([list[list]]): トラックたちの訪問順のリスト\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限
+
+    Returns:
+        [list[list]]: 各トラックの訪問する都市の順番のリスト
+    """
     idxs=[i for i in range(len(orders))]
     weights=[0 for _ in range(len(orders))]
     #重さの初期化
@@ -117,7 +129,18 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #show_truck_cap(weights,TRUCK_CAPACITY)
     return orders
 
-def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
+def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):  
+    """2-opt*法による改善型解法
+
+    Args:
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        dis_mat ([list[list]]): 各都市間の距離行列\\
+        orders ([list[list]]): トラックたちの訪問順のリスト\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限
+
+    Returns:
+        [list[list]]: 各トラックの訪問する都市の順番のリスト
+    """
     idxs=[i for i in range(len(orders))]
     weights=[0 for _ in range(len(orders))]
     #重さの初期化
@@ -174,10 +197,10 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
 
     Args:
-        dis_mat ([list[list]]): 各都市間の距離行列
-        truck_size ([int]): トラックの台数
-        TRUCK_CAPACITY ([int]): トラックの容量制限
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
+        dis_mat ([list[list]]): 各都市間の距離行列\\
+        truck_size ([int]): トラックの台数\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限\\
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
         size ([int]): デポを含んだ都市の大きさ
 
     Returns:
@@ -223,13 +246,15 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """セービング法による初期解構築
 
     Args:
-        dis_mat ([list[list]]): 各都市間の距離行列
-        truck_size ([int]): トラックの台数
+        dis_mat ([list[list]]): 各都市間の距離行列\\
+        truck_size ([int]): トラックの台数\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限\\
+        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
         size ([int]): デポを含んだ都市の大きさ
 
     Returns:
         [list[list]]: 各トラックの訪問する都市の順番のリスト
-    """    
+    """   
     #デポから顧客1人だけを訪問するルートで初期化
     orders=[[0,i,0] for i in range(size)]
     weights=[i["weight"] for i in data]
@@ -269,7 +294,18 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         
     return [orders[i] for i in valid]
 
-def sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j):    
+def sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j):
+    """セービング法で併合エラーが起きたときのサブルーチン。
+    併合される側をバラして生きているルートの先頭に挿入する。
+
+    Args:
+        TRUCK_CAPACITY ([int]): トラックの容量制限\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
+        weights ([int]): セービング法での各トラックの合計重量\\
+        valid ([list[int]]): セービング法で現在生きているトラックの添字\\
+        orders ([list[int]]): セービング法での各トラックのルート\\
+        j ([int]): ルートをバラされるトラックの添字
+    """    
     for out in orders[j][1:-1]:
         for id in valid:
             if weights[id]+data[out]["weight"]>TRUCK_CAPACITY:
@@ -321,6 +357,14 @@ def check_unvisit(data,orders):
     print("total weight:",sum([data[i]["weight"] for i in range(len(customers)) if not customers[i]]))
 
 def show_route_dif(data,old,new,TRUCK_CAPACITY):
+    """改善型解法により解がどの程度改善されたかを表示する。
+
+    Args:
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
+        old ([list[list]]): トラックたちの訪問順のリスト\\
+        new ([list[list]]): トラックたちの訪問順のリスト\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限
+    """    
     size=len(new)
     for id in range(size):
         old_weight=sum([data[i]["weight"] for i in old[id]])
