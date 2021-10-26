@@ -259,6 +259,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         
         i,j=max_ids
         if weights[i]+weights[j]>TRUCK_CAPACITY:
+            sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j)
             invalid.append(j)
             continue
         #iを訪問してからデポに帰るルートとjを最初に訪問するルートを併合
@@ -268,6 +269,14 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         
     return [orders[i] for i in valid]
 
+def sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j):    
+    for out in orders[j][1:-1]:
+        for id in valid:
+            if weights[id]+data[out]["weight"]>TRUCK_CAPACITY:
+                continue
+            orders[id].insert(1,out)
+            weights[id]+=data[out]
+            
 def kmeans(data,truck_size,TRUCK_CAPACITY):
     """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す
 

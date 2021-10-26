@@ -49,7 +49,7 @@ with open(fname) as f:
     if state==0:
         orders=mod.insert_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==1:
-        orders=mod.saving_construct(dis_mat,TRUCK_SIZE+1,TRUCK_CAPACITY,data,size)
+        orders=mod.saving_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==2:
         orders=mod.kmeans(data,TRUCK_SIZE,TRUCK_CAPACITY)
     else:
