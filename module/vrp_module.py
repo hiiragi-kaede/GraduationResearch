@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import matplotlib
 import itertools
 from sklearn.cluster import KMeans
@@ -89,6 +90,8 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #重さの初期化
     for i in range(len(orders)):
         weights[i]=calc_total_weight(data,orders[i])
+    
+    fig,ims=gif_init()
 
     while True:
         isBreak=False
@@ -116,7 +119,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
                             orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
                             orders[i]=orders[i][0:b]+orders[i][b+2:]
                             isBreak=True
-                            break
+                            gif_append(data,orders,ims)
         
         #一度or-optが終わるたびに2opt法を実行する
         for i in range(len(orders)):
@@ -125,8 +128,8 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         #変更がなくなったらループを終了
         if not isBreak: break
 
-    print("finish or-opt")              
-    #show_truck_cap(weights,TRUCK_CAPACITY)
+    print("finish or-opt")
+    save_gif(fig,ims,title="or-opt.gif")
     return orders
 
 def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):  
@@ -146,6 +149,8 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #重さの初期化
     for i in range(len(orders)):
         weights[i]=calc_total_weight(data,orders[i])
+    
+    fig,ims=gif_init()
     
     cnt=0
     last=0
@@ -181,6 +186,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
                         fst_ord[f_id:]=sec_ord[s_id:]
                         sec_ord[s_id:]=tmp
                         isBreak=True
+                        gif_append(data,orders,ims)
         
         #一度2-opt*が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -191,6 +197,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
         
         print("\r"+str(calc_total_dis(dis_mat,orders)),end="")
     print("\nfinish 2-opt*")
+    save_gif(fig,ims,title="2opt*.gif")
     return orders
     
 def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
@@ -199,6 +206,8 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
     #重さの初期化
     for i in range(len(orders)):
         weights[i]=calc_total_weight(data,orders[i])
+
+    fig,ims=gif_init()
     
     while True:
         isBreak=False
@@ -241,6 +250,7 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
                         fst_ord[f_ids[0]:f_ids[1]]=sec_ord[s_ids[0]:s_ids[1]]
                         sec_ord[s_ids[0]:s_ids[1]]=tmp
                         isBreak=True
+                        gif_append(data,orders,ims)
         
         #一度近傍探索が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -251,6 +261,7 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
         print("\r"+str(calc_total_dis(dis_mat,orders)),end="") 
     
     print("\nfinish cross-exchange")
+    save_gif(fig,ims,title="crossEx.gif")
     return orders
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -445,3 +456,26 @@ def calc_total_dis(dis_mat,orders):
         for i in range(len(ord)-1):
             total+=dis_mat[ord[i]][ord[i+1]]
     return total
+
+def gif_init():
+    return [plt.figure(),[]]
+
+def gif_append(data,orders,ims):
+    im=[]
+    cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    for idx,order in enumerate(orders):
+        if len(order)<=2: continue
+        xs=[data[i]["x"] for i in order]
+        ys=[data[i]["y"] for i in order]
+        xs.append(xs[0])
+        ys.append(ys[0])
+
+        #frame,=plt.plot(xs,ys)
+        frame,=plt.plot(xs,ys,color=cycle[idx])
+        im.append(frame)
+    ims.append(im)
+
+def save_gif(fig,ims,title="default.gif"):
+    title="out/"+title
+    ani = animation.ArtistAnimation(fig,ims,interval=300,repeat_delay=5000)
+    ani.save(title,writer="pillow")
