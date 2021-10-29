@@ -193,6 +193,66 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     print("\nfinish 2-opt*")
     return orders
     
+def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
+    idxs=[i for i in range(len(orders))]
+    weights=[0 for _ in range(len(orders))]
+    #重さの初期化
+    for i in range(len(orders)):
+        weights[i]=calc_total_weight(data,orders[i])
+    
+    while True:
+        isBreak=False
+        #トラック番号をi,jで管理。iとjの途中のルートを交換する形。
+        for v in itertools.combinations(idxs,2):
+            if isBreak: break
+            i,j=v
+            for f_ids in itertools.combinations(range(1,len(orders[i])-1),2):
+                if isBreak: break
+                fst_ord=orders[i]
+                fst_weight=calc_total_weight(data,fst_ord[f_ids[0]:f_ids[1]])
+                
+                for s_ids in itertools.combinations(range(1,len(orders[j])-1),2):
+                    if isBreak: break
+                    sec_ord=orders[j]
+                    sec_weight=calc_total_weight(data,sec_ord[s_ids[0]:s_ids[1]])
+                    
+                    #ルートを交換した場合容量オーバーなら次のループへ
+                    if (calc_total_weight(data,fst_ord[:f_ids[0]])\
+                        +calc_total_weight(data,fst_ord[f_ids[1]:])\
+                        +sec_weight > TRUCK_CAPACITY\
+                        or 
+                        calc_total_weight(data,sec_ord[:s_ids[0]])\
+                        +calc_total_weight(data,sec_ord[s_ids[1]:])\
+                        +fst_weight > TRUCK_CAPACITY):
+                        continue
+                    
+                    dif=-dis_mat[fst_ord[f_ids[0]-1]][fst_ord[f_ids[0]]]\
+                        -dis_mat[fst_ord[f_ids[1]-1]][fst_ord[f_ids[1]]]\
+                        -dis_mat[sec_ord[s_ids[0]-1]][sec_ord[s_ids[0]]]\
+                        -dis_mat[sec_ord[s_ids[1]-1]][sec_ord[s_ids[1]]]\
+                        +dis_mat[fst_ord[f_ids[0]-1]][sec_ord[s_ids[0]]]\
+                        +dis_mat[fst_ord[f_ids[1]-1]][sec_ord[s_ids[1]]]\
+                        +dis_mat[sec_ord[s_ids[0]-1]][fst_ord[f_ids[0]]]\
+                        +dis_mat[sec_ord[s_ids[1]-1]][fst_ord[f_ids[1]]]
+                    
+                    #ルートを交換する
+                    if dif<0 and abs(dif)>1e-4:
+                        tmp=fst_ord[f_ids[0]:f_ids[1]]
+                        fst_ord[f_ids[0]:f_ids[1]]=sec_ord[s_ids[0]:s_ids[1]]
+                        sec_ord[s_ids[0]:s_ids[1]]=tmp
+                        isBreak=True
+        
+        #一度近傍探索が終わるたびに各ルートに2opt法を実行する
+        for i in range(len(orders)):
+            two_opt_method(dis_mat,orders[i])
+        
+        #変更がなくなったらループを終了
+        if not isBreak: break       
+        print("\r"+str(calc_total_dis(dis_mat,orders)),end="") 
+    
+    print("\nfinish cross-exchange")
+    return orders
+
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築
 

@@ -59,6 +59,7 @@ with open(fname) as f:
     print("局所探索法を選択してください")
     print("0:Or-opt法")
     print("1:2-opt*法")
+    print("2:クロス交換法")
     l_state=int(input())
 
     for i in range(TRUCK_SIZE):
@@ -77,6 +78,12 @@ with open(fname) as f:
     elif l_state==1:
         mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY)
         mod.draw_graphs(data,orders,title="2-opt*法実行後")
+    elif l_state==2:
+        mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        mod.draw_graphs(data,orders,title="クロス交換法実行後")
+    else:
+        print("正しい数字を入力してください")
+        exit(1)
 
     mod.show_route_dif(data,old,orders,TRUCK_CAPACITY)
     print("total move cost:"+str(mod.calc_total_dis(dis_mat,old))+\
