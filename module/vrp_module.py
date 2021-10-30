@@ -93,25 +93,11 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
             i,j=v
             for b in range(1,len(orders[i])-2):
                 if isBreak: break
-                ord=orders[i]
-                bef_score=-dis_mat[ord[b-1]][ord[b]]-dis_mat[ord[b+1]][ord[b+2]]+dis_mat[ord[b-1]][ord[b+2]]
-                change_weight=data[ord[b]]["weight"]+data[ord[b+1]]["weight"]
+                
                 for e in range(len(orders[j])-1):
                     if isBreak: break
-                    to_ord=orders[j]
-                    aft_score=dis_mat[to_ord[e]][ord[b]]+dis_mat[to_ord[e+1]][ord[b+1]]-dis_mat[to_ord[e]][to_ord[e+1]]
 
-                    #他のルートに挿入すると総移動距離が短くなるとき
-                    if bef_score+aft_score<0:
-                        #挿入先の容量成約を満たしているならば
-                        if weights[j]+change_weight<TRUCK_CAPACITY:
-                            weights[i]-=change_weight
-                            weights[j]+=change_weight
-
-                            orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
-                            orders[i]=orders[i][0:b]+orders[i][b+2:]
-                            isBreak=True
-                            util.gif_append(data,orders,ims)
+                    isBreak = or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims)
         
         #一度or-optが終わるたびに2opt法を実行する
         for i in range(len(orders)):
@@ -123,6 +109,45 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     print("finish or-opt")
     util.save_gif(fig,ims,title="or-opt.gif")
     return orders
+
+def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
+    """Or-opt法のサブルーチン。変更後の距離を比較して更新されたかどうかのbool値を返す。
+
+    Args:
+        orders ([list[list]]): トラックたちの訪問順のリスト\\
+        weights ([list[int]]): 各トラックの合計重量\\
+        dis_mat ([list[list]]): 各都市間の距離行列\\
+        TRUCK_CAPACITY ([int]): トラックの容量制限\\
+        i ([int]): ルートを抜かれるトラックの添字   
+        j ([int]): ルートを入れられるトラックの添字\\
+        b ([int]): 抜かれるルートの一人目の顧客の添字   
+        e ([int]): 入れられるルートの挿入する直前の顧客の添字\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
+        ims ([list]): gif出力用の画像を保存するリスト
+
+    Returns:
+        [bool]: 変更があればTrue、なければFalseを返す
+    """    
+    isBreak=False
+    ord=orders[i]
+    bef_score=-dis_mat[ord[b-1]][ord[b]]-dis_mat[ord[b+1]][ord[b+2]]+dis_mat[ord[b-1]][ord[b+2]]
+    change_weight=data[ord[b]]["weight"]+data[ord[b+1]]["weight"]
+    
+    to_ord=orders[j]
+    aft_score=dis_mat[to_ord[e]][ord[b]]+dis_mat[to_ord[e+1]][ord[b+1]]-dis_mat[to_ord[e]][to_ord[e+1]]
+    #他のルートに挿入すると総移動距離が短くなるとき
+    if bef_score+aft_score<0:
+        #挿入先の容量成約を満たしているならば
+        if weights[j]+change_weight<TRUCK_CAPACITY:
+            weights[i]-=change_weight
+            weights[j]+=change_weight
+
+            orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
+            orders[i]=orders[i][0:b]+orders[i][b+2:]
+            isBreak=True
+            util.gif_append(data,orders,ims)
+            
+    return isBreak
 
 def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):  
     """2-opt*法による改善型解法
@@ -162,18 +187,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
                     or util.calc_total_weight(data,sec_ord[:s_id])+fst_weight > TRUCK_CAPACITY):
                         continue
                     
-                    dif=-dis_mat[fst_ord[f_id-1]][fst_ord[f_id]]\
-                        -dis_mat[sec_ord[s_id-1]][sec_ord[s_id]]\
-                        +dis_mat[fst_ord[f_id-1]][sec_ord[s_id]]\
-                        +dis_mat[sec_ord[s_id-1]][fst_ord[f_id]]
-                    
-                    #ルートを交換する
-                    if dif<0 and abs(dif)>1e-4:
-                        tmp=fst_ord[f_id:]
-                        fst_ord[f_id:]=sec_ord[s_id:]
-                        sec_ord[s_id:]=tmp
-                        isBreak=True
-                        util.gif_append(data,orders,ims)
+                    isBreak=two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims)
         
         #一度2-opt*が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -186,7 +200,24 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     print("\nfinish 2-opt*")
     util.save_gif(fig,ims,title="2opt_star.gif")
     return orders
+
+def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
+    isBreak=False
+    dif=-dis_mat[fst_ord[f_id-1]][fst_ord[f_id]]\
+        -dis_mat[sec_ord[s_id-1]][sec_ord[s_id]]\
+        +dis_mat[fst_ord[f_id-1]][sec_ord[s_id]]\
+        +dis_mat[sec_ord[s_id-1]][fst_ord[f_id]]
+                    
+    #ルートを交換する
+    if dif<0 and abs(dif)>1e-4:
+        tmp=fst_ord[f_id:]
+        fst_ord[f_id:]=sec_ord[s_id:]
+        sec_ord[s_id:]=tmp
+        isBreak=True
+        util.gif_append(data,orders,ims)
     
+    return isBreak
+
 def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
