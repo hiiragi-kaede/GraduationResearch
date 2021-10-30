@@ -1,6 +1,7 @@
 import sys
 sys.path.append("../")
 from module import vrp_module as mod
+from module import utility as util
 from pprint import pprint
 import math
 import copy
@@ -38,7 +39,7 @@ with open(fname) as f:
     print("total weight:",total_weight)
     TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)
     print("truck size:",TRUCK_SIZE)
-    dis_mat=[[mod.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
+    dis_mat=[[util.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
 
     print("初期解構築法を選択してください")
@@ -85,6 +86,6 @@ with open(fname) as f:
         print("正しい数字を入力してください")
         exit(1)
 
-    mod.show_route_dif(data,old,orders,TRUCK_CAPACITY)
-    print("total move cost:"+str(mod.calc_total_dis(dis_mat,old))+\
-        " → "+str(mod.calc_total_dis(dis_mat,orders)))
+    util.show_route_dif(data,old,orders,TRUCK_CAPACITY)
+    print("total move cost:"+str(util.calc_total_dis(dis_mat,old))+\
+        " → "+str(util.calc_total_dis(dis_mat,orders)))

@@ -1,12 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import matplotlib
 import itertools
 from sklearn.cluster import KMeans
 import numpy as np
-
-def dis(a,b):
-    return ((a["x"]-b["x"])**2+(a["y"]-b["y"])**2)**.5
+from module import utility as util
 
 def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
@@ -34,7 +31,7 @@ def draw_graphs(data,orders,title="default_title"):
         label="truck"+str(idx+1)
         plt.plot(xs,ys,label=label)
     
-    check_unvisit(data,orders)
+    util.check_unvisit(data,orders)
     plt.scatter(data[0]["x"],data[0]["y"],label="depo")
     plt.title(title,fontname="MS Gothic")
     plt.legend()
@@ -85,13 +82,8 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     Returns:
         [list[list]]: 各トラックの訪問する都市の順番のリスト
     """
-    idxs=[i for i in range(len(orders))]
-    weights=[0 for _ in range(len(orders))]
-    #重さの初期化
-    for i in range(len(orders)):
-        weights[i]=calc_total_weight(data,orders[i])
-    
-    fig,ims=gif_init()
+    idxs,weights=local_search_init(data,orders)
+    fig,ims=util.gif_init()
 
     while True:
         isBreak=False
@@ -119,7 +111,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
                             orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
                             orders[i]=orders[i][0:b]+orders[i][b+2:]
                             isBreak=True
-                            gif_append(data,orders,ims)
+                            util.gif_append(data,orders,ims)
         
         #一度or-optが終わるたびに2opt法を実行する
         for i in range(len(orders)):
@@ -129,7 +121,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         if not isBreak: break
 
     print("finish or-opt")
-    save_gif(fig,ims,title="or-opt.gif")
+    util.save_gif(fig,ims,title="or-opt.gif")
     return orders
 
 def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):  
@@ -144,13 +136,8 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     Returns:
         [list[list]]: 各トラックの訪問する都市の順番のリスト
     """
-    idxs=[i for i in range(len(orders))]
-    weights=[0 for _ in range(len(orders))]
-    #重さの初期化
-    for i in range(len(orders)):
-        weights[i]=calc_total_weight(data,orders[i])
-    
-    fig,ims=gif_init()
+    idxs,weights=local_search_init(data,orders)
+    fig,ims=util.gif_init()
     
     cnt=0
     last=0
@@ -163,16 +150,16 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
             for f_id in range(1,len(orders[i])-1):
                 if isBreak: break
                 fst_ord=orders[i]
-                fst_weight=calc_total_weight(data,fst_ord[f_id:])
+                fst_weight=util.calc_total_weight(data,fst_ord[f_id:])
                 
                 for s_id in range(1,len(orders[j])-1):
                     if isBreak: break
                     sec_ord=orders[j]
-                    sec_weight=calc_total_weight(data,sec_ord[s_id:])
+                    sec_weight=util.calc_total_weight(data,sec_ord[s_id:])
                     
                     #ルートを交換した場合容量オーバーなら次のループへ
-                    if (calc_total_weight(data,fst_ord[:f_id])+sec_weight > TRUCK_CAPACITY\
-                    or calc_total_weight(data,sec_ord[:s_id])+fst_weight > TRUCK_CAPACITY):
+                    if (util.calc_total_weight(data,fst_ord[:f_id])+sec_weight > TRUCK_CAPACITY\
+                    or util.calc_total_weight(data,sec_ord[:s_id])+fst_weight > TRUCK_CAPACITY):
                         continue
                     
                     dif=-dis_mat[fst_ord[f_id-1]][fst_ord[f_id]]\
@@ -186,7 +173,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
                         fst_ord[f_id:]=sec_ord[s_id:]
                         sec_ord[s_id:]=tmp
                         isBreak=True
-                        gif_append(data,orders,ims)
+                        util.gif_append(data,orders,ims)
         
         #一度2-opt*が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -195,19 +182,14 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
         #変更がなくなったらループを終了
         if not isBreak: break        
         
-        print("\r"+str(calc_total_dis(dis_mat,orders)),end="")
+        print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="")
     print("\nfinish 2-opt*")
-    save_gif(fig,ims,title="2opt*.gif")
+    util.save_gif(fig,ims,title="2opt_star.gif")
     return orders
     
 def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
-    idxs=[i for i in range(len(orders))]
-    weights=[0 for _ in range(len(orders))]
-    #重さの初期化
-    for i in range(len(orders)):
-        weights[i]=calc_total_weight(data,orders[i])
-
-    fig,ims=gif_init()
+    idxs,weights=local_search_init(data,orders)
+    fig,ims=util.gif_init()
     
     while True:
         isBreak=False
@@ -218,20 +200,20 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
             for f_ids in itertools.combinations(range(1,len(orders[i])-1),2):
                 if isBreak: break
                 fst_ord=orders[i]
-                fst_weight=calc_total_weight(data,fst_ord[f_ids[0]:f_ids[1]])
+                fst_weight=util.calc_total_weight(data,fst_ord[f_ids[0]:f_ids[1]])
                 
                 for s_ids in itertools.combinations(range(1,len(orders[j])-1),2):
                     if isBreak: break
                     sec_ord=orders[j]
-                    sec_weight=calc_total_weight(data,sec_ord[s_ids[0]:s_ids[1]])
+                    sec_weight=util.calc_total_weight(data,sec_ord[s_ids[0]:s_ids[1]])
                     
                     #ルートを交換した場合容量オーバーなら次のループへ
-                    if (calc_total_weight(data,fst_ord[:f_ids[0]])\
-                        +calc_total_weight(data,fst_ord[f_ids[1]:])\
+                    if (util.calc_total_weight(data,fst_ord[:f_ids[0]])\
+                        +util.calc_total_weight(data,fst_ord[f_ids[1]:])\
                         +sec_weight > TRUCK_CAPACITY\
                         or 
-                        calc_total_weight(data,sec_ord[:s_ids[0]])\
-                        +calc_total_weight(data,sec_ord[s_ids[1]:])\
+                        util.calc_total_weight(data,sec_ord[:s_ids[0]])\
+                        +util.calc_total_weight(data,sec_ord[s_ids[1]:])\
                         +fst_weight > TRUCK_CAPACITY):
                         continue
                     
@@ -250,7 +232,7 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
                         fst_ord[f_ids[0]:f_ids[1]]=sec_ord[s_ids[0]:s_ids[1]]
                         sec_ord[s_ids[0]:s_ids[1]]=tmp
                         isBreak=True
-                        gif_append(data,orders,ims)
+                        util.gif_append(data,orders,ims)
         
         #一度近傍探索が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -258,10 +240,10 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
         
         #変更がなくなったらループを終了
         if not isBreak: break       
-        print("\r"+str(calc_total_dis(dis_mat,orders)),end="") 
+        print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="") 
     
     print("\nfinish cross-exchange")
-    save_gif(fig,ims,title="crossEx.gif")
+    util.save_gif(fig,ims,title="crossEx.gif")
     return orders
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -354,6 +336,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
                 max_ids=[i,j]
         
         i,j=max_ids
+        #最終的に実行できる解が出来なければjのルートをバラして生きているルートに併合
         if weights[i]+weights[j]>TRUCK_CAPACITY:
             sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j)
             invalid.append(j)
@@ -416,66 +399,11 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     #print(orders)
     return orders
 
-def check_unvisit(data,orders):
-    customers=[False for i in range(len(data))]
-    for order in orders:
-        for i in order:
-            customers[i]=True
+def local_search_init(data,orders):
+    idxs=[i for i in range(len(orders))]
+    weights=[0 for _ in range(len(orders))]
+    #重さの初期化
+    for i in range(len(orders)):
+        weights[i]=util.calc_total_weight(data,orders[i])
     
-    tmp=[i for i in range(len(customers)) if not customers[i]]
-    if len(tmp)==0: return
-    print("unvisit:",tmp,end="   ")
-    print("total weight:",sum([data[i]["weight"] for i in range(len(customers)) if not customers[i]]))
-
-def show_route_dif(data,old,new,TRUCK_CAPACITY):
-    """改善型解法により解がどの程度改善されたかを表示する。
-
-    Args:
-        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
-        old ([list[list]]): トラックたちの訪問順のリスト\\
-        new ([list[list]]): トラックたちの訪問順のリスト\\
-        TRUCK_CAPACITY ([int]): トラックの容量制限
-    """    
-    size=len(new)
-    for id in range(size):
-        old_weight=sum([data[i]["weight"] for i in old[id]])
-        old_size=len(old[id])
-
-        new_weight=sum([data[i]["weight"] for i in new[id]])
-        new_size=len(new[id])
-        print("truck "+str(id+1).zfill(2)+"  size:"+str(old_size).zfill(2)+\
-            " → "+str(new_size).zfill(2),end="    ")
-        print("weight:"+str(old_weight)+" → "+str(new_weight)+" /"+str(TRUCK_CAPACITY))
-
-def calc_total_weight(data,order):
-    return sum([data[i]["weight"] for i in order])
-
-def calc_total_dis(dis_mat,orders):
-    total=0
-    for ord in orders:
-        for i in range(len(ord)-1):
-            total+=dis_mat[ord[i]][ord[i+1]]
-    return total
-
-def gif_init():
-    return [plt.figure(),[]]
-
-def gif_append(data,orders,ims):
-    im=[]
-    cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']
-    for idx,order in enumerate(orders):
-        if len(order)<=2: continue
-        xs=[data[i]["x"] for i in order]
-        ys=[data[i]["y"] for i in order]
-        xs.append(xs[0])
-        ys.append(ys[0])
-
-        #frame,=plt.plot(xs,ys)
-        frame,=plt.plot(xs,ys,color=cycle[idx])
-        im.append(frame)
-    ims.append(im)
-
-def save_gif(fig,ims,title="default.gif"):
-    title="out/"+title
-    ani = animation.ArtistAnimation(fig,ims,interval=300,repeat_delay=5000)
-    ani.save(title,writer="pillow")
+    return idxs,weights
