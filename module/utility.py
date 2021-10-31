@@ -5,6 +5,12 @@ def dis(a,b):
     return ((a["x"]-b["x"])**2+(a["y"]-b["y"])**2)**.5
 
 def check_unvisit(data,orders):
+    """訪問していない顧客を確認する
+
+    Args:
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
+        orders ([list[list]]): 各トラックの点の訪問順を示すリスト\\
+    """    
     customers=[False for i in range(len(data))]
     for order in orders:
         for i in order:
@@ -58,12 +64,12 @@ def gif_append(data,orders,ims):
         xs.append(xs[0])
         ys.append(ys[0])
 
-        #frame,=plt.plot(xs,ys)
         frame,=plt.plot(xs,ys,color=cycle[idx])
         im.append(frame)
     ims.append(im)
 
 def save_gif(fig,ims,title="default.gif"):
-    title="out/"+title
+    file_dir="out/"
+    title=file_dir+title
     ani = animation.ArtistAnimation(fig,ims,interval=300,repeat_delay=5000)
     ani.save(title,writer="pillow")

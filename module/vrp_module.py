@@ -9,7 +9,7 @@ def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
 
     Args:
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         orders ([list[list]]): 各トラックの点の訪問順を示すリスト\\
         title ([string]): グラフのタイトル。指定しなければ"default_title"になる。
     
@@ -74,7 +74,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     """Or-opt法による改善型解法
 
     Args:
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         dis_mat ([list[list]]): 各都市間の距離行列\\
         orders ([list[list]]): トラックたちの訪問順のリスト\\
         TRUCK_CAPACITY ([int]): トラックの容量制限
@@ -153,7 +153,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     """2-opt*法による改善型解法
 
     Args:
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         dis_mat ([list[list]]): 各都市間の距離行列\\
         orders ([list[list]]): トラックたちの訪問順のリスト\\
         TRUCK_CAPACITY ([int]): トラックの容量制限
@@ -284,7 +284,7 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         dis_mat ([list[list]]): 各都市間の距離行列\\
         truck_size ([int]): トラックの台数\\
         TRUCK_CAPACITY ([int]): トラックの容量制限\\
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         size ([int]): デポを含んだ都市の大きさ
 
     Returns:
@@ -333,7 +333,7 @@ def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         dis_mat ([list[list]]): 各都市間の距離行列\\
         truck_size ([int]): トラックの台数\\
         TRUCK_CAPACITY ([int]): トラックの容量制限\\
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)\\
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         size ([int]): デポを含んだ都市の大きさ
 
     Returns:
@@ -402,7 +402,7 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す
 
     Args:
-        data ([list[list]]): 各点のx,y座標のリスト(0の点がデポとなる)
+        data ([list[dict]]): 各顧客の位置と需要量の辞書\\
         truck_size ([int]): トラックの台数
 
     Returns:
@@ -425,9 +425,6 @@ def kmeans(data,truck_size,TRUCK_CAPACITY):
     for i in orders:
         i.append(0)
     
-    #show_truck_cap(weights,TRUCK_CAPACITY)
-    #check_unvisit(data,orders)
-    #print(orders)
     return orders
 
 def local_search_init(data,orders):
