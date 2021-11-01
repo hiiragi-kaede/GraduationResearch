@@ -4,6 +4,9 @@ import itertools
 from sklearn.cluster import KMeans
 import numpy as np
 from module import utility as util
+import time
+
+TIME_LIMIT=300
 
 def draw_graphs(data,orders,title="default_title"):
     """各トラックの経路表示
@@ -84,8 +87,11 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
     """
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
-
+    plt.title("or-opt近傍探索",fontname="MS Gothic")
+    st=time.time()
+    
     while True:
+        if time.time()-st>TIME_LIMIT: break
         isBreak=False
         #トラック番号をi,jで管理。iの一部をjに挿入する形
         for v in itertools.combinations(idxs,2):
@@ -163,10 +169,13 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
     """
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
+    plt.title("2-opt*近傍探索",fontname="MS Gothic")
+    st=time.time()
     
     cnt=0
     last=0
     while True:
+        if time.time()-st>TIME_LIMIT: break
         isBreak=False
         #トラック番号をi,jで管理。iとjのある添字以降を交換する形。
         for v in itertools.combinations(idxs,2):
@@ -221,8 +230,11 @@ def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
 def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
+    plt.title("クロス交換近傍探索",fontname="MS Gothic")
+    st=time.time()
     
     while True:
+        if time.time()-st>TIME_LIMIT: break
         isBreak=False
         #トラック番号をi,jで管理。iとjの途中のルートを交換する形。
         for v in itertools.combinations(idxs,2):
@@ -396,7 +408,7 @@ def sub_saving(TRUCK_CAPACITY,data,weights,valid,orders,j):
             if weights[id]+data[out]["weight"]>TRUCK_CAPACITY:
                 continue
             orders[id].insert(1,out)
-            weights[id]+=data[out]
+            weights[id]+=data[out]["weight"]
             
 def kmeans(data,truck_size,TRUCK_CAPACITY):
     """dataをtruck_sizeのクラスターに分割し、各クラスターの添字をordersに格納して返す

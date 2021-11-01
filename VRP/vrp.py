@@ -7,7 +7,8 @@ import math
 import copy
 
 #fname="rand100_weight.txt"
-fname="CVRP_Data/eilA101.txt"
+#fname="CVRP_Data/tsplib/eilA101.txt"
+fname="CVRP_Data/vrplib/X-n228-k23.txt"
 
 #トラックの台数
 TRUCK_SIZE=10
@@ -23,8 +24,8 @@ with open(fname) as f:
         tmp=[list(map(float,i.split())) for i in f.readlines()]
         data=[{"x":i[0],"y":i[1],"weight":i[2]} for i in tmp]
     else:
-        TRUCK_CAPACITY=int(f.readline())
         size=int(f.readline())
+        TRUCK_CAPACITY=int(f.readline())
         for i in range(size):
             tmp=list(map(float,f.readline().split()[1:]))
             data.append({"x":tmp[0],"y":tmp[1]})
@@ -37,7 +38,7 @@ with open(fname) as f:
 
     total_weight=sum([i["weight"] for i in data])
     print("total weight:",total_weight)
-    TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)
+    TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)+1
     print("truck size:",TRUCK_SIZE)
     dis_mat=[[util.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)

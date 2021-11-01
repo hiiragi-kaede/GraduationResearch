@@ -64,12 +64,12 @@ def gif_append(data,orders,ims):
         xs.append(xs[0])
         ys.append(ys[0])
 
-        frame,=plt.plot(xs,ys,color=cycle[idx])
+        frame,=plt.plot(xs,ys,color=cycle[(idx%len(cycle))])
         im.append(frame)
     ims.append(im)
 
 def save_gif(fig,ims,title="default.gif"):
-    file_dir="out/"
+    file_dir="out/vrplib/"
     title=file_dir+title
-    ani = animation.ArtistAnimation(fig,ims,interval=300,repeat_delay=5000)
+    ani = animation.ArtistAnimation(fig,ims,interval=300)
     ani.save(title,writer="pillow")
