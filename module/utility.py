@@ -69,7 +69,7 @@ def gif_append(data,orders,ims):
     ims.append(im)
 
 def save_gif(fig,ims,title="default.gif"):
-    file_dir="out/vrplib/"
+    file_dir="out/"
     title=file_dir+title
     ani = animation.ArtistAnimation(fig,ims,interval=300)
     ani.save(title,writer="pillow")

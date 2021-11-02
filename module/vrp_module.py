@@ -83,7 +83,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         TRUCK_CAPACITY ([int]): トラックの容量制限
 
     Returns:
-        [list[list]]: 各トラックの訪問する都市の順番のリスト
+        fig,ims: gifを保存するための情報を返す
     """
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
@@ -113,8 +113,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         if not isBreak: break
 
     print("finish or-opt")
-    util.save_gif(fig,ims,title="or-opt.gif")
-    return orders
+    return fig,ims
 
 def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
     """Or-opt法のサブルーチン。変更後の距離を比較して更新されたかどうかのbool値を返す。
@@ -165,7 +164,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
         TRUCK_CAPACITY ([int]): トラックの容量制限
 
     Returns:
-        [list[list]]: 各トラックの訪問する都市の順番のリスト
+        fig,ims: gifを保存するための情報を返す
     """
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
@@ -207,8 +206,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
         
         print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="")
     print("\nfinish 2-opt*")
-    util.save_gif(fig,ims,title="2opt_star.gif")
-    return orders
+    return fig,ims
 
 def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
     isBreak=False
@@ -286,8 +284,7 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
         print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="") 
     
     print("\nfinish cross-exchange")
-    util.save_gif(fig,ims,title="crossEx.gif")
-    return orders
+    return fig,ims
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築

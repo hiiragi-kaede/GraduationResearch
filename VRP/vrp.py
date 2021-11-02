@@ -74,14 +74,15 @@ with open(fname) as f:
         mod.draw_graphs(data,orders,title="k-means法構築")
     
     old=copy.deepcopy(orders)
+    fig,ims=[0,0]
     if l_state==0:
-        mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        fig,ims=mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)
         mod.draw_graphs(data,orders,title="or-opt法実行後")
     elif l_state==1:
-        mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        fig,ims=mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY)
         mod.draw_graphs(data,orders,title="2-opt*法実行後")
     elif l_state==2:
-        mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        fig,ims=mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY)
         mod.draw_graphs(data,orders,title="クロス交換法実行後")
     else:
         print("正しい数字を入力してください")
@@ -90,3 +91,8 @@ with open(fname) as f:
     util.show_route_dif(data,old,orders,TRUCK_CAPACITY)
     print("total move cost:"+str(util.calc_total_dis(dis_mat,old))+\
         " → "+str(util.calc_total_dis(dis_mat,orders)))
+    
+    print("局所探索法の過程のgifを保存します。")
+    print("出力ファイル名を入力してください(out/につづくディレクトリ名を入力してください)")
+    f_title=input()
+    util.save_gif(fig,ims,title=f_title)
