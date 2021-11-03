@@ -73,7 +73,7 @@ def two_opt_method(dis_mat,order):
     
     return order
 
-def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
+def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     """Or-opt法による改善型解法
 
     Args:
@@ -113,7 +113,10 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY):
         if not isBreak: break
 
     print("finish or-opt")
-    return fig,ims
+    if(f_title==""):
+        pass
+    else:
+        util.save_gif(fig,ims,title=f_title)
 
 def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
     """Or-opt法のサブルーチン。変更後の距離を比較して更新されたかどうかのbool値を返す。
@@ -154,7 +157,7 @@ def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
             
     return isBreak
 
-def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):  
+def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):  
     """2-opt*法による改善型解法
 
     Args:
@@ -206,7 +209,10 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY):
         
         print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="")
     print("\nfinish 2-opt*")
-    return fig,ims
+    if(f_title==""):
+        pass
+    else:
+        util.save_gif(fig,ims,title=f_title)
 
 def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
     isBreak=False
@@ -225,7 +231,7 @@ def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
     
     return isBreak
 
-def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
+def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     idxs,weights=local_search_init(data,orders)
     fig,ims=util.gif_init()
     plt.title("クロス交換近傍探索",fontname="MS Gothic")
@@ -258,14 +264,7 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
                         +fst_weight > TRUCK_CAPACITY):
                         continue
                     
-                    dif=-dis_mat[fst_ord[f_ids[0]-1]][fst_ord[f_ids[0]]]\
-                        -dis_mat[fst_ord[f_ids[1]-1]][fst_ord[f_ids[1]]]\
-                        -dis_mat[sec_ord[s_ids[0]-1]][sec_ord[s_ids[0]]]\
-                        -dis_mat[sec_ord[s_ids[1]-1]][sec_ord[s_ids[1]]]\
-                        +dis_mat[fst_ord[f_ids[0]-1]][sec_ord[s_ids[0]]]\
-                        +dis_mat[fst_ord[f_ids[1]-1]][sec_ord[s_ids[1]]]\
-                        +dis_mat[sec_ord[s_ids[0]-1]][fst_ord[f_ids[0]]]\
-                        +dis_mat[sec_ord[s_ids[1]-1]][fst_ord[f_ids[1]]]
+                    dif=get_cross_dif(dis_mat,fst_ord,f_ids,sec_ord,s_ids)
                     
                     #ルートを交換する
                     if dif<0 and abs(dif)>1e-4:
@@ -284,7 +283,22 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY):
         print("\r"+str(util.calc_total_dis(dis_mat,orders)),end="") 
     
     print("\nfinish cross-exchange")
-    return fig,ims
+    if(f_title==""):
+        pass
+    else:
+        util.save_gif(fig,ims,title=f_title)
+
+def get_cross_dif(dis_mat,fst_ord,f_ids,sec_ord,s_ids):
+    ret=-dis_mat[fst_ord[f_ids[0]-1]][fst_ord[f_ids[0]]]\
+        -dis_mat[fst_ord[f_ids[1]-1]][fst_ord[f_ids[1]]]\
+        -dis_mat[sec_ord[s_ids[0]-1]][sec_ord[s_ids[0]]]\
+        -dis_mat[sec_ord[s_ids[1]-1]][sec_ord[s_ids[1]]]\
+        +dis_mat[fst_ord[f_ids[0]-1]][sec_ord[s_ids[0]]]\
+        +dis_mat[fst_ord[f_ids[1]-1]][sec_ord[s_ids[1]]]\
+        +dis_mat[sec_ord[s_ids[0]-1]][fst_ord[f_ids[0]]]\
+        +dis_mat[sec_ord[s_ids[1]-1]][fst_ord[f_ids[1]]]
+    
+    return ret
 
 def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """挿入法による初期解構築

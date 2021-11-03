@@ -3,12 +3,13 @@ sys.path.append("../")
 from module import vrp_module as mod
 from module import utility as util
 from pprint import pprint
+import matplotlib.pyplot as plt
 import math
 import copy
 
 #fname="rand100_weight.txt"
-#fname="CVRP_Data/tsplib/eilA101.txt"
-fname="CVRP_Data/vrplib/X-n228-k23.txt"
+fname="CVRP_Data/tsplib/eilA101.txt"
+#fname="CVRP_Data/vrplib/X-n228-k23.txt"
 
 #トラックの台数
 TRUCK_SIZE=10
@@ -38,7 +39,7 @@ with open(fname) as f:
 
     total_weight=sum([i["weight"] for i in data])
     print("total weight:",total_weight)
-    TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)+1
+    TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)
     print("truck size:",TRUCK_SIZE)
     dis_mat=[[util.dis(data[i],data[j]) for i in range(len(data))] for j in range(len(data))]
     size=len(data)
@@ -63,6 +64,11 @@ with open(fname) as f:
     print("1:2-opt*法")
     print("2:クロス交換法")
     l_state=int(input())
+    
+    print("局所探索法の過程のgifを保存します。")
+    print("出力ファイル名を入力してください(out/につづくディレクトリ名を入力してください)")
+    print("無入力でスキップします")
+    f_title=input()
 
     for i in range(TRUCK_SIZE):
         mod.two_opt_method(dis_mat,orders[i])
@@ -74,25 +80,19 @@ with open(fname) as f:
         mod.draw_graphs(data,orders,title="k-means法構築")
     
     old=copy.deepcopy(orders)
-    fig,ims=[0,0]
     if l_state==0:
-        fig,ims=mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
         mod.draw_graphs(data,orders,title="or-opt法実行後")
     elif l_state==1:
-        fig,ims=mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
         mod.draw_graphs(data,orders,title="2-opt*法実行後")
     elif l_state==2:
-        fig,ims=mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY)
+        mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
         mod.draw_graphs(data,orders,title="クロス交換法実行後")
     else:
         print("正しい数字を入力してください")
         exit(1)
-
+    
     util.show_route_dif(data,old,orders,TRUCK_CAPACITY)
     print("total move cost:"+str(util.calc_total_dis(dis_mat,old))+\
         " → "+str(util.calc_total_dis(dis_mat,orders)))
-    
-    print("局所探索法の過程のgifを保存します。")
-    print("出力ファイル名を入力してください(out/につづくディレクトリ名を入力してください)")
-    f_title=input()
-    util.save_gif(fig,ims,title=f_title)
