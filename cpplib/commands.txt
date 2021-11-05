@@ -1,0 +1,4 @@
+cd ../../大学/卒業研究/プログラム
+
+testの部分を作ったファイル名にしてあげればOK
+g++ -O3 -Wall -shared -std=c++11 -fPIC $(python3 -m pybind11 --includes) test.cpp -o test$(python3-config --extension-suffix)
