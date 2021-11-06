@@ -86,6 +86,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
         fig,ims: gifを保存するための情報を返す
     """
     idxs,weights=local_search_init(data,orders)
+    is_save_gif=f_title!=""
     fig,ims=util.gif_init()
     plt.title("or-opt近傍探索",fontname="MS Gothic")
     st=time.time()
@@ -103,7 +104,7 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
                 for e in range(len(orders[j])-1):
                     if isBreak: break
 
-                    isBreak = or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims)
+                    isBreak = or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims,is_save_gif)
         
         #一度or-optが終わるたびに2opt法を実行する
         for i in range(len(orders)):
@@ -113,12 +114,10 @@ def or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
         if not isBreak: break
 
     print("finish or-opt")
-    if(f_title==""):
-        pass
-    else:
+    if is_save_gif:
         util.save_gif(fig,ims,title=f_title)
 
-def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
+def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims,is_save_gif):
     """Or-opt法のサブルーチン。変更後の距離を比較して更新されたかどうかのbool値を返す。
 
     Args:
@@ -153,7 +152,8 @@ def or_opt_change(orders,weights,dis_mat,TRUCK_CAPACITY,i,j,b,e,data,ims):
             orders[j]=orders[j][0:e]+orders[i][b:b+2]+orders[j][e:]
             orders[i]=orders[i][0:b]+orders[i][b+2:]
             isBreak=True
-            util.gif_append(data,orders,ims)
+            if is_save_gif:
+                util.gif_append(data,orders,ims)
             
     return isBreak
 
@@ -170,6 +170,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
         fig,ims: gifを保存するための情報を返す
     """
     idxs,weights=local_search_init(data,orders)
+    is_save_gif=f_title!=""
     fig,ims=util.gif_init()
     plt.title("2-opt*近傍探索",fontname="MS Gothic")
     st=time.time()
@@ -198,7 +199,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
                     or util.calc_total_weight(data,sec_ord[:s_id])+fst_weight > TRUCK_CAPACITY):
                         continue
                     
-                    isBreak=two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims)
+                    isBreak=two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims,is_save_gif)
         
         #一度2-opt*が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
@@ -214,7 +215,7 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     else:
         util.save_gif(fig,ims,title=f_title)
 
-def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
+def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims,is_save_gif):
     isBreak=False
     dif=-dis_mat[fst_ord[f_id-1]][fst_ord[f_id]]\
         -dis_mat[sec_ord[s_id-1]][sec_ord[s_id]]\
@@ -227,12 +228,14 @@ def two_opt_asterisk_change(data,dis_mat,orders,fst_ord,f_id,sec_ord,s_id,ims):
         fst_ord[f_id:]=sec_ord[s_id:]
         sec_ord[s_id:]=tmp
         isBreak=True
-        util.gif_append(data,orders,ims)
+        if is_save_gif:
+            util.gif_append(data,orders,ims)
     
     return isBreak
 
 def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     idxs,weights=local_search_init(data,orders)
+    is_save_gif=f_title!=""
     fig,ims=util.gif_init()
     plt.title("クロス交換近傍探索",fontname="MS Gothic")
     st=time.time()
@@ -272,7 +275,8 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
                         fst_ord[f_ids[0]:f_ids[1]]=sec_ord[s_ids[0]:s_ids[1]]
                         sec_ord[s_ids[0]:s_ids[1]]=tmp
                         isBreak=True
-                        util.gif_append(data,orders,ims)
+                        if is_save_gif:
+                            util.gif_append(data,orders,ims)
         
         #一度近傍探索が終わるたびに各ルートに2opt法を実行する
         for i in range(len(orders)):
