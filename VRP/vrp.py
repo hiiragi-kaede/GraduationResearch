@@ -6,6 +6,7 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 import math
 import copy
+import time
 
 #fname="rand100_weight.txt"
 fname="CVRP_Data/tsplib/eilA101.txt"
@@ -37,6 +38,7 @@ with open(fname) as f:
             buf=f.readline().split()
             data[i]["weight"]=int(buf[1])
 
+    print("data file:",fname)
     total_weight=sum([i["weight"] for i in data])
     print("total weight:",total_weight)
     TRUCK_SIZE=math.ceil(total_weight/TRUCK_CAPACITY)
@@ -50,7 +52,10 @@ with open(fname) as f:
     print("2:k-means法 + random-2opt")
     state=int(input())
     if state==0:
+        st=time.time()
         orders=mod.insert_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
+        end=time.time()
+        print("elapsed time:",(end-st)*1000,"ms")
     elif state==1:
         orders=mod.saving_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==2:
