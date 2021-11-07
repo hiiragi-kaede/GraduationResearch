@@ -5,13 +5,21 @@
 #include<stdio.h>
 #include<cmath>
 #include"src/construct.hpp"
+#include"src/util.hpp"
 #include<chrono>
 
+/*
+compile command
+g++ -O3 -o main main.cpp src/construct.cpp src/util.cpp
+./main < "source data file name"
+*/
 using namespace std;
 
-int calc_total_weight(vector<int> order,vector<int> weights);
-void check_unvisited(vector<vector<int>>orders,int n);
-void show_orders(vector<vector<int>> orders,int n);
+double calc_total_dist(const vector<vector<int>> orders,
+                        const vector<vector<double>> dis_mat);
+int calc_total_weight(const vector<int> order,const vector<int> weights);
+void check_unvisited(const vector<vector<int>>orders,int n);
+void show_orders(const vector<vector<int>> orders,int n);
 
 int main(void){
     /*==========data input==========*/
@@ -57,6 +65,11 @@ int main(void){
     auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
     cout<<"elapsed time:"<<msec<<"ms"<<endl;
     //show_orders(orders,n);
+    cout<<"total move cost:"<<calc_total_dist(orders,dis_mat)<<endl;
+    for(auto& order: orders){
+        two_opt(order,dis_mat);
+    }
+    cout<<"two opt finished:"<<calc_total_dist(orders,dis_mat)<<endl;
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -95,7 +108,19 @@ int calc_total_weight(vector<int> order,vector<int> weights){
     return total;
 }
 
-void check_unvisited(vector<vector<int>>orders,int n){
+double calc_total_dist(const vector<vector<int>> orders,
+                    const vector<vector<double>> dis_mat)
+{
+    double total=0;
+    for(auto order : orders){
+        for(auto it=order.begin(); (it+1)!=order.end(); it++){
+            total+=dis_mat[*it][*(it+1)];
+        }
+    }
+    return total;
+}
+
+void check_unvisited(const vector<vector<int>>orders,int n){
     vector<bool> visited(n,false);
     for(auto order: orders){
         for(int id: order) visited[id]=true;
@@ -106,7 +131,7 @@ void check_unvisited(vector<vector<int>>orders,int n){
     cout<<endl;
 }
 
-void show_orders(vector<vector<int>> orders,int n){
+void show_orders(const vector<vector<int>> orders,int n){
     for(auto order: orders){
         for(int id: order) cout<<id<<",";
         //cout<<"    "<<calc_total_weight(order,weights)<<"/max:"<<capacity;
