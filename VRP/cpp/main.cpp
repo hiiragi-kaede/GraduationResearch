@@ -15,12 +15,6 @@ g++ -O3 -o main main.cpp src/construct.cpp src/util.cpp
 */
 using namespace std;
 
-double calc_total_dist(const vector<vector<int>> orders,
-                        const vector<vector<double>> dis_mat);
-int calc_total_weight(const vector<int> order,const vector<int> weights);
-void check_unvisited(const vector<vector<int>>orders,int n);
-void show_orders(const vector<vector<int>> orders,int n);
-
 int main(void){
     /*==========data input==========*/
     int n; cin>>n;
@@ -63,13 +57,20 @@ int main(void){
     auto orders=insert_construct(dis_mat,weights,capacity,truck_size);
     auto end=chrono::system_clock::now();
     auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
-    cout<<"elapsed time:"<<msec<<"ms"<<endl;
-    //show_orders(orders,n);
-    cout<<"total move cost:"<<calc_total_dist(orders,dis_mat)<<endl;
+    cout<<"construct elapsed time:"<<msec<<"ms"<<endl;
     for(auto& order: orders){
         two_opt(order,dis_mat);
     }
-    cout<<"two opt finished:"<<calc_total_dist(orders,dis_mat)<<endl;
+    cout<<"total move cost:"<<calc_total_dist(orders,dis_mat)<<endl;
+
+    st=chrono::system_clock::now();
+    cross_exchange_neighbor(weights,orders,dis_mat,capacity);
+    end=chrono::system_clock::now();
+    auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
+    cout<<"exchange elapsed time:"<<sec<<"s"<<endl;
+
+    cout<<"cross exchanged:"<<calc_total_dist(orders,dis_mat)<<endl;
+    check_unvisited(orders,n);    
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -98,45 +99,4 @@ int main(void){
     pclose(p);
     
     return 0;
-}
-
-int calc_total_weight(vector<int> order,vector<int> weights){
-    int total=0;
-    for(int i=0; i<order.size(); i++){
-        total+=weights[order[i]];
-    }
-    return total;
-}
-
-double calc_total_dist(const vector<vector<int>> orders,
-                    const vector<vector<double>> dis_mat)
-{
-    double total=0;
-    for(auto order : orders){
-        for(auto it=order.begin(); (it+1)!=order.end(); it++){
-            total+=dis_mat[*it][*(it+1)];
-        }
-    }
-    return total;
-}
-
-void check_unvisited(const vector<vector<int>>orders,int n){
-    vector<bool> visited(n,false);
-    for(auto order: orders){
-        for(int id: order) visited[id]=true;
-    }
-    for(int i=0; i<n; i++){
-        if(!visited[i]) cout<<i<<",";
-    }
-    cout<<endl;
-}
-
-void show_orders(const vector<vector<int>> orders,int n){
-    for(auto order: orders){
-        for(int id: order) cout<<id<<",";
-        //cout<<"    "<<calc_total_weight(order,weights)<<"/max:"<<capacity;
-        cout<<endl;
-    }
-    cout<<"unvisit:";
-    check_unvisited(orders,n);
 }

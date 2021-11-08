@@ -52,10 +52,7 @@ with open(fname) as f:
     print("2:k-means法 + random-2opt")
     state=int(input())
     if state==0:
-        st=time.time()
         orders=mod.insert_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
-        end=time.time()
-        print("elapsed time:",(end-st)*1000,"ms")
     elif state==1:
         orders=mod.saving_construct(dis_mat,TRUCK_SIZE,TRUCK_CAPACITY,data,size)
     elif state==2:
@@ -85,6 +82,7 @@ with open(fname) as f:
         mod.draw_graphs(data,orders,title="k-means法構築")
     
     old=copy.deepcopy(orders)
+    st=time.time()
     if l_state==0:
         mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
         mod.draw_graphs(data,orders,title="or-opt法実行後")
@@ -97,6 +95,9 @@ with open(fname) as f:
     else:
         print("正しい数字を入力してください")
         exit(1)
+        
+    end=time.time()
+    print("elapsed time:",(end-st),"s")
     
     util.show_route_dif(data,old,orders,TRUCK_CAPACITY)
     print("total move cost:"+str(util.calc_total_dis(dis_mat,old))+\
