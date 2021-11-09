@@ -70,7 +70,6 @@ int main(void){
     cout<<"exchange elapsed time:"<<sec<<"s"<<endl;
 
     cout<<"cross exchanged:"<<calc_total_dist(orders,dis_mat)<<endl;
-    check_unvisited(orders,n);    
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
