@@ -7,13 +7,19 @@
 #include"src/construct.hpp"
 #include"src/util.hpp"
 #include<chrono>
+#include<thread>
 
 /*
 compile command
-g++ -O3 -o main main.cpp src/construct.cpp src/util.cpp
+g++ -O3 -o main main.cpp src/construct.cpp src/util.cpp -pthread
 ./main < "source data file name"
 */
 using namespace std;
+
+void thread_process(const vector<vector<double>> dis_mat,const vector<int> weights,
+                    const int capacity,const int truck_size,
+                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
+                    vector<vector<int>>& ans_orders);
 
 int main(void){
     /*==========data input==========*/
@@ -52,24 +58,42 @@ int main(void){
     int truck_size=ceil((double)total_weight/capacity);
     //cout<<"truck_size:"<<truck_size<<endl;
 
-    /*==========construct initial answer==========*/
-    auto st=chrono::system_clock::now();
-    auto orders=insert_construct(dis_mat,weights,capacity,truck_size);
-    auto end=chrono::system_clock::now();
-    auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
-    cout<<"construct elapsed time:"<<msec<<"ms"<<endl;
-    for(auto& order: orders){
-        two_opt(order,dis_mat);
+    /*==========solve problem using multiple thread==========*/
+    const int THREAD_SIZE=4;
+    vector<thread> threads(THREAD_SIZE);
+    vector<long long> constructs(THREAD_SIZE);
+    vector<long long> local_searches(THREAD_SIZE);
+    vector<double> befs(THREAD_SIZE),afts(THREAD_SIZE);
+    vector<vector<vector<int>>> thread_orders(THREAD_SIZE);
+
+    //スレッドに求解させる
+    for(int i=0; i<THREAD_SIZE; i++){
+        threads[i]=thread(thread_process,dis_mat,weights,capacity,truck_size,
+                        ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
+                        ref(thread_orders[i]));
     }
-    cout<<"total move cost:"<<calc_total_dist(orders,dis_mat)<<endl;
+    //すべてのスレッドの処理が終わるのを待つ
+    for(int i=0; i<THREAD_SIZE; i++) threads[i].join();
 
-    st=chrono::system_clock::now();
-    cross_exchange_neighbor(weights,orders,dis_mat,capacity);
-    end=chrono::system_clock::now();
-    auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-    cout<<"exchange elapsed time:"<<sec<<"s"<<endl;
+    //各スレッドの解の性質などをログ出力する
+    for(int i=0; i<THREAD_SIZE; i++){
+        cout<<"Thread "<<i+1<<endl;
+        cout<<"time info"<<endl;
+        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n\n";
+    }
 
-    cout<<"cross exchanged:"<<calc_total_dist(orders,dis_mat)<<endl;
+    //一番改善後の総移動距離が短いスレッドの解を採用する
+    int minid=0;
+    double min_dist=afts[0];
+    for(int i=1; i<THREAD_SIZE; i++){
+        if(min_dist>afts[i]){
+            minid=i;
+            min_dist=afts[i];
+        }
+    }
+    cout<<"use thread"<<minid+1<<"'s answer\n";
+    auto orders=thread_orders[minid];
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -98,4 +122,29 @@ int main(void){
     pclose(p);
     
     return 0;
+}
+
+void thread_process(const vector<vector<double>> dis_mat,const vector<int> weights,
+                    const int capacity,const int truck_size,
+                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
+                    vector<vector<int>>& ans_orders)
+{
+    /*==========construct initial answer==========*/
+    auto st=chrono::system_clock::now();
+    auto orders=insert_construct(dis_mat,weights,capacity,truck_size);
+    auto end=chrono::system_clock::now();
+    construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+    for(auto& order: orders){
+        two_opt(order,dis_mat);
+    }
+    bef_dist=calc_total_dist(orders,dis_mat);
+
+    /*==========local search to improve answer==========*/
+    st=chrono::system_clock::now();
+    cross_exchange_neighbor(weights,orders,dis_mat,capacity);
+    end=chrono::system_clock::now();
+    local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
+
+    aft_dist=calc_total_dist(orders,dis_mat);
+    ans_orders=orders;
 }
