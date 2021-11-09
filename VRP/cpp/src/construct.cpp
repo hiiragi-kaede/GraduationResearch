@@ -15,13 +15,17 @@ vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> 
 
     vector<int> idxs(n-1);
     iota(idxs.begin(),idxs.end(),1);
+    //顧客の需要量順に添え字をソート
+    sort(idxs.begin(),idxs.end(),[&weights](const int &a,const int &b){return weights[a]>weights[b];});
+
     random_device seed_gen;
     mt19937 engine(seed_gen());
-    shuffle(idxs.begin(),idxs.end(),engine);
+    //顧客の需要量が上からトラックの台数分は種顧客を固定し、容量オーバーになる可能性をできる限り低くする。
+    //種顧客以外はランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
+    shuffle(idxs.begin()+truck_size,idxs.end(),engine);
 
     //各トラックの2番めに種顧客を挿入
     for(int i=0; i<truck_size; i++){
-        //デポの分だけ挿入する顧客の添字を調整
         orders[i].insert(orders[i].begin()+1,idxs[i]);
         total_weights[i]+=weights[idxs[i]];
     }
@@ -44,6 +48,9 @@ vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> 
                 }
             }
         }
+
+        //顧客をどこにも挿入できなかった場合はスキップ。後で訪れていない点として注意表示がされる。
+        if(min_dis==10000000000) continue;
 
         orders[t_id].insert(orders[t_id].begin()+ins_id,idxs[i]);
         total_weights[t_id]+=weights[idxs[i]];

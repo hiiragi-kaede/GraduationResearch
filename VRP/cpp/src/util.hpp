@@ -22,8 +22,9 @@ double calc_total_dist(const vector<vector<int>> orders,
 
 int calc_total_weight(const vector<int> order,const vector<int> weights);
 
-void check_unvisited(const vector<vector<int>>orders,int n);
+void check_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n);
 
-void show_orders(const vector<vector<int>> orders,int n);
+void show_orders(const vector<vector<int>> orders,const vector<int> weights,
+                const int capacity,const int n);
 
 vector<vector<int>> comb(int n, int r);

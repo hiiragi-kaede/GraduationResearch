@@ -11,7 +11,7 @@
 
 /*
 compile command
-g++ -O3 -o main main.cpp src/construct.cpp src/util.cpp -pthread
+g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp -pthread
 ./main < "source data file name"
 */
 using namespace std;
@@ -54,9 +54,9 @@ int main(void){
     vector<int> all;
     for(int i=0; i<n; i++) all.push_back(i);
     int total_weight=calc_total_weight(all,weights);
-    //cout<<"total_weight:"<<total_weight<<endl;
+    cout<<"total_weight:"<<total_weight<<endl;
     int truck_size=ceil((double)total_weight/capacity);
-    //cout<<"truck_size:"<<truck_size<<endl;
+    cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========solve problem using multiple thread==========*/
     const int THREAD_SIZE=4;
@@ -75,14 +75,6 @@ int main(void){
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();
 
-    //各スレッドの解の性質などをログ出力する
-    for(int i=0; i<THREAD_SIZE; i++){
-        cout<<"Thread "<<i+1<<endl;
-        cout<<"time info"<<endl;
-        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n\n";
-    }
-
     //一番改善後の総移動距離が短いスレッドの解を採用する
     int minid=0;
     double min_dist=afts[0];
@@ -92,8 +84,19 @@ int main(void){
             min_dist=afts[i];
         }
     }
-    cout<<"use thread"<<minid+1<<"'s answer\n";
+    cout<<"use thread"<<minid+1<<"'s answer\n\n";
     auto orders=thread_orders[minid];
+
+    //各スレッドの解の性質などをログ出力する
+    for(int i=0; i<THREAD_SIZE; i++){
+        if(i==minid) cout<<"\e[31m";
+        cout<<"Thread "<<i+1<<"\e[0m"<<endl;
+        cout<<"time info"<<endl;
+        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+        show_orders(thread_orders[i],weights,capacity,n);
+        cout<<endl;
+    }
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";

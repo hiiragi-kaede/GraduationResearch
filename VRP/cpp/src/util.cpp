@@ -153,26 +153,38 @@ double calc_total_dist(const vector<vector<int>> orders,
     return total;
 }
 
-void check_unvisited(const vector<vector<int>>orders,int n){
+void check_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
     vector<bool> visited(n,false);
-    cout<<"unvisited:";
+    bool out=false;
+    cout<<"\e[31munvisited:";
     for(auto order: orders){
         for(int id: order) visited[id]=true;
     }
     for(int i=0; i<n; i++){
-        if(!visited[i]) cout<<i<<",";
+        if(!visited[i]){
+            if(out) cout<<"          "<<i<<",weight:"<<weights[i]<<endl;
+            else cout<<i<<",weight:"<<weights[i]<<endl;
+            out=true;
+        }
     }
-    cout<<endl;
+    if(!out) cout<<"\033[1K";
+    cout<<"\e[0m";
 }
 
-void show_orders(const vector<vector<int>> orders,int n){
+void show_orders(const vector<vector<int>> orders,const vector<int> weights,
+                const int capacity,const int n){
     for(auto order: orders){
         for(int id: order) cout<<id<<",";
-        //cout<<"    "<<calc_total_weight(order,weights)<<"/max:"<<capacity;
+        
+        //容量オーバーは合計容量を赤く塗る
+        int total_weight=calc_total_weight(order,weights);
+        if(total_weight>capacity) cout<<"\e[31m";
+        cout<<"    "<<total_weight<<"\e[0m";
+
+        cout<<"/capacity:"<<capacity;
         cout<<endl;
     }
-    cout<<"unvisit:";
-    check_unvisited(orders,n);
+    check_unvisited(orders,weights,n);
 }
 
 //https://scrapbox.io/rustacean/combination%E3%81%AE%E5%AE%9F%E8%A3%85
