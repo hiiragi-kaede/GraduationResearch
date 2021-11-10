@@ -54,11 +54,8 @@ void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orde
         if(sec>limit_time) break;
 
         bool is_changed=false;
-        for(auto ids : c){
+        for(auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            // cout<<"i:"<<i<<" j:"<<j<<endl;
-            // cout<<"order_i:"<<orders[i].size()<<endl;
-            // cout<<"order_j"<<orders[j].size()<<endl;
             is_changed=sub_cross(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
         }
@@ -73,16 +70,13 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
-    //cout<<"i_size:"<<fst_size<<" j_size:"<<sec_size<<endl;
     for(int i_st=1; i_st<fst_size-2; i_st++){
         for(int i_end=i_st+1; i_end<fst_size-1; i_end++){
             for(int j_st=1; j_st<sec_size-2; j_st++){
                 for(int j_end=j_st+1; j_end<sec_size-1; j_end++){
-                    // cout<<"i"<<i_st<<"->"<<i_end;
-                    // cout<<"   j"<<j_st<<"->"<<j_end<<endl;
-                    vector<int> fst_ord,sec_ord;
-                    for(int l_i=i_st; l_i<i_end; l_i++) fst_ord.push_back(orders[i][l_i]);
-                    for(int l_i=j_st; l_i<j_end; l_i++) sec_ord.push_back(orders[j][l_i]);
+                    vector<int> fst_ord(i_end-i_st),sec_ord(j_end-j_st);
+                    copy(orders[i].begin()+i_st,orders[i].begin()+i_end,fst_ord.begin());
+                    copy(orders[j].begin()+j_st,orders[j].begin()+j_end,sec_ord.begin());
 
                     int fst_weight=calc_total_weight(fst_ord,weights);
                     int sec_weight=calc_total_weight(sec_ord,weights);
@@ -99,15 +93,17 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
                                     +dis_mat[orders[j][j_st-1]][orders[i][i_st]]
                                     +dis_mat[orders[j][j_end-1]][orders[i][i_end]];
                         if(dif<0){
-                            vector<int> new_i,new_j;
-                            for(int id=0; id<i_st; id++) new_i.push_back(orders[i][id]);
-                            for(int id=0; id<j_st; id++) new_j.push_back(orders[j][id]);
+                            int i_dif=i_end-i_st,j_dif=j_end-j_st;
+                            vector<int> new_i(fst_size-i_dif+j_dif),new_j(sec_size-j_dif+i_dif);
 
-                            for(int id=j_st; id<j_end; id++) new_i.push_back(orders[j][id]);
-                            for(int id=i_st; id<i_end; id++) new_j.push_back(orders[i][id]);
+                            copy(orders[i].begin(),orders[i].begin()+i_st,new_i.begin());
+                            copy(orders[j].begin(),orders[j].begin()+j_st,new_j.begin());
 
-                            for(int id=i_end; id<fst_size; id++) new_i.push_back(orders[i][id]);
-                            for(int id=j_end; id<sec_size; id++) new_j.push_back(orders[j][id]);
+                            copy(orders[j].begin()+j_st,orders[j].begin()+j_end,new_i.begin()+i_st);
+                            copy(orders[i].begin()+i_st,orders[i].begin()+i_end,new_j.begin()+j_st);
+                            
+                            copy(orders[i].begin()+i_end,orders[i].end(),new_i.begin()+i_st+j_dif);
+                            copy(orders[j].begin()+j_end,orders[j].end(),new_j.begin()+j_st+i_dif);
 
                             orders[i]=new_i;
                             orders[j]=new_j;
@@ -145,7 +141,7 @@ double calc_total_dist(const vector<vector<int>> orders,
                     const vector<vector<double>> dis_mat)
 {
     double total=0;
-    for(auto order : orders){
+    for(auto& order : orders){
         for(auto it=order.begin(); (it+1)!=order.end(); it++){
             total+=dis_mat[*it][*(it+1)];
         }
@@ -153,11 +149,11 @@ double calc_total_dist(const vector<vector<int>> orders,
     return total;
 }
 
-void check_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+void show_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
     vector<bool> visited(n,false);
     bool out=false;
     cout<<"\e[31munvisited:";
-    for(auto order: orders){
+    for(auto& order: orders){
         for(int id: order) visited[id]=true;
     }
     for(int i=0; i<n; i++){
@@ -171,20 +167,31 @@ void check_unvisited(const vector<vector<int>>orders,const vector<int> weights,i
     cout<<"\e[0m";
 }
 
-void show_orders(const vector<vector<int>> orders,const vector<int> weights,
+bool is_exist_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+    vector<bool> visited(n,false);
+    for(auto& order: orders){
+        for(int id : order) visited[id]=true;
+    }
+    //訪れていない顧客が存在する
+    for(bool check : visited) if(!check) return true;
+    return false;
+}
+
+void show_orders_info(const vector<vector<int>> orders,const vector<int> weights,
                 const int capacity,const int n){
-    for(auto order: orders){
-        for(int id: order) cout<<id<<",";
-        
+    for(auto& order: orders){
         //容量オーバーは合計容量を赤く塗る
         int total_weight=calc_total_weight(order,weights);
         if(total_weight>capacity) cout<<"\e[31m";
-        cout<<"    "<<total_weight<<"\e[0m";
+        cout<<total_weight<<"\e[0m";
 
-        cout<<"/capacity:"<<capacity;
+        cout<<"/capacity:"<<capacity<<"    ";
+
+        for(int id: order) cout<<id<<",";
+        
         cout<<endl;
     }
-    check_unvisited(orders,weights,n);
+    show_unvisited(orders,weights,n);
 }
 
 //https://scrapbox.io/rustacean/combination%E3%81%AE%E5%AE%9F%E8%A3%85

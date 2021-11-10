@@ -94,7 +94,7 @@ int main(void){
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        show_orders(thread_orders[i],weights,capacity,n);
+        show_orders_info(thread_orders[i],weights,capacity,n);
         cout<<endl;
     }
 
@@ -108,7 +108,7 @@ int main(void){
 
     string order_fname="tmp/order.txt";
     ofstream ord_output(order_fname);
-    for(auto order: orders){
+    for(auto& order: orders){
         for(int cus: order){
             ord_output<<cus<<" ";
         }
@@ -133,8 +133,15 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
                     vector<vector<int>>& ans_orders)
 {
     /*==========construct initial answer==========*/
+    int n=dis_mat.size();
     auto st=chrono::system_clock::now();
-    auto orders=insert_construct(dis_mat,weights,capacity,truck_size);
+    vector<vector<int>> orders;
+    //挿入法構築で実行可能解ができるまで繰り返し生成する。
+    do
+    {
+        orders=insert_construct(dis_mat,weights,capacity,truck_size);
+    } while (is_exist_unvisited(orders,weights,n));
+    
     auto end=chrono::system_clock::now();
     construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
     for(auto& order: orders){
