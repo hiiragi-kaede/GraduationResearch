@@ -16,6 +16,8 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp -pt
 */
 using namespace std;
 
+static int CONSTRUCT_LIMIT_MS=1000;
+
 void thread_process(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
@@ -134,12 +136,17 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
 {
     /*==========construct initial answer==========*/
     int n=dis_mat.size();
+    int t_size=truck_size;
     auto st=chrono::system_clock::now();
     vector<vector<int>> orders;
     //挿入法構築で実行可能解ができるまで繰り返し生成する。
     do
     {
-        orders=insert_construct(dis_mat,weights,capacity,truck_size);
+        auto end=chrono::system_clock::now();
+        long long elapsed_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(elapsed_ms>CONSTRUCT_LIMIT_MS) t_size++;
+        
+        orders=insert_construct(dis_mat,weights,capacity,t_size);
     } while (is_exist_unvisited(orders,weights,n));
     
     auto end=chrono::system_clock::now();
