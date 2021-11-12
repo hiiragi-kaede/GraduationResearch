@@ -53,6 +53,8 @@ int main(void){
         }
     }
 
+    vector<vector<int>> neighbor_list=construct_neighbor_list(n,dis_mat);
+
     vector<int> all;
     for(int i=0; i<n; i++) all.push_back(i);
     int total_weight=calc_total_weight(all,weights);
@@ -139,6 +141,7 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
     int t_size=truck_size;
     auto st=chrono::system_clock::now();
     vector<vector<int>> orders;
+    vector<int> truck_ids(n);
     //挿入法構築で実行可能解ができるまで繰り返し生成する。
     do
     {
@@ -146,7 +149,7 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
         long long elapsed_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(elapsed_ms>CONSTRUCT_LIMIT_MS) t_size++;
         
-        orders=insert_construct(dis_mat,weights,capacity,t_size);
+        orders=insert_construct(dis_mat,weights,capacity,t_size,truck_ids);
     } while (is_exist_unvisited(orders,weights,n));
     
     auto end=chrono::system_clock::now();
@@ -158,10 +161,11 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    cross_exchange_neighbor(weights,orders,dis_mat,capacity);
+    cross_exchange_neighbor(weights,orders,dis_mat,capacity,truck_ids);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
     aft_dist=calc_total_dist(orders,dis_mat);
     ans_orders=orders;
+    //show_truck_ids(truck_ids);
 }

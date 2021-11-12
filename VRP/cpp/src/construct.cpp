@@ -8,7 +8,7 @@
 using namespace std;
 
 vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> weights,
-                                    int truck_capacity,int truck_size){
+                                    int truck_capacity,int truck_size,vector<int>& truck_ids){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);
     int n=weights.size();
@@ -28,6 +28,7 @@ vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> 
     for(int i=0; i<truck_size; i++){
         orders[i].insert(orders[i].begin()+1,idxs[i]);
         total_weights[i]+=weights[idxs[i]];
+        truck_ids[idxs[i]]=i;
     }
 
     for(int i=truck_size; i<n-1; i++){
@@ -54,6 +55,7 @@ vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> 
 
         orders[t_id].insert(orders[t_id].begin()+ins_id,idxs[i]);
         total_weights[t_id]+=weights[idxs[i]];
+        truck_ids[idxs[i]]=t_id;
     }
 
     return orders;

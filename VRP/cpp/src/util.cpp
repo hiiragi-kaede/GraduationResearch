@@ -3,6 +3,7 @@
 #include<iostream>
 #include"util.hpp"
 #include<chrono>
+#include<numeric>
 
 using namespace std;
 
@@ -38,7 +39,8 @@ void two_opt(vector<int>& order,const vector<vector<double>> dis_mat){
 }
 
 void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orders,
-                            const vector<vector<double>> dis_mat,const int truck_capacity)
+                            const vector<vector<double>> dis_mat,const int truck_capacity,
+                            vector<int>& truck_ids)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
@@ -56,7 +58,7 @@ void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orde
         bool is_changed=false;
         for(auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=sub_cross(weights,orders,dis_mat,truck_capacity,i,j);
+            is_changed=sub_cross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
             if(is_changed) break;
         }
 
@@ -66,7 +68,7 @@ void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orde
 
 bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<double>> dis_mat,const int truck_capacity,
-                const int i,const int j)
+                const int i,const int j,vector<int>& truck_ids)
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
@@ -95,6 +97,9 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
                         if(dif<0){
                             int i_dif=i_end-i_st,j_dif=j_end-j_st;
                             vector<int> new_i(fst_size-i_dif+j_dif),new_j(sec_size-j_dif+i_dif);
+
+                            for(int id : fst_ord) truck_ids[id]=j;
+                            for(int id : sec_ord) truck_ids[id]=i;
 
                             copy(orders[i].begin(),orders[i].begin()+i_st,new_i.begin());
                             copy(orders[j].begin(),orders[j].begin()+j_st,new_j.begin());
@@ -206,4 +211,29 @@ vector<vector<int>> comb(int n, int r) {
         combs.push_back(c);
     } while (next_permutation(b.begin(), b.end()));
     return combs;
+}
+
+vector<vector<int>> construct_neighbor_list(const int n,const vector<vector<double>> dis_mat){
+    vector<vector<int>> neighbor_list(n,vector<int>(n));
+    for(int i=0; i<n; i++){
+        iota(neighbor_list[i].begin(),neighbor_list[i].end(),0);
+        sort(neighbor_list[i].begin(),neighbor_list[i].end(),
+        [&i,&dis_mat](const int &a,const int &b)
+        {
+            return dis_mat[i][a]<dis_mat[i][b];
+        });
+    }
+
+    // for(auto& list : neighbor_list){
+    //     for_each(list.begin(),list.end(),[](const int& n){cout<<n<<",";});
+    //     cout<<endl;
+    // }
+
+    return neighbor_list;
+}
+
+void show_truck_ids(vector<int> truck_ids){
+    for(int i=0; i<truck_ids.size(); i++){
+        cout<<i<<":"<<truck_ids[i]<<endl;
+    }
 }
