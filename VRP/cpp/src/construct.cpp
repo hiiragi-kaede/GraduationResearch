@@ -7,7 +7,7 @@
 
 using namespace std;
 
-vector<vector<int>> insert_construct(vector<vector<double>> dis_mat,vector<int> weights,
+vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> weights,
                                     int truck_capacity,int truck_size,vector<int>& truck_ids){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);

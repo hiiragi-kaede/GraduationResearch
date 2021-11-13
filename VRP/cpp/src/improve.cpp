@@ -8,7 +8,7 @@ using namespace std;
 
 static int limit_time=60;
 
-void two_opt(vector<int>& order,const vector<vector<double>> dis_mat){
+void TwoOpt(vector<int>& order,const vector<vector<double>> dis_mat){
     int n=order.size();
     
     while(true){
@@ -37,14 +37,14 @@ void two_opt(vector<int>& order,const vector<vector<double>> dis_mat){
     }
 }
 
-void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orders,
+void CrossExchangeNeighbor(const vector<int> weights,vector<vector<int>>& orders,
                             const vector<vector<double>> dis_mat,const int truck_capacity,
                             vector<int>& truck_ids)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
-        total_weight[i]=calc_total_weight(orders[i],weights);
+        total_weight[i]=TotalWeight(orders[i],weights);
     
     auto c=comb(truck_size,2);
     auto st=chrono::system_clock::now();
@@ -57,7 +57,7 @@ void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orde
         bool is_changed=false;
         for(auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=sub_cross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
+            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
             if(is_changed) break;
         }
 
@@ -65,7 +65,7 @@ void cross_exchange_neighbor(const vector<int> weights,vector<vector<int>>& orde
     }
 }
 
-bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
+bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<double>> dis_mat,const int truck_capacity,
                 const int i,const int j,vector<int>& truck_ids)
 {
@@ -79,10 +79,10 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
                     copy(orders[i].begin()+i_st,orders[i].begin()+i_end,fst_ord.begin());
                     copy(orders[j].begin()+j_st,orders[j].begin()+j_end,sec_ord.begin());
 
-                    int fst_weight=calc_total_weight(fst_ord,weights);
-                    int sec_weight=calc_total_weight(sec_ord,weights);
+                    int fst_weight=TotalWeight(fst_ord,weights);
+                    int sec_weight=TotalWeight(sec_ord,weights);
 
-                    if(is_valid_weight(orders[i],orders[j],weights,
+                    if(IsValidWeight(orders[i],orders[j],weights,
                         fst_weight,sec_weight,truck_capacity))
                     {
                         double dif=-dis_mat[orders[i][i_st-1]][orders[i][i_st]]
@@ -112,8 +112,8 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
                             orders[i]=new_i;
                             orders[j]=new_j;
 
-                            two_opt(orders[i],dis_mat);
-                            two_opt(orders[j],dis_mat);
+                            TwoOpt(orders[i],dis_mat);
+                            TwoOpt(orders[j],dis_mat);
                             return true;
                         }
                     }
@@ -124,11 +124,11 @@ bool sub_cross(const vector<int> weights,vector<vector<int>>& orders,
     return false;
 }
 
-bool is_valid_weight(const vector<int> order_i,const vector<int> order_j,
+bool IsValidWeight(const vector<int> order_i,const vector<int> order_j,
                 const vector<int> weights,const int fst_weight,const int sec_weight,
                 const int truck_capacity)
 {
-    bool ret=(calc_total_weight(order_i,weights)-fst_weight+sec_weight<truck_capacity)
-            &&(calc_total_weight(order_j,weights)-sec_weight+fst_weight<truck_capacity);
+    bool ret=(TotalWeight(order_i,weights)-fst_weight+sec_weight<truck_capacity)
+            &&(TotalWeight(order_j,weights)-sec_weight+fst_weight<truck_capacity);
     return ret;
 }

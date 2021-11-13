@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int calc_total_weight(vector<int> order,vector<int> weights){
+int TotalWeight(vector<int> order,vector<int> weights){
     int total=0;
     for(int i=0; i<order.size(); i++){
         total+=weights[order[i]];
@@ -14,7 +14,7 @@ int calc_total_weight(vector<int> order,vector<int> weights){
     return total;
 }
 
-double calc_total_dist(const vector<vector<int>> orders,
+double TotalDistance(const vector<vector<int>> orders,
                     const vector<vector<double>> dis_mat)
 {
     double total=0;
@@ -26,7 +26,7 @@ double calc_total_dist(const vector<vector<int>> orders,
     return total;
 }
 
-void show_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+void ShowUnvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
     vector<bool> visited(n,false);
     bool out=false;
     cout<<"\e[31munvisited:";
@@ -44,7 +44,7 @@ void show_unvisited(const vector<vector<int>>orders,const vector<int> weights,in
     cout<<"\e[0m";
 }
 
-bool is_exist_unvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+bool IsExistUnvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
     vector<bool> visited(n,false);
     for(auto& order: orders){
         for(int id : order) visited[id]=true;
@@ -54,11 +54,11 @@ bool is_exist_unvisited(const vector<vector<int>>orders,const vector<int> weight
     return false;
 }
 
-void show_orders_info(const vector<vector<int>> orders,const vector<int> weights,
+void ShowOrdersInfo(const vector<vector<int>> orders,const vector<int> weights,
                 const int capacity,const int n){
     for(auto& order: orders){
         //容量オーバーは合計容量を赤く塗る
-        int total_weight=calc_total_weight(order,weights);
+        int total_weight=TotalWeight(order,weights);
         if(total_weight>capacity) cout<<"\e[31m";
         cout<<total_weight<<"\e[0m";
 
@@ -68,7 +68,7 @@ void show_orders_info(const vector<vector<int>> orders,const vector<int> weights
         
         cout<<endl;
     }
-    show_unvisited(orders,weights,n);
+    ShowUnvisited(orders,weights,n);
 }
 
 //https://scrapbox.io/rustacean/combination%E3%81%AE%E5%AE%9F%E8%A3%85
@@ -85,7 +85,7 @@ vector<vector<int>> comb(int n, int r) {
     return combs;
 }
 
-vector<vector<int>> construct_neighbor_list(const int n,const vector<vector<double>> dis_mat){
+vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double>> dis_mat){
     vector<vector<int>> neighbor_list(n,vector<int>(n));
     for(int i=0; i<n; i++){
         iota(neighbor_list[i].begin(),neighbor_list[i].end(),0);
@@ -99,7 +99,7 @@ vector<vector<int>> construct_neighbor_list(const int n,const vector<vector<doub
     return neighbor_list;
 }
 
-void show_truck_ids(vector<int> truck_ids){
+void ShowTruckIds(vector<int> truck_ids){
     for(int i=0; i<truck_ids.size(); i++){
         cout<<i<<":"<<truck_ids[i]<<endl;
     }

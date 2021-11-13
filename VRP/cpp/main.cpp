@@ -19,7 +19,7 @@ using namespace std;
 
 static int CONSTRUCT_LIMIT_MS=1000;
 
-void thread_process(const vector<vector<double>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders);
@@ -54,11 +54,11 @@ int main(void){
         }
     }
 
-    vector<vector<int>> neighbor_list=construct_neighbor_list(n,dis_mat);
+    vector<vector<int>> neighbor_list=ConstructNeighborList(n,dis_mat);
 
     vector<int> all;
     for(int i=0; i<n; i++) all.push_back(i);
-    int total_weight=calc_total_weight(all,weights);
+    int total_weight=TotalWeight(all,weights);
     cout<<"total_weight:"<<total_weight<<endl;
     int truck_size=ceil((double)total_weight/capacity);
     cout<<"truck_size:"<<truck_size<<endl;
@@ -73,7 +73,7 @@ int main(void){
 
     //スレッドに求解させる
     for(int i=0; i<THREAD_SIZE; i++){
-        threads[i]=thread(thread_process,dis_mat,weights,capacity,truck_size,
+        threads[i]=thread(ThreadProcess,dis_mat,weights,capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
                         ref(thread_orders[i]));
     }
@@ -99,7 +99,7 @@ int main(void){
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        show_orders_info(thread_orders[i],weights,capacity,n);
+        ShowOrdersInfo(thread_orders[i],weights,capacity,n);
         cout<<endl;
     }
 
@@ -132,7 +132,7 @@ int main(void){
     return 0;
 }
 
-void thread_process(const vector<vector<double>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders)
@@ -150,22 +150,22 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
         long long elapsed_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(elapsed_ms>CONSTRUCT_LIMIT_MS) t_size++;
         
-        orders=insert_construct(dis_mat,weights,capacity,t_size,truck_ids);
-    } while (is_exist_unvisited(orders,weights,n));
+        orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids);
+    } while (IsExistUnvisited(orders,weights,n));
     
     auto end=chrono::system_clock::now();
     construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
     for(auto& order: orders){
-        two_opt(order,dis_mat);
+        TwoOpt(order,dis_mat);
     }
-    bef_dist=calc_total_dist(orders,dis_mat);
+    bef_dist=TotalDistance(orders,dis_mat);
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    cross_exchange_neighbor(weights,orders,dis_mat,capacity,truck_ids);
+    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
-    aft_dist=calc_total_dist(orders,dis_mat);
+    aft_dist=TotalDistance(orders,dis_mat);
     ans_orders=orders;
 }
