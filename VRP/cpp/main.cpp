@@ -4,14 +4,15 @@
 #include<fstream>
 #include<stdio.h>
 #include<cmath>
-#include"src/construct.hpp"
-#include"src/util.hpp"
 #include<chrono>
 #include<thread>
+#include"src/construct.hpp"
+#include"src/util.hpp"
+#include"src/improve.hpp"
 
 /*
 compile command
-g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp -pthread
+g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src/improve.cpp -pthread
 ./main < "source data file name"
 */
 using namespace std;
@@ -167,5 +168,4 @@ void thread_process(const vector<vector<double>> dis_mat,const vector<int> weigh
 
     aft_dist=calc_total_dist(orders,dis_mat);
     ans_orders=orders;
-    //show_truck_ids(truck_ids);
 }
