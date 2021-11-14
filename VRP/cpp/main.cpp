@@ -6,6 +6,7 @@
 #include<cmath>
 #include<chrono>
 #include<thread>
+#include<utility>
 #include"src/construct.hpp"
 #include"src/util.hpp"
 #include"src/improve.hpp"
@@ -142,7 +143,7 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
     int t_size=truck_size;
     auto st=chrono::system_clock::now();
     vector<vector<int>> orders;
-    vector<int> truck_ids(n);
+    vector<pair<int,int>> truck_ids(n);
     //挿入法構築で実行可能解ができるまで繰り返し生成する。
     do
     {

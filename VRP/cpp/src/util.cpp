@@ -2,6 +2,7 @@
 #include<algorithm>
 #include<iostream>
 #include<numeric>
+#include<utility>
 #include"util.hpp"
 
 using namespace std;
@@ -99,8 +100,17 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double
     return neighbor_list;
 }
 
-void ShowTruckIds(vector<int> truck_ids){
+void SetTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids){
+    for(int i=0; i<orders.size(); i++){
+        for(int j=0; j<orders[i].size(); j++){
+            int id=orders[i][j];
+            truck_ids[id]=make_pair(i,j);
+        }
+    }
+}
+
+void ShowTruckIds(const vector<pair<int,int>> truck_ids){
     for(int i=0; i<truck_ids.size(); i++){
-        cout<<i<<":"<<truck_ids[i]<<endl;
+        cout<<i<<":"<<truck_ids[i].first<<"の"<<truck_ids[i].second<<"番目"<<endl;
     }
 }

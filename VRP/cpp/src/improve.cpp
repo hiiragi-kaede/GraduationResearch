@@ -3,6 +3,7 @@
 #include<vector>
 #include<chrono>
 #include<algorithm>
+#include<utility>
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void TwoOpt(vector<int>& order,const vector<vector<double>> dis_mat){
 
 void CrossExchangeNeighbor(const vector<int> weights,vector<vector<int>>& orders,
                             const vector<vector<double>> dis_mat,const int truck_capacity,
-                            vector<int>& truck_ids)
+                            vector<pair<int,int>>& truck_ids)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
@@ -57,17 +58,19 @@ void CrossExchangeNeighbor(const vector<int> weights,vector<vector<int>>& orders
         bool is_changed=false;
         for(auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
+            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
         }
 
         if(!is_changed) break;
     }
+
+    SetTruckIds(orders,truck_ids);
 }
 
 bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<double>> dis_mat,const int truck_capacity,
-                const int i,const int j,vector<int>& truck_ids)
+                const int i,const int j)
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
@@ -96,9 +99,6 @@ bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                         if(dif<0){
                             int i_dif=i_end-i_st,j_dif=j_end-j_st;
                             vector<int> new_i(fst_size-i_dif+j_dif),new_j(sec_size-j_dif+i_dif);
-
-                            for(int id : fst_ord) truck_ids[id]=j;
-                            for(int id : sec_ord) truck_ids[id]=i;
 
                             copy(orders[i].begin(),orders[i].begin()+i_st,new_i.begin());
                             copy(orders[j].begin(),orders[j].begin()+j_st,new_j.begin());

@@ -1,8 +1,10 @@
 #pragma once
 
 #include<vector>
+#include<utility>
 
 using std::vector;
+using std::pair;
 
 double TotalDistance(const vector<vector<int>> orders,
                         const vector<vector<double>> dis_mat);
@@ -20,4 +22,6 @@ vector<vector<int>> comb(int n, int r);
 
 vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double>> dis_mat);
 
-void ShowTruckIds(vector<int> truck_ids);
+void SetTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids);
+
+void ShowTruckIds(const vector<pair<int,int>> truck_ids);

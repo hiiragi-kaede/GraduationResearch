@@ -1,14 +1,16 @@
 #include"construct.hpp"
+#include"util.hpp"
 #include<vector>
 #include<random>
 #include<numeric>
 #include<algorithm>
 #include<iostream>
+#include<utility>
 
 using namespace std;
 
 vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> weights,
-                                    int truck_capacity,int truck_size,vector<int>& truck_ids){
+                                    int truck_capacity,int truck_size,vector<pair<int,int>>& truck_ids){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);
     int n=weights.size();
@@ -28,7 +30,6 @@ vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> w
     for(int i=0; i<truck_size; i++){
         orders[i].insert(orders[i].begin()+1,idxs[i]);
         total_weights[i]+=weights[idxs[i]];
-        truck_ids[idxs[i]]=i;
     }
 
     for(int i=truck_size; i<n-1; i++){
@@ -55,8 +56,9 @@ vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> w
 
         orders[t_id].insert(orders[t_id].begin()+ins_id,idxs[i]);
         total_weights[t_id]+=weights[idxs[i]];
-        truck_ids[idxs[i]]=t_id;
     }
+
+    SetTruckIds(orders,truck_ids);
 
     return orders;
 }
