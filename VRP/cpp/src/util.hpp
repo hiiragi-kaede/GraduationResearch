@@ -22,6 +22,8 @@ vector<vector<int>> comb(int n, int r);
 
 vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double>> dis_mat);
 
-void SetTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids);
+void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids);
+
+void UpdateTruckIds(const vector<int> order,const int order_num,vector<pair<int,int>>& truck_ids);
 
 void ShowTruckIds(const vector<pair<int,int>> truck_ids);

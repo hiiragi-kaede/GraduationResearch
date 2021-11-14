@@ -58,19 +58,17 @@ void CrossExchangeNeighbor(const vector<int> weights,vector<vector<int>>& orders
         bool is_changed=false;
         for(auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
+            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
             if(is_changed) break;
         }
 
         if(!is_changed) break;
     }
-
-    SetTruckIds(orders,truck_ids);
 }
 
 bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<double>> dis_mat,const int truck_capacity,
-                const int i,const int j)
+                const int i,const int j,vector<pair<int,int>>& truck_ids)
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
@@ -114,6 +112,9 @@ bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
 
                             TwoOpt(orders[i],dis_mat);
                             TwoOpt(orders[j],dis_mat);
+
+                            UpdateTruckIds(orders[i],i,truck_ids);
+                            UpdateTruckIds(orders[j],j,truck_ids);
                             return true;
                         }
                     }

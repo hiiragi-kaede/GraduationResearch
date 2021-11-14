@@ -58,7 +58,7 @@ vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> w
         total_weights[t_id]+=weights[idxs[i]];
     }
 
-    SetTruckIds(orders,truck_ids);
+    UpdateTruckIds(orders,truck_ids);
 
     return orders;
 }

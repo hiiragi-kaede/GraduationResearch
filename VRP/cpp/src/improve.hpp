@@ -13,7 +13,7 @@ void CrossExchangeNeighbor(const vector<int> weights,vector<vector<int>>& orders
 
 bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<double>> dis_mat,const int truck_capacity,
-                const int i,const int j);
+                const int i,const int j,vector<pair<int,int>>& truck_ids);
 
 bool IsValidWeight(const vector<int> order_i,const vector<int> order_j,
                 const vector<int> weights,const int fst_weight,const int sec_weight,

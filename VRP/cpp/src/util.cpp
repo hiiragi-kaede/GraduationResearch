@@ -63,7 +63,7 @@ void ShowOrdersInfo(const vector<vector<int>> orders,const vector<int> weights,
         if(total_weight>capacity) cout<<"\e[31m";
         cout<<total_weight<<"\e[0m";
 
-        cout<<"/capacity:"<<capacity<<"    ";
+        cout<<"/capacity:"<<capacity<<"    route:";
 
         for(int id: order) cout<<id<<",";
         
@@ -100,12 +100,20 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double
     return neighbor_list;
 }
 
-void SetTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids){
+void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids){
     for(int i=0; i<orders.size(); i++){
         for(int j=0; j<orders[i].size(); j++){
             int id=orders[i][j];
             truck_ids[id]=make_pair(i,j);
         }
+    }
+}
+
+void UpdateTruckIds(const vector<int> order,const int order_num,vector<pair<int,int>>& truck_ids){
+    int i=order_num;
+    for(int j=0; j<order.size(); j++){
+        int id=order[j];
+        truck_ids[id]=make_pair(i,j);
     }
 }
 
