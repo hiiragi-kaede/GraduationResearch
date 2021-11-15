@@ -7,6 +7,7 @@
 #include<chrono>
 #include<thread>
 #include<utility>
+#include<set>
 #include"src/construct.hpp"
 #include"src/util.hpp"
 #include"src/improve.hpp"
@@ -56,6 +57,7 @@ int main(void){
     }
 
     vector<vector<int>> neighbor_list=ConstructNeighborList(n,dis_mat);
+    vector<set<int>> nn_list=ConstructNNList(dis_mat,neighbor_list);
 
     vector<int> all;
     for(int i=0; i<n; i++) all.push_back(i);

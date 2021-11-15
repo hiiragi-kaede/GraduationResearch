@@ -3,6 +3,7 @@
 #include<iostream>
 #include<numeric>
 #include<utility>
+#include<set>
 #include"util.hpp"
 
 using namespace std;
@@ -98,6 +99,22 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double
     }
 
     return neighbor_list;
+}
+
+vector<set<int>> ConstructNNList(const vector<vector<double>> dis_mat,
+                                        const vector<vector<int>> neighbor_list)
+{
+    int n=dis_mat.size();
+    int part_size=n/10;
+    vector<set<int>> nn_list(n);
+    for(int i=0; i<n; i++){
+        //自分自身との距離が0になり、それが一番近いため、それを飛ばして構築する。
+        for(int j=1; j<=part_size; j++){
+            nn_list[i].insert(neighbor_list[i][j]);
+        }
+    }
+
+    return nn_list;
 }
 
 void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids){
