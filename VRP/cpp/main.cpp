@@ -24,7 +24,7 @@ static int CONSTRUCT_LIMIT_MS=1000;
 void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders);
+                    vector<vector<int>>& ans_orders,const vector<set<int>> nn_list);
 
 int main(void){
     /*==========data input==========*/
@@ -78,7 +78,7 @@ int main(void){
     for(int i=0; i<THREAD_SIZE; i++){
         threads[i]=thread(ThreadProcess,dis_mat,weights,capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
-                        ref(thread_orders[i]));
+                        ref(thread_orders[i]),nn_list);
     }
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();
@@ -138,7 +138,7 @@ int main(void){
 void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders)
+                    vector<vector<int>>& ans_orders,const vector<set<int>> nn_list)
 {
     /*==========construct initial answer==========*/
     int n=dis_mat.size();
@@ -167,6 +167,7 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
     st=chrono::system_clock::now();
     //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
     TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
+    //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
