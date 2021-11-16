@@ -165,7 +165,8 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
