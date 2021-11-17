@@ -19,7 +19,7 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 */
 using namespace std;
 
-static int CONSTRUCT_LIMIT_MS=1000;
+static const int CONSTRUCT_LIMIT_MS=1000;
 
 void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
@@ -166,8 +166,9 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
     //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
-    TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
+    //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
     //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
