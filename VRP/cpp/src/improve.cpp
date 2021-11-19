@@ -306,45 +306,45 @@ bool SubFastTwoOptStar(const vector<int> weights,vector<vector<int>>& orders,
                     const vector<vector<double>> dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,vector<set<int>> nn_list)
 {
-    for(int i=0; i<nn_list.size(); i++){
-        for(int j : nn_list[i]){
-            auto i_locate=truck_ids[i],j_locate=truck_ids[j];
-            int i_truck_id=i_locate.first,j_truck_id=j_locate.first;
+    for(int cus_i=0; cus_i<nn_list.size(); cus_i++){
+        for(int cus_j : nn_list[cus_i]){
+            auto i_locate=truck_ids[cus_i],j_locate=truck_ids[cus_j];
+            int i=i_locate.first,j=j_locate.first;
             //所属するトラックが一緒ならスキップ
-            if(i_truck_id==j_truck_id) continue;
+            if(i==j) continue;
 
             int fst_id=i_locate.second,sec_id=j_locate.second;
-            int fst_size=orders[i_truck_id].size(),sec_size=orders[j_truck_id].size();
+            int fst_size=orders[i].size(),sec_size=orders[j].size();
 
             int i_dif=fst_size-fst_id,j_dif=sec_size-sec_id;
             if(i_dif<2 || j_dif<2) continue;
 
             vector<int> fst_ord(i_dif),sec_ord(j_dif);
-            copy(orders[i_truck_id].begin()+fst_id,orders[i_truck_id].end(),fst_ord.begin());
-            copy(orders[j_truck_id].begin()+sec_id,orders[j_truck_id].end(),sec_ord.begin());
+            copy(orders[i].begin()+fst_id,orders[i].end(),fst_ord.begin());
+            copy(orders[j].begin()+sec_id,orders[j].end(),sec_ord.begin());
             int fst_weights=TotalWeight(fst_ord,weights);
             int sec_weights=TotalWeight(sec_ord,weights);
 
-            if(IsValidWeight(orders[i_truck_id],orders[j_truck_id],weights,fst_weights,sec_weights,truck_capacity)){
-                double dif=-dis_mat[orders[i_truck_id][fst_id-1]][orders[i_truck_id][fst_id]]
-                            -dis_mat[orders[j_truck_id][sec_id-1]][orders[j_truck_id][sec_id]]
-                            +dis_mat[orders[i_truck_id][fst_id-1]][orders[j_truck_id][sec_id]]
-                            +dis_mat[orders[j_truck_id][sec_id-1]][orders[i_truck_id][fst_id]];
+            if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
+                double dif=-dis_mat[orders[i][fst_id-1]][orders[i][fst_id]]
+                            -dis_mat[orders[j][sec_id-1]][orders[j][sec_id]]
+                            +dis_mat[orders[i][fst_id-1]][orders[j][sec_id]]
+                            +dis_mat[orders[j][sec_id-1]][orders[i][fst_id]];
                 if(dif<0 && abs(dif)>0.0005){
                     vector<int> new_fst(fst_size-i_dif+j_dif),new_sec(sec_size-j_dif+i_dif);
-                    copy(orders[i_truck_id].begin(),orders[i_truck_id].begin()+fst_id,new_fst.begin());
-                    copy(orders[j_truck_id].begin(),orders[j_truck_id].begin()+sec_id,new_sec.begin());
-                    copy(orders[j_truck_id].begin()+sec_id,orders[j_truck_id].end(),new_fst.begin()+fst_id);
-                    copy(orders[i_truck_id].begin()+fst_id,orders[i_truck_id].end(),new_sec.begin()+sec_id);
+                    copy(orders[i].begin(),orders[i].begin()+fst_id,new_fst.begin());
+                    copy(orders[j].begin(),orders[j].begin()+sec_id,new_sec.begin());
+                    copy(orders[j].begin()+sec_id,orders[j].end(),new_fst.begin()+fst_id);
+                    copy(orders[i].begin()+fst_id,orders[i].end(),new_sec.begin()+sec_id);
 
-                    orders[i_truck_id]=new_fst;
-                    orders[j_truck_id]=new_sec;
+                    orders[i]=new_fst;
+                    orders[j]=new_sec;
 
-                    TwoOpt(orders[i_truck_id],dis_mat);
-                    TwoOpt(orders[j_truck_id],dis_mat);
+                    TwoOpt(orders[i],dis_mat);
+                    TwoOpt(orders[j],dis_mat);
 
-                    UpdateTruckIds(orders[i_truck_id],i_truck_id,truck_ids);
-                    UpdateTruckIds(orders[j_truck_id],j_truck_id,truck_ids);
+                    UpdateTruckIds(orders[i],i,truck_ids);
+                    UpdateTruckIds(orders[j],j,truck_ids);
                     return true;
                 }
             }
