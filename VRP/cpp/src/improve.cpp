@@ -6,10 +6,12 @@
 #include<utility>
 #include<set>
 #include<iostream>
+#include<queue>
 
 using namespace std;
 
 static const int limit_time=60;
+static const int tabu_iterate_size=3;
 
 void TwoOpt(vector<int>& order,const vector<vector<double>> dis_mat){
     int n=order.size();
@@ -149,6 +151,8 @@ void FastCrossExchange(const vector<int> weights,vector<vector<int>>& orders,
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
         total_weight[i]=TotalWeight(orders[i],weights);
+    vector<bool> is_tabu(dis_mat.size(),false);
+    queue<int> tabu_list;
     
     auto st=chrono::system_clock::now();
     while(1){
@@ -156,13 +160,26 @@ void FastCrossExchange(const vector<int> weights,vector<vector<int>>& orders,
         loop_st:
         for(int cus_i=0; cus_i<nn_list.size(); cus_i++){
             for(int cus_j : nn_list[cus_i]){
+                if(is_tabu[cus_i] || is_tabu[cus_j]) break;
                 auto end=chrono::system_clock::now();
                 auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
                 if(sec>limit_time) return;
 
                 is_changed=SubFastCross(weights,orders,dis_mat,truck_capacity,
                                                 truck_ids,nn_list,cus_i,cus_j);
-                if(is_changed) goto loop_st;
+                if(is_changed){
+                    is_tabu[cus_i]=true;
+                    is_tabu[cus_j]=true;
+                    tabu_list.push(cus_i);
+                    tabu_list.push(cus_j);
+                    if(tabu_list.size()>=2*tabu_iterate_size){
+                        is_tabu[tabu_list.front()]=false;
+                        tabu_list.pop();
+                        is_tabu[tabu_list.front()]=false;
+                        tabu_list.pop();
+                    }
+                    goto loop_st;
+                }
             }
         }
         if(!is_changed) return;
