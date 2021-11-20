@@ -127,7 +127,7 @@ bool SubCross(const vector<int> weights,vector<vector<int>>& orders,
                         fst_weight,sec_weight,truck_capacity))
                     {
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
-                        if(dif<0){
+                        if(dif<0 && abs(dif)>0.0005){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
 
                             UpdateTruckIds(orders[i],i,truck_ids);
@@ -178,7 +178,8 @@ void FastCrossExchange(const vector<int> weights,vector<vector<int>>& orders,
                         is_tabu[tabu_list.front()]=false;
                         tabu_list.pop();
                     }
-                    goto loop_st;
+                    //goto loop_st;
+                    break;
                 }
             }
         }
@@ -213,7 +214,7 @@ bool SubFastCross(const vector<int> weights,vector<vector<int>>& orders,
             if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity))
             {
                 double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
-                if(dif<0){
+                if(dif<0 && abs(dif)>0.0005){
                     UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
 
                     UpdateTruckIds(orders[i],i,truck_ids);
@@ -221,6 +222,7 @@ bool SubFastCross(const vector<int> weights,vector<vector<int>>& orders,
                     return true;
                 }
             }
+            else break;
         }
     }
     return false;

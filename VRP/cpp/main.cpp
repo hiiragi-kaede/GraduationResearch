@@ -101,8 +101,9 @@ int main(void){
         cout<<"Thread "<<i+1<<"\e[0m"<<endl;
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        // cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+        // ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
         cout<<endl;
     }
 
@@ -165,8 +166,8 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    // TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
-    // CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
+    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
     FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
