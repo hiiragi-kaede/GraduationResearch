@@ -9,7 +9,7 @@
 
 using namespace std;
 
-vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> weights,
+vector<vector<int>> InsertConstruct(vector<vector<float>> dis_mat,vector<int> weights,
                                     int truck_capacity,int truck_size,vector<pair<int,int>>& truck_ids){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);
@@ -17,14 +17,11 @@ vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> w
 
     vector<int> idxs(n-1);
     iota(idxs.begin(),idxs.end(),1);
-    //顧客の需要量順に添え字をソート
-    sort(idxs.begin(),idxs.end(),[&weights](const int &a,const int &b){return weights[a]>weights[b];});
 
     random_device seed_gen;
     mt19937 engine(seed_gen());
-    //顧客の需要量が上からトラックの台数分は種顧客を固定し、容量オーバーになる可能性をできる限り低くする。
-    //種顧客以外はランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
-    shuffle(idxs.begin()+truck_size,idxs.end(),engine);
+    //顧客順をランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
+    shuffle(idxs.begin(),idxs.end(),engine);
 
     //各トラックの2番めに種顧客を挿入
     for(int i=0; i<truck_size; i++){
@@ -41,7 +38,7 @@ vector<vector<int>> InsertConstruct(vector<vector<double>> dis_mat,vector<int> w
             //容量オーバーなら探索をスキップ
             if(total_weights[id]+weights[idxs[i]]>truck_capacity) continue;
 
-            for(int j=1; j<orders[id].size()-1; j++){
+            for(int j=1; j<orders[id].size(); j++){
                 double cur_dis=dis_mat[orders[id][j-1]][idxs[i]]+dis_mat[idxs[i]][orders[id][j]];
                 if(cur_dis<min_dis){
                     min_dis=cur_dis;

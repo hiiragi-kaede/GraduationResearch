@@ -83,20 +83,23 @@ with open(fname) as f:
     
     old=copy.deepcopy(orders)
     st=time.time()
+    end=0
     if l_state==0:
         mod.or_opt_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
+        end=time.time()
         mod.draw_graphs(data,orders,title="or-opt法実行後")
     elif l_state==1:
         mod.twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
+        end=time.time()
         mod.draw_graphs(data,orders,title="2-opt*法実行後")
     elif l_state==2:
         mod.cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title)
+        end=time.time()
         mod.draw_graphs(data,orders,title="クロス交換法実行後")
     else:
         print("正しい数字を入力してください")
         exit(1)
-        
-    end=time.time()
+
     print("elapsed time:",(end-st),"s")
     
     util.show_route_dif(data,old,orders,TRUCK_CAPACITY)

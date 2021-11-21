@@ -9,7 +9,7 @@ using std::pair;
 using std::set;
 
 double TotalDistance(const vector<vector<int>> orders,
-                        const vector<vector<double>> dis_mat);
+                        const vector<vector<float>> dis_mat);
 
 int TotalWeight(const vector<int> order,const vector<int> weights);
 
@@ -22,9 +22,9 @@ void ShowOrdersInfo(const vector<vector<int>> orders,const vector<int> weights,
 
 vector<vector<int>> comb(int n, int r);
 
-vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double>> dis_mat);
+vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>> dis_mat);
 
-vector<set<int>> ConstructNNList(const vector<vector<double>> dis_mat,
+vector<set<int>> ConstructNNList(const vector<vector<float>> dis_mat,
                                 const vector<vector<int>> neighbor_list);
 
 void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids);

@@ -21,7 +21,7 @@ using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=1000;
 
-void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<float>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>> nn_list);
@@ -49,7 +49,7 @@ int main(void){
     }
 
     /*==========prepare for calculation==========*/
-    vector<vector<double>> dis_mat(n,vector<double>(n,0));
+    vector<vector<float>> dis_mat(n,vector<float>(n,0));
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             dis_mat[i][j]=hypot(cus_x[i]-cus_x[j],cus_y[i]-cus_y[j]);
@@ -101,8 +101,8 @@ int main(void){
         cout<<"Thread "<<i+1<<"\e[0m"<<endl;
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-        // cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        // ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+        //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
         cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
         cout<<endl;
     }
@@ -136,7 +136,7 @@ int main(void){
     return 0;
 }
 
-void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<float>> dis_mat,const vector<int> weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>> nn_list)
@@ -167,9 +167,9 @@ void ThreadProcess(const vector<vector<double>> dis_mat,const vector<int> weight
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
     //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
-    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
-    FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
-    FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 

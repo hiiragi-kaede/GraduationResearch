@@ -17,7 +17,7 @@ int TotalWeight(vector<int> order,vector<int> weights){
 }
 
 double TotalDistance(const vector<vector<int>> orders,
-                    const vector<vector<double>> dis_mat)
+                    const vector<vector<float>> dis_mat)
 {
     double total=0;
     for(auto& order : orders){
@@ -87,7 +87,7 @@ vector<vector<int>> comb(int n, int r) {
     return combs;
 }
 
-vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double>> dis_mat){
+vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>> dis_mat){
     vector<vector<int>> neighbor_list(n,vector<int>(n));
     for(int i=0; i<n; i++){
         iota(neighbor_list[i].begin(),neighbor_list[i].end(),0);
@@ -101,7 +101,7 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<double
     return neighbor_list;
 }
 
-vector<set<int>> ConstructNNList(const vector<vector<double>> dis_mat,
+vector<set<int>> ConstructNNList(const vector<vector<float>> dis_mat,
                                         const vector<vector<int>> neighbor_list)
 {
     int n=dis_mat.size();

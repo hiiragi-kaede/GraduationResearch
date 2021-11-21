@@ -175,8 +175,6 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     plt.title("2-opt*近傍探索",fontname="MS Gothic")
     st=time.time()
     
-    cnt=0
-    last=0
     while True:
         if time.time()-st>TIME_LIMIT: break
         isBreak=False
@@ -184,12 +182,12 @@ def twp_opt_asterisk_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
         for v in itertools.combinations(idxs,2):
             if isBreak: break
             i,j=v
-            for f_id in range(1,len(orders[i])-1):
+            for f_id in reversed(range(1,len(orders[i])-1)):
                 if isBreak: break
                 fst_ord=orders[i]
                 fst_weight=util.calc_total_weight(data,fst_ord[f_id:])
                 
-                for s_id in range(1,len(orders[j])-1):
+                for s_id in reversed(range(1,len(orders[j])-1)):
                     if isBreak: break
                     sec_ord=orders[j]
                     sec_weight=util.calc_total_weight(data,sec_ord[s_id:])
