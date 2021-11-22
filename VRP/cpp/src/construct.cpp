@@ -17,11 +17,13 @@ vector<vector<int>> InsertConstruct(vector<vector<float>> dis_mat,vector<int> we
 
     vector<int> idxs(n-1);
     iota(idxs.begin(),idxs.end(),1);
+    //顧客の需要量順に添え字をソート
+    sort(idxs.begin(),idxs.end(),[&weights](const int &a,const int &b){return weights[a]>weights[b];});
 
-    random_device seed_gen;
-    mt19937 engine(seed_gen());
-    //顧客順をランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
-    shuffle(idxs.begin(),idxs.end(),engine);
+    // random_device seed_gen;
+    // mt19937 engine(seed_gen());
+    // //顧客順をランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
+    // shuffle(idxs.begin(),idxs.end(),engine);
 
     //各トラックの2番めに種顧客を挿入
     for(int i=0; i<truck_size; i++){

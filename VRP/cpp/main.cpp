@@ -67,7 +67,7 @@ int main(void){
     cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========solve problem using multiple thread==========*/
-    const int THREAD_SIZE=4;
+    const int THREAD_SIZE=1;
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
@@ -99,6 +99,7 @@ int main(void){
     for(int i=0; i<THREAD_SIZE; i++){
         if(i==minid) cout<<"\e[31m";
         cout<<"Thread "<<i+1<<"\e[0m"<<endl;
+        cout<<"truck size:"<<thread_orders[i].size()<<endl;
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";

@@ -236,10 +236,11 @@ def cross_exchange_method(data,dis_mat,orders,TRUCK_CAPACITY,f_title):
     is_save_gif=f_title!=""
     fig,ims=util.gif_init()
     plt.title("クロス交換近傍探索",fontname="MS Gothic")
-    st=time.time()
+    st=time.process_time()
     
     while True:
-        if time.time()-st>TIME_LIMIT: break
+        elapsed=time.process_time()-st
+        if elapsed>TIME_LIMIT: break
         isBreak=False
         #トラック番号をi,jで管理。iとjの途中のルートを交換する形。
         for v in itertools.combinations(idxs,2):
@@ -319,36 +320,35 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     #デポから出発して戻ってくるルートを初期化しておく
     orders=[[0,0] for _ in range(truck_size)]
     weights=[0 for _ in range(truck_size)]
+    idxs=[i for i in range(1,size)]
+    idxs.sort(key=lambda x: data[x]["weight"])
+    idxs.reverse()
     
-    #とりあえず添え字順に各トラックの種顧客を設定
+    #とりあえず需要量の降順に各トラックの種顧客を設定
     for i in range(truck_size):
-        #デポの分だけ添字をずらしておく
-        orders[i].insert(1,i+1)
-        weights[i]+=data[i+1]["weight"]
+        orders[i].insert(1,idxs[i])
+        weights[i]+=data[idxs[i]]["weight"]
     
-    #デポの分だけ添字がずれているので、トラックが5台なら添字の始まりは6になる
-    for i in range(truck_size+1,size):
+    for i in range(truck_size,size-1):
         truck_id=0
         #insertは0を渡すと先頭に追加するので挿入位置は1で初期化
         ins_id=1
         min_dis=10**10
         for truck in range(truck_size):
             #トラックの容量を超えているならば挿入位置を調べることはしない
-            if weights[truck]+data[i]["weight"]>TRUCK_CAPACITY:
+            if weights[truck]+data[idxs[i]]["weight"]>TRUCK_CAPACITY:
                 continue
 
             for order in range(1,len(orders[truck])):
-                cur_dis=dis_mat[orders[truck][order-1]][i]+dis_mat[i][orders[truck][order]]
+                cur_dis=dis_mat[orders[truck][order-1]][idxs[i]]+dis_mat[idxs[i]][orders[truck][order]]
                 if cur_dis<min_dis:
                     min_dis=cur_dis
                     ins_id=order
                     truck_id=truck
         
-        orders[truck_id].insert(ins_id,i)
-        weights[truck_id]+=data[i]["weight"]
+        orders[truck_id].insert(ins_id,idxs[i])
+        weights[truck_id]+=data[idxs[i]]["weight"]
     
-    #show_truck_cap(weights,TRUCK_CAPACITY)
-    #check_unvisit(data,orders)
     return orders
 
 def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
@@ -460,3 +460,6 @@ def local_search_init(data,orders):
         weights[i]=util.calc_total_weight(data,orders[i])
     
     return idxs,weights
+
+def is_valid_weight(weights,capacity):
+    return all([i<=capacity for i in weights])
