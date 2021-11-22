@@ -1,0 +1,15 @@
+101:
+score: c++>Python  speed: c++>Python
+
+228:
+score: c++>Python  speed: c++>Python
+
+gil262:
+score: c++<Python  speed: c++<Python c++はtime over
+
+242:
+score: c++<Python  speed: c++>Python
+
+247:
+score: c++>Python  speed: c++<Python c++はtime over
+

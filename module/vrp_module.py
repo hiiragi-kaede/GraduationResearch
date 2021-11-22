@@ -349,7 +349,10 @@ def insert_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
         orders[truck_id].insert(ins_id,idxs[i])
         weights[truck_id]+=data[idxs[i]]["weight"]
     
-    return orders
+    if is_valid_weight(weights,TRUCK_CAPACITY):
+        return orders
+    else:
+        return insert_construct(dis_mat,truck_size+1,TRUCK_CAPACITY,data,size)
 
 def saving_construct(dis_mat,truck_size,TRUCK_CAPACITY,data,size):
     """セービング法による初期解構築

@@ -25,7 +25,7 @@ void FastCrossExchange(const vector<int> weights,vector<vector<int>>& orders,
 bool SubFastCross(const vector<int> weights,vector<vector<int>>& orders,
                     const vector<vector<float>> dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,vector<set<int>> nn_list,
-                    int cus_i,int cus_j);
+                    int i,int cus);
 
 void TwoOptStar(const vector<int> weights,vector<vector<int>>& orders,
                 const vector<vector<float>> dis_mat,const int truck_capacity,
