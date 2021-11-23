@@ -306,14 +306,14 @@ bool SubFastTwoOptStar(const vector<int> weights,vector<vector<int>>& orders,
 {
     int n=orders.size();
     for(int i=0; i<n; i++){
-        for(int ord=0,size=orders[i].size(); ord<size; ord++){
-            for(int cus_j : nn_list[orders[i][ord]]){
+        for(int cus : orders[i]){
+            for(int cus_j : nn_list[cus]){
                 auto j_locate=truck_ids[cus_j];
                 int j=j_locate.first;
                 //所属するトラックが一緒ならスキップ
                 if(i==j) continue;
 
-                int fst_id=truck_ids[ord].second,sec_id=j_locate.second;
+                int fst_id=truck_ids[cus].second,sec_id=j_locate.second;
                 int fst_size=orders[i].size(),sec_size=orders[j].size();
 
                 int i_dif=fst_size-fst_id,j_dif=sec_size-sec_id;
@@ -330,7 +330,7 @@ bool SubFastTwoOptStar(const vector<int> weights,vector<vector<int>>& orders,
                                 -dis_mat[orders[j][sec_id-1]][orders[j][sec_id]]
                                 +dis_mat[orders[i][fst_id-1]][orders[j][sec_id]]
                                 +dis_mat[orders[j][sec_id-1]][orders[i][fst_id]];
-                    if(dif<0 && abs(dif)>0.0005){
+                    if(dif<0 && abs(dif)>0.0001){
                         vector<int> new_fst(fst_size-i_dif+j_dif),new_sec(sec_size-j_dif+i_dif);
                         copy(orders[i].begin(),orders[i].begin()+fst_id,new_fst.begin());
                         copy(orders[j].begin(),orders[j].begin()+sec_id,new_sec.begin());
