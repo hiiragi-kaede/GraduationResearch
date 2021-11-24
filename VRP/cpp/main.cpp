@@ -67,7 +67,7 @@ int main(void){
     cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========solve problem using multiple thread==========*/
-    const int THREAD_SIZE=1;
+    const int THREAD_SIZE=8;
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
@@ -96,17 +96,29 @@ int main(void){
     auto orders=thread_orders[minid];
 
     //各スレッドの解の性質などをログ出力する
+    // for(int i=0; i<THREAD_SIZE; i++){
+    //     if(i==minid) cout<<"\e[31m";
+    //     cout<<"Thread "<<i+1<<"\e[0m"<<endl;
+    //     cout<<"truck size:"<<thread_orders[i].size()<<endl;
+    //     cout<<"time info"<<endl;
+    //     cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+    //     cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+    //     //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+    //     cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
+    //     cout<<endl;
+    // }
+    double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
     for(int i=0; i<THREAD_SIZE; i++){
-        if(i==minid) cout<<"\e[31m";
-        cout<<"Thread "<<i+1<<"\e[0m"<<endl;
-        cout<<"truck size:"<<thread_orders[i].size()<<endl;
-        cout<<"time info"<<endl;
-        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
-        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
-        cout<<endl;
+        ls_ave+=(double)local_searches[i]/THREAD_SIZE;
+        bef_ave+=befs[i]/THREAD_SIZE;
+        aft_ave+=afts[i]/THREAD_SIZE;
+        imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
     }
+    cout<<"construct average score:"<<bef_ave<<endl;
+    cout<<"improved average score:"<<aft_ave<<endl;
+    cout<<"local search average seconds:"<<ls_ave<<endl;
+    cout<<"improve rate average:"<<imp_rate_ave<<endl;
+    cout<<"minimum:"<<afts[minid]<<endl;
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -168,9 +180,9 @@ void ThreadProcess(const vector<vector<float>> dis_mat,const vector<int> weights
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
     //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
-    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
     //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
-    //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 

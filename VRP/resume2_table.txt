@@ -1,0 +1,78 @@
+101
+cross:
+construct average score:35715
+improved average score:29706.1
+local search average seconds:0
+improve rate average:83.4016
+minimum:28912.8
+
+fast cross:
+construct average score:36437
+improved average score:34668.7
+local search average seconds:0
+improve rate average:95.1758
+minimum:33379.4
+
+
+153
+cross:
+construct average score:27560.9
+improved average score:22939.1
+local search average seconds:29.875
+improve rate average:83.2485
+minimum:22570.9
+
+fast cross:
+construct average score:28689.5
+improved average score:27337.9
+local search average seconds:0
+improve rate average:95.2957
+minimum:26045.8
+
+
+200
+cross:
+construct average score:74100.5
+improved average score:63126.4
+local search average seconds:301.75(time over)
+improve rate average:85.1984
+minimum:62529
+
+fast cross:
+construct average score:74342.4
+improved average score:66772.1
+local search average seconds:0.625
+improve rate average:89.8446
+minimum:65239.8
+
+
+251
+cross:
+construct average score:57377.5
+improved average score:49334.5
+local search average seconds:302.75(time over)
+improve rate average:85.9979
+minimum:45866.9
+
+fast cross:
+construct average score:60137.2
+improved average score:47019.9
+local search average seconds:2
+improve rate average:78.246
+minimum:44435.9
+
+
+303
+cross:
+construct average score:37195.3
+improved average score:33707.6
+local search average seconds:304.25(time over)
+improve rate average:90.6234
+minimum:31624.2
+
+fast cross:
+construct average score:36780.7
+improved average score:27245.4
+local search average seconds:135.375
+improve rate average:74.4572
+minimum:25621.1
