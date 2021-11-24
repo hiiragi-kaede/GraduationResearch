@@ -152,14 +152,12 @@ void FastCrossExchange(const vector<int> weights,vector<vector<int>>& orders,
     auto st=chrono::system_clock::now();
     while(1){
         bool is_changed=false;
-        loop_st:
         for(int i=0; i<truck_size; i++){
-            for(int ord=1,n=orders[i].size(); ord<n; ord++){
+            for(int cus : orders[i]){
                 auto end=chrono::system_clock::now();
                 auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
                 if(sec>limit_time) return;
 
-                int cus=orders[i][ord];
                 is_changed=SubFastCross(weights,orders,dis_mat,truck_capacity,
                                                 truck_ids,nn_list,i,cus);
                 if(is_changed) break;
