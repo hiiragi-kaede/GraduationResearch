@@ -21,10 +21,10 @@ using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=1000;
 
-void ThreadProcess(const vector<vector<float>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders,const vector<set<int>> nn_list);
+                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list);
 
 int main(void){
     /*==========data input==========*/
@@ -76,9 +76,9 @@ int main(void){
 
     //スレッドに求解させる
     for(int i=0; i<THREAD_SIZE; i++){
-        threads[i]=thread(ThreadProcess,dis_mat,weights,capacity,truck_size,
+        threads[i]=thread(ThreadProcess,ref(dis_mat),ref(weights),capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
-                        ref(thread_orders[i]),nn_list);
+                        ref(thread_orders[i]),ref(nn_list));
     }
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();
@@ -96,29 +96,29 @@ int main(void){
     auto orders=thread_orders[minid];
 
     //各スレッドの解の性質などをログ出力する
-    // for(int i=0; i<THREAD_SIZE; i++){
-    //     if(i==minid) cout<<"\e[31m";
-    //     cout<<"Thread "<<i+1<<"\e[0m"<<endl;
-    //     cout<<"truck size:"<<thread_orders[i].size()<<endl;
-    //     cout<<"time info"<<endl;
-    //     cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-    //     cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-    //     //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
-    //     cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
-    //     cout<<endl;
-    // }
-    double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
     for(int i=0; i<THREAD_SIZE; i++){
-        ls_ave+=(double)local_searches[i]/THREAD_SIZE;
-        bef_ave+=befs[i]/THREAD_SIZE;
-        aft_ave+=afts[i]/THREAD_SIZE;
-        imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
+        if(i==minid) cout<<"\e[31m";
+        cout<<"Thread "<<i+1<<"\e[0m"<<endl;
+        cout<<"truck size:"<<thread_orders[i].size()<<endl;
+        cout<<"time info"<<endl;
+        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+        //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
+        cout<<endl;
     }
-    cout<<"construct average score:"<<bef_ave<<endl;
-    cout<<"improved average score:"<<aft_ave<<endl;
-    cout<<"local search average seconds:"<<ls_ave<<endl;
-    cout<<"improve rate average:"<<imp_rate_ave<<endl;
-    cout<<"minimum:"<<afts[minid]<<endl;
+    // double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
+    // for(int i=0; i<THREAD_SIZE; i++){
+    //     ls_ave+=(double)local_searches[i]/THREAD_SIZE;
+    //     bef_ave+=befs[i]/THREAD_SIZE;
+    //     aft_ave+=afts[i]/THREAD_SIZE;
+    //     imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
+    // }
+    // cout<<"construct average score:"<<bef_ave<<endl;
+    // cout<<"improved average score:"<<aft_ave<<endl;
+    // cout<<"local search average seconds:"<<ls_ave<<endl;
+    // cout<<"improve rate average:"<<imp_rate_ave<<endl;
+    // cout<<"minimum:"<<afts[minid]<<endl;
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -149,10 +149,10 @@ int main(void){
     return 0;
 }
 
-void ThreadProcess(const vector<vector<float>> dis_mat,const vector<int> weights,
+void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders,const vector<set<int>> nn_list)
+                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list)
 {
     /*==========construct initial answer==========*/
     int n=dis_mat.size();

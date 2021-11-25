@@ -9,7 +9,7 @@
 
 using namespace std;
 
-vector<vector<int>> InsertConstruct(vector<vector<float>> dis_mat,vector<int> weights,
+vector<vector<int>> InsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                                     int truck_capacity,int truck_size,vector<pair<int,int>>& truck_ids){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);
@@ -18,7 +18,7 @@ vector<vector<int>> InsertConstruct(vector<vector<float>> dis_mat,vector<int> we
     vector<int> idxs(n-1);
     iota(idxs.begin(),idxs.end(),1);
     //顧客の需要量順に添え字をソート
-    sort(idxs.begin(),idxs.end(),[&weights](const int &a,const int &b){return weights[a]>weights[b];});
+    sort(idxs.begin(),idxs.end(),[weights](const int &a,const int &b){return weights[a]>weights[b];});
 
     random_device seed_gen;
     mt19937 engine(seed_gen());
