@@ -19,12 +19,20 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 */
 using namespace std;
 
-static const int CONSTRUCT_LIMIT_MS=1000;
+static const int CONSTRUCT_LIMIT_MS=500;
 
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list);
+
+void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
+                    const vector<long long>& constructs,const vector<long long>& local_searches,
+                    const vector<double>& befs,const vector<double>& afts,int capacity,int n,
+                    const vector<int>& weights);
+
+void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
+                    const vector<double>& befs,const vector<double>& afts,int minid);
 
 int main(void){
     /*==========data input==========*/
@@ -67,7 +75,7 @@ int main(void){
     cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========solve problem using multiple thread==========*/
-    const int THREAD_SIZE=8;
+    const int THREAD_SIZE=4;
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
@@ -92,33 +100,14 @@ int main(void){
             min_dist=afts[i];
         }
     }
+    cout<<"thread size:"<<THREAD_SIZE<<endl;
     cout<<"use thread"<<minid+1<<"'s answer\n\n";
     auto orders=thread_orders[minid];
 
     //各スレッドの解の性質などをログ出力する
-    for(int i=0; i<THREAD_SIZE; i++){
-        if(i==minid) cout<<"\e[31m";
-        cout<<"Thread "<<i+1<<"\e[0m"<<endl;
-        cout<<"truck size:"<<thread_orders[i].size()<<endl;
-        cout<<"time info"<<endl;
-        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
-        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
-        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
-        cout<<endl;
-    }
-    // double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
-    // for(int i=0; i<THREAD_SIZE; i++){
-    //     ls_ave+=(double)local_searches[i]/THREAD_SIZE;
-    //     bef_ave+=befs[i]/THREAD_SIZE;
-    //     aft_ave+=afts[i]/THREAD_SIZE;
-    //     imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
-    // }
-    // cout<<"construct average score:"<<bef_ave<<endl;
-    // cout<<"improved average score:"<<aft_ave<<endl;
-    // cout<<"local search average seconds:"<<ls_ave<<endl;
-    // cout<<"improve rate average:"<<imp_rate_ave<<endl;
-    // cout<<"minimum:"<<afts[minid]<<endl;
+    ShowThreadsInfos(THREAD_SIZE,minid,thread_orders,constructs,local_searches,
+                    befs,afts,capacity,n,weights);
+    ShowThreadsAves(THREAD_SIZE,local_searches,befs,afts,minid);
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
@@ -165,7 +154,10 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
     {
         auto end=chrono::system_clock::now();
         long long elapsed_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
-        if(elapsed_ms>CONSTRUCT_LIMIT_MS) t_size++;
+        if(elapsed_ms>CONSTRUCT_LIMIT_MS){
+            t_size++;
+            st=chrono::system_clock::now();
+        }
         
         orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids);
     } while (IsExistUnvisited(orders,weights,n));
@@ -179,13 +171,48 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
+    TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
     //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
     //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
-    FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
     aft_dist=TotalDistance(orders,dis_mat);
     ans_orders=orders;
+}
+
+void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
+                    const vector<long long>& constructs,const vector<long long>& local_searches,
+                    const vector<double>& befs,const vector<double>& afts,int capacity,int n,
+                    const vector<int>& weights)
+{
+    for(int i=0; i<THREAD_SIZE; i++){
+        if(i==minid) cout<<"\e[31m";
+        cout<<"Thread "<<i+1<<"\e[0m"<<endl;
+        cout<<"truck size:"<<thread_orders[i].size()<<endl;
+        cout<<"time info"<<endl;
+        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+        cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
+        ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
+        cout<<endl;
+    }
+}
+
+void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
+                    const vector<double>& befs,const vector<double>& afts,int minid)
+{
+    double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
+    for(int i=0; i<THREAD_SIZE; i++){
+        ls_ave+=(double)local_searches[i]/THREAD_SIZE;
+        bef_ave+=befs[i]/THREAD_SIZE;
+        aft_ave+=afts[i]/THREAD_SIZE;
+        imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
+    }
+    cout<<"construct average score:"<<bef_ave<<endl;
+    cout<<"improved average score:"<<aft_ave<<endl;
+    cout<<"local search average seconds:"<<ls_ave<<endl;
+    cout<<"improve rate average:"<<imp_rate_ave<<endl;
+    cout<<"minimum:"<<afts[minid]<<endl;
 }

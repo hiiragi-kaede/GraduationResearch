@@ -11,7 +11,6 @@
 using namespace std;
 
 static const int limit_time=300;
-static const int tabu_iterate_size=3;
 
 void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
     int n=order.size();
@@ -73,6 +72,23 @@ void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<float>>& 
 
     orders[i]=new_i;
     orders[j]=new_j;
+
+    TwoOpt(orders[i],dis_mat);
+    TwoOpt(orders[j],dis_mat);
+}
+
+void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<float>>& dis_mat,
+                            int i,int j,int fst_size,int sec_size,int i_dif,int j_dif,
+                            int i_id,int j_id)
+{
+    vector<int> new_fst(fst_size-i_dif+j_dif),new_sec(sec_size-j_dif+i_dif);
+    copy(orders[i].begin(),orders[i].begin()+i_id,new_fst.begin());
+    copy(orders[j].begin(),orders[j].begin()+j_id,new_sec.begin());
+    copy(orders[j].begin()+j_id,orders[j].end(),new_fst.begin()+i_id);
+    copy(orders[i].begin()+i_id,orders[i].end(),new_sec.begin()+j_id);
+
+    orders[i]=new_fst;
+    orders[j]=new_sec;
 
     TwoOpt(orders[i],dis_mat);
     TwoOpt(orders[j],dis_mat);
@@ -258,17 +274,8 @@ bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                             +dis_mat[orders[j][j_id-1]][orders[i][i_id]];
                 
                 if(dif<0 && abs(dif)>0.0001){
-                    vector<int> new_fst(fst_size-i_dif+j_dif),new_sec(sec_size-j_dif+i_dif);
-                    copy(orders[i].begin(),orders[i].begin()+i_id,new_fst.begin());
-                    copy(orders[j].begin(),orders[j].begin()+j_id,new_sec.begin());
-                    copy(orders[j].begin()+j_id,orders[j].end(),new_fst.begin()+i_id);
-                    copy(orders[i].begin()+i_id,orders[i].end(),new_sec.begin()+j_id);
-
-                    orders[i]=new_fst;
-                    orders[j]=new_sec;
-
-                    TwoOpt(orders[i],dis_mat);
-                    TwoOpt(orders[j],dis_mat);
+                    UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
+                                        i_dif,j_dif,i_id,j_id);
                     return true;
                 }
             }
@@ -329,17 +336,8 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                                 +dis_mat[orders[i][fst_id-1]][orders[j][sec_id]]
                                 +dis_mat[orders[j][sec_id-1]][orders[i][fst_id]];
                     if(dif<0 && abs(dif)>0.0001){
-                        vector<int> new_fst(fst_size-i_dif+j_dif),new_sec(sec_size-j_dif+i_dif);
-                        copy(orders[i].begin(),orders[i].begin()+fst_id,new_fst.begin());
-                        copy(orders[j].begin(),orders[j].begin()+sec_id,new_sec.begin());
-                        copy(orders[j].begin()+sec_id,orders[j].end(),new_fst.begin()+fst_id);
-                        copy(orders[i].begin()+fst_id,orders[i].end(),new_sec.begin()+sec_id);
-
-                        orders[i]=new_fst;
-                        orders[j]=new_sec;
-
-                        TwoOpt(orders[i],dis_mat);
-                        TwoOpt(orders[j],dis_mat);
+                        UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
+                                                i_dif,j_dif,fst_id,sec_id);
 
                         UpdateTruckIds(orders[i],i,truck_ids);
                         UpdateTruckIds(orders[j],j,truck_ids);
