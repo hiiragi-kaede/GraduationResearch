@@ -5,6 +5,7 @@
 #include<utility>
 #include<set>
 #include"util.hpp"
+#include"improve.hpp"
 
 using namespace std;
 
@@ -145,5 +146,145 @@ void UpdateTruckIds(const vector<int>& order,const int order_num,vector<pair<int
 void ShowTruckIds(const vector<pair<int,int>>& truck_ids){
     for(int i=0; i<truck_ids.size(); i++){
         cout<<i<<":"<<truck_ids[i].first<<"の"<<truck_ids[i].second<<"番目"<<endl;
+    }
+}
+
+void util::ShowTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                vector<pair<int,int>>& truck_ids)
+{
+    int truck_size=orders.size();
+    vector<int> total_weight(truck_size,0);
+    for(int i=0; i<truck_size; i++) 
+        total_weight[i]=TotalWeight(orders[i],weights);
+    
+    for(int i=0; i<truck_size-1; i++){
+        for(int j=i+1; j<truck_size; j++){
+            util::SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
+        }
+    }
+}
+
+void util::SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const int i,const int j,vector<pair<int,int>>& truck_ids)
+{
+    auto construct=orders;
+
+    int fst_size=orders[i].size();
+    int sec_size=orders[j].size();
+    for(int i_id=fst_size-2; i_id>=1; i_id--){
+        for(int j_id=sec_size-2; j_id>=1; j_id--){
+            orders=construct;
+            double bef_cost,aft_cost;
+
+            int i_dif=fst_size-i_id,j_dif=sec_size-j_id;
+            vector<int> fst_ord(i_dif),sec_ord(j_dif);
+            copy(orders[i].begin()+i_id,orders[i].end(),fst_ord.begin());
+            copy(orders[j].begin()+j_id,orders[j].end(),sec_ord.begin());
+            int fst_weights=TotalWeight(fst_ord,weights);
+            int sec_weights=TotalWeight(sec_ord,weights);
+
+            if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
+                double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
+                
+                if(dif<0 && abs(dif)>0.0001){
+                    bef_cost=TotalDistance(orders,dis_mat);
+                    UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
+                                        i_dif,j_dif,i_id,j_id);
+                    aft_cost=TotalDistance(orders,dis_mat);
+
+                    double change_cost_dif=bef_cost-aft_cost;
+                    ShowDifInfos(i,j,change_cost_dif,construct,orders);
+                }
+            }
+        }
+    }
+}
+
+void util::ShowDifInfos(int i,int j,double change_cost_dif,
+                        const vector<vector<int>>& construct,
+                        const vector<vector<int>>& orders)
+{
+    cout<<"change truck"<<i<<" and truck"<<j<<endl;
+    cout<<"total move cost change:"<<change_cost_dif<<endl;
+    cout<<"truck "<<i<<"'s root:\nbefore:";
+    for_each(construct[i].begin(),construct[i].end(),[](int x){
+        cout<<x<<",";
+    });
+    cout<<"\nafter:";
+    for_each(orders[i].begin(),orders[i].end(),[](int x){
+        cout<<x<<",";
+    });
+    cout<<endl;
+    cout<<"truck "<<j<<"'s root:\nbefore:";
+    for_each(construct[j].begin(),construct[j].end(),[](int x){
+        cout<<x<<",";
+    });
+    cout<<"\nafter:";
+    for_each(orders[j].begin(),orders[j].end(),[](int x){
+        cout<<x<<",";
+    });
+    cout<<"\n\n";
+}
+
+void util::ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
+{
+    int truck_size=orders.size();
+    vector<int> total_weight(truck_size,0);
+    for(int i=0; i<truck_size; i++) 
+        total_weight[i]=TotalWeight(orders[i],weights);
+
+    util::SubFastTwoOptStar(weights,orders,dis_mat,truck_capacity,
+                            truck_ids,nn_list);
+}
+
+void util::SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
+{
+    int n=orders.size();
+    auto construct=orders;
+
+    for(int i=0; i<n; i++){
+        for(int cus : construct[i]){
+            for(int cus_j : nn_list[cus]){
+                auto j_locate=truck_ids[cus_j];
+                int j=j_locate.first;
+                //所属するトラックが一緒ならスキップ
+                if(i==j) continue;
+
+                orders=construct;
+                double bef_cost,aft_cost;
+
+                int fst_id=truck_ids[cus].second,sec_id=j_locate.second;
+                int fst_size=orders[i].size(),sec_size=orders[j].size();
+
+                int i_dif=fst_size-fst_id,j_dif=sec_size-sec_id;
+                if(i_dif<2 || j_dif<2) continue;
+
+                vector<int> fst_ord(i_dif),sec_ord(j_dif);
+                copy(orders[i].begin()+fst_id,orders[i].end(),fst_ord.begin());
+                copy(orders[j].begin()+sec_id,orders[j].end(),sec_ord.begin());
+                int fst_weights=TotalWeight(fst_ord,weights);
+                int sec_weights=TotalWeight(sec_ord,weights);
+
+                if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
+                    double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,fst_id,sec_id);
+                    
+                    if(dif<0 && abs(dif)>0.0001){
+                        bef_cost=TotalDistance(orders,dis_mat);
+                        UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
+                                                i_dif,j_dif,fst_id,sec_id);
+                        aft_cost=TotalDistance(orders,dis_mat);
+
+                        double change_cost_dif=bef_cost-aft_cost;
+                        ShowDifInfos(i,j,change_cost_dif,construct,orders);
+                    }
+                }
+            }
+        }
     }
 }

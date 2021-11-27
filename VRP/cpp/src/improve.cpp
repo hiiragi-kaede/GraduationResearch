@@ -55,6 +55,16 @@ double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<i
     return dif;
 }
 
+double GetTwoOptStarDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
+                        int i,int j,int i_id,int j_id)
+{
+    double dif=-dis_mat[orders[i][i_id-1]][orders[i][i_id]]
+                -dis_mat[orders[j][j_id-1]][orders[j][j_id]]
+                +dis_mat[orders[i][i_id-1]][orders[j][j_id]]
+                +dis_mat[orders[j][j_id-1]][orders[i][i_id]];
+    return dif;
+}
+
 void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<float>>& dis_mat,int i,int j,
                         int i_st,int i_end,int j_st,int j_end,int fst_size,int sec_size)
 {
@@ -268,10 +278,7 @@ bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
             int sec_weights=TotalWeight(sec_ord,weights);
 
             if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
-                double dif=-dis_mat[orders[i][i_id-1]][orders[i][i_id]]
-                            -dis_mat[orders[j][j_id-1]][orders[j][j_id]]
-                            +dis_mat[orders[i][i_id-1]][orders[j][j_id]]
-                            +dis_mat[orders[j][j_id-1]][orders[i][i_id]];
+                double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
                 
                 if(dif<0 && abs(dif)>0.0001){
                     UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
@@ -331,10 +338,8 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 int sec_weights=TotalWeight(sec_ord,weights);
 
                 if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
-                    double dif=-dis_mat[orders[i][fst_id-1]][orders[i][fst_id]]
-                                -dis_mat[orders[j][sec_id-1]][orders[j][sec_id]]
-                                +dis_mat[orders[i][fst_id-1]][orders[j][sec_id]]
-                                +dis_mat[orders[j][sec_id-1]][orders[i][fst_id]];
+                    double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,fst_id,sec_id);
+                    
                     if(dif<0 && abs(dif)>0.0001){
                         UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                                 i_dif,j_dif,fst_id,sec_id);

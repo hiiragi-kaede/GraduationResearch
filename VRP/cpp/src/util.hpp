@@ -35,3 +35,25 @@ void UpdateTruckIds(const vector<vector<int>>& orders,vector<pair<int,int>>& tru
 void UpdateTruckIds(const vector<int>& order,const int order_num,vector<pair<int,int>>& truck_ids);
 
 void ShowTruckIds(const vector<pair<int,int>>& truck_ids);
+
+namespace util{
+    void ShowTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                vector<pair<int,int>>& truck_ids);
+    
+    void SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const int i,const int j,vector<pair<int,int>>& truck_ids);
+    
+    void ShowDifInfos(int i,int j,double change_cost_dif,
+                        const vector<vector<int>>& construct,
+                        const vector<vector<int>>& orders);
+
+    void ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list);
+    
+    void SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list);
+}

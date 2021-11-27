@@ -10,6 +10,9 @@ void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat);
 double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
                     int i,int j,int i_st,int i_end,int j_st,int j_end);
 
+double GetTwoOptStarDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
+                        int i,int j,int i_id,int j_id);
+
 void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<float>>& dis_mat,int i,int j,
                         int i_st,int i_end,int j_st,int j_end,int fst_size,int sec_size);
 

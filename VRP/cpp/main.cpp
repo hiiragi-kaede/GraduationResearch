@@ -20,7 +20,11 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=4;
+static const int THREAD_SIZE=1;
+
+void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+                        const int capacity,const int truck_size,
+                        vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids);
 
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
@@ -75,13 +79,20 @@ int main(void){
     int truck_size=ceil((double)total_weight/capacity);
     cout<<"truck_size:"<<truck_size<<endl;
 
+    vector<vector<int>> test_orders;
+    vector<pair<int,int>> truck_ids(n);
+    
+    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
+    util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
+
     /*==========solve problem using multiple thread==========*/
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
     vector<double> befs(THREAD_SIZE),afts(THREAD_SIZE);
     vector<vector<vector<int>>> thread_orders(THREAD_SIZE);
-
+    
     //スレッドに求解させる
     for(int i=0; i<THREAD_SIZE; i++){
         threads[i]=thread(ThreadProcess,ref(dis_mat),ref(weights),capacity,truck_size,
@@ -139,17 +150,13 @@ int main(void){
     return 0;
 }
 
-void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
-                    const int capacity,const int truck_size,
-                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list)
+void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+                        const int capacity,const int truck_size,
+                        vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids)
 {
-    /*==========construct initial answer==========*/
     int n=dis_mat.size();
     int t_size=truck_size;
     auto st=chrono::system_clock::now();
-    vector<vector<int>> orders;
-    vector<pair<int,int>> truck_ids(n);
     //挿入法構築で実行可能解ができるまで繰り返し生成する。
     do
     {
@@ -168,9 +175,23 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         }
         
     } while (IsExistUnvisited(orders,weights,n));
-    
+}
+
+void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+                    const int capacity,const int truck_size,
+                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
+                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list)
+{
+    /*==========construct initial answer==========*/
+    int n=dis_mat.size();
+    vector<vector<int>> orders;
+    vector<pair<int,int>> truck_ids(n);
+
+    auto st=chrono::system_clock::now();
+    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,orders,truck_ids);
     auto end=chrono::system_clock::now();
     construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+
     for(auto& order: orders){
         TwoOpt(order,dis_mat);
     }
@@ -178,9 +199,9 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
+    //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
     //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
-    //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
