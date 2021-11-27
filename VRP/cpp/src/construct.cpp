@@ -10,7 +10,8 @@
 using namespace std;
 
 vector<vector<int>> InsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
-                                    int truck_capacity,int truck_size,vector<pair<int,int>>& truck_ids){
+                                    int truck_capacity,int truck_size,vector<pair<int,int>>& truck_ids,
+                                    bool construct_randomly){
     vector<vector<int>> orders(truck_size,vector<int>(2,0));
     vector<int> total_weights(truck_size,0);
     int n=weights.size();
@@ -20,10 +21,12 @@ vector<vector<int>> InsertConstruct(const vector<vector<float>>& dis_mat,const v
     //顧客の需要量順に添え字をソート
     sort(idxs.begin(),idxs.end(),[weights](const int &a,const int &b){return weights[a]>weights[b];});
 
-    random_device seed_gen;
-    mt19937 engine(seed_gen());
-    //顧客順をランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
-    shuffle(idxs.begin(),idxs.end(),engine);
+    if(construct_randomly){
+        random_device seed_gen;
+        mt19937 engine(seed_gen());
+        //顧客順をランダムシャッフルし、他スタート局所探索法のために初期解を異なったものにさせる。
+        shuffle(idxs.begin(),idxs.end(),engine);
+    }
 
     //各トラックの2番めに種顧客を挿入
     for(int i=0; i<truck_size; i++){

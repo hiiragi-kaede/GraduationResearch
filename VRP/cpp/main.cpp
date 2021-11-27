@@ -20,6 +20,7 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=500;
+static const int THREAD_SIZE=4;
 
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
@@ -75,7 +76,6 @@ int main(void){
     cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========solve problem using multiple thread==========*/
-    const int THREAD_SIZE=4;
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
@@ -159,7 +159,13 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
             st=chrono::system_clock::now();
         }
         
-        orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids);
+        if(THREAD_SIZE==1){
+            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids);
+        }
+        else{
+            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids,true);
+        }
+        
     } while (IsExistUnvisited(orders,weights,n));
     
     auto end=chrono::system_clock::now();
