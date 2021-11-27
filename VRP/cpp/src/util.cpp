@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int TotalWeight(vector<int> order,vector<int> weights){
+int TotalWeight(const vector<int>& order,const vector<int>& weights){
     int total=0;
     for(int i=0; i<order.size(); i++){
         total+=weights[order[i]];
@@ -16,19 +16,27 @@ int TotalWeight(vector<int> order,vector<int> weights){
     return total;
 }
 
-double TotalDistance(const vector<vector<int>> orders,
-                    const vector<vector<float>> dis_mat)
+double TotalDistance(const vector<vector<int>>& orders,
+                    const vector<vector<float>>& dis_mat)
 {
     double total=0;
-    for(auto& order : orders){
-        for(auto it=order.begin(); (it+1)!=order.end(); it++){
-            total+=dis_mat[*it][*(it+1)];
-        }
+    for(const auto& order : orders){
+        total+=TotalDistance(order,dis_mat);
     }
     return total;
 }
 
-void ShowUnvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+double TotalDistance(const vector<int>& order,
+                    const vector<vector<float>>& dis_mat)
+{
+    double total=0;
+    for(auto it=order.begin(); (it+1)!=order.end(); it++){
+        total+=dis_mat[*it][*(it+1)];
+    }
+    return total;
+}
+
+void ShowUnvisited(const vector<vector<int>>& orders,const vector<int>& weights,int n){
     vector<bool> visited(n,false);
     bool out=false;
     cout<<"\e[31munvisited:";
@@ -46,7 +54,7 @@ void ShowUnvisited(const vector<vector<int>>orders,const vector<int> weights,int
     cout<<"\e[0m";
 }
 
-bool IsExistUnvisited(const vector<vector<int>>orders,const vector<int> weights,int n){
+bool IsExistUnvisited(const vector<vector<int>>& orders,const vector<int>& weights,int n){
     vector<bool> visited(n,false);
     for(auto& order: orders){
         for(int id : order) visited[id]=true;
@@ -56,8 +64,8 @@ bool IsExistUnvisited(const vector<vector<int>>orders,const vector<int> weights,
     return false;
 }
 
-void ShowOrdersInfo(const vector<vector<int>> orders,const vector<int> weights,
-                const int capacity,const int n){
+void ShowOrdersInfo(const vector<vector<int>>& orders,const vector<int>& weights,
+                    const int capacity,const int n){
     for(auto& order: orders){
         //容量オーバーは合計容量を赤く塗る
         int total_weight=TotalWeight(order,weights);
@@ -87,7 +95,7 @@ vector<vector<int>> comb(int n, int r) {
     return combs;
 }
 
-vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>> dis_mat){
+vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>>& dis_mat){
     vector<vector<int>> neighbor_list(n,vector<int>(n));
     for(int i=0; i<n; i++){
         iota(neighbor_list[i].begin(),neighbor_list[i].end(),0);
@@ -101,8 +109,8 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>
     return neighbor_list;
 }
 
-vector<set<int>> ConstructNNList(const vector<vector<float>> dis_mat,
-                                        const vector<vector<int>> neighbor_list)
+vector<set<int>> ConstructNNList(const vector<vector<float>>& dis_mat,
+                                const vector<vector<int>>& neighbor_list)
 {
     int n=dis_mat.size();
     int part_size=n/10;
@@ -117,7 +125,7 @@ vector<set<int>> ConstructNNList(const vector<vector<float>> dis_mat,
     return nn_list;
 }
 
-void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truck_ids){
+void UpdateTruckIds(const vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids){
     for(int i=0; i<orders.size(); i++){
         for(int j=0; j<orders[i].size(); j++){
             int id=orders[i][j];
@@ -126,7 +134,7 @@ void UpdateTruckIds(const vector<vector<int>> orders,vector<pair<int,int>>& truc
     }
 }
 
-void UpdateTruckIds(const vector<int> order,const int order_num,vector<pair<int,int>>& truck_ids){
+void UpdateTruckIds(const vector<int>& order,const int order_num,vector<pair<int,int>>& truck_ids){
     int i=order_num;
     for(int j=0; j<order.size(); j++){
         int id=order[j];
@@ -134,7 +142,7 @@ void UpdateTruckIds(const vector<int> order,const int order_num,vector<pair<int,
     }
 }
 
-void ShowTruckIds(const vector<pair<int,int>> truck_ids){
+void ShowTruckIds(const vector<pair<int,int>>& truck_ids){
     for(int i=0; i<truck_ids.size(); i++){
         cout<<i<<":"<<truck_ids[i].first<<"の"<<truck_ids[i].second<<"番目"<<endl;
     }

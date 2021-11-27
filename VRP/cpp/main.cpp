@@ -107,7 +107,8 @@ int main(void){
     //各スレッドの解の性質などをログ出力する
     ShowThreadsInfos(THREAD_SIZE,minid,thread_orders,constructs,local_searches,
                     befs,afts,capacity,n,weights);
-    ShowThreadsAves(THREAD_SIZE,local_searches,befs,afts,minid);
+    if(THREAD_SIZE!=1)
+        ShowThreadsAves(THREAD_SIZE,local_searches,befs,afts,minid);
 
     /*==========output for python==========*/
     string data_fname="tmp/data.txt";
