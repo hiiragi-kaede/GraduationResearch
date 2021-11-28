@@ -79,12 +79,13 @@ int main(void){
     int truck_size=ceil((double)total_weight/capacity);
     cout<<"truck_size:"<<truck_size<<endl;
 
-    vector<vector<int>> test_orders;
-    vector<pair<int,int>> truck_ids(n);
+    /*==========check difference between normal method and fast method==========*/
+    // vector<vector<int>> test_orders;
+    // vector<pair<int,int>> truck_ids(n);
     
-    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
     //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
-    util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
+    //util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
 
     /*==========solve problem using multiple thread==========*/
     vector<thread> threads(THREAD_SIZE);

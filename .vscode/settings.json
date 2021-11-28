@@ -1,6 +1,9 @@
 {
     "editor.fontLigatures": null,
     "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.extraPaths": [
+        "C:\\Users\\ASUS-DESKTOP\\Anaconda3\\Lib\\site-packages",
+    ],
     "files.associations": {
         "algorithm": "cpp",
         "array": "cpp",
