@@ -195,7 +195,7 @@ void util::SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                     aft_cost=TotalDistance(orders,dis_mat);
 
                     double change_cost_dif=bef_cost-aft_cost;
-                    ShowDifInfos(i,j,change_cost_dif,construct,orders);
+                    ShowDifInfos(i,j,change_cost_dif,construct,orders,true);
                 }
             }
         }
@@ -204,28 +204,35 @@ void util::SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
 void util::ShowDifInfos(int i,int j,double change_cost_dif,
                         const vector<vector<int>>& construct,
-                        const vector<vector<int>>& orders)
+                        const vector<vector<int>>& orders,
+                        bool isSimpled)
 {
-    cout<<"change truck"<<i<<" and truck"<<j<<endl;
-    cout<<"total move cost change:"<<change_cost_dif<<endl;
-    cout<<"truck "<<i<<"'s root:\nbefore:";
-    for_each(construct[i].begin(),construct[i].end(),[](int x){
-        cout<<x<<",";
-    });
-    cout<<"\nafter:";
-    for_each(orders[i].begin(),orders[i].end(),[](int x){
-        cout<<x<<",";
-    });
-    cout<<endl;
-    cout<<"truck "<<j<<"'s root:\nbefore:";
-    for_each(construct[j].begin(),construct[j].end(),[](int x){
-        cout<<x<<",";
-    });
-    cout<<"\nafter:";
-    for_each(orders[j].begin(),orders[j].end(),[](int x){
-        cout<<x<<",";
-    });
-    cout<<"\n\n";
+    if(isSimpled){
+        cout<<i<<" "<<j<<endl;
+        cout<<change_cost_dif<<endl;
+    }
+    else{
+        cout<<"change truck"<<i<<" and truck"<<j<<endl;
+        cout<<"total move cost change:"<<change_cost_dif<<endl;
+        cout<<"truck "<<i<<"'s root:\nbefore:";
+        for_each(construct[i].begin(),construct[i].end(),[](int x){
+            cout<<x<<",";
+        });
+        cout<<"\nafter:";
+        for_each(orders[i].begin(),orders[i].end(),[](int x){
+            cout<<x<<",";
+        });
+        cout<<endl;
+        cout<<"truck "<<j<<"'s root:\nbefore:";
+        for_each(construct[j].begin(),construct[j].end(),[](int x){
+            cout<<x<<",";
+        });
+        cout<<"\nafter:";
+        for_each(orders[j].begin(),orders[j].end(),[](int x){
+            cout<<x<<",";
+        });
+        cout<<"\n\n";
+    }
 }
 
 void util::ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
@@ -281,7 +288,7 @@ void util::SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& ord
                         aft_cost=TotalDistance(orders,dis_mat);
 
                         double change_cost_dif=bef_cost-aft_cost;
-                        ShowDifInfos(i,j,change_cost_dif,construct,orders);
+                        ShowDifInfos(i,j,change_cost_dif,construct,orders,true);
                     }
                 }
             }

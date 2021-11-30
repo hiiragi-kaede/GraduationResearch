@@ -47,7 +47,8 @@ namespace util{
     
     void ShowDifInfos(int i,int j,double change_cost_dif,
                         const vector<vector<int>>& construct,
-                        const vector<vector<int>>& orders);
+                        const vector<vector<int>>& orders,
+                        bool isSimpled=false);
 
     void ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
