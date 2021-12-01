@@ -85,8 +85,12 @@ int main(void){
     
     TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
     cout<<test_orders.size()<<endl;
+    double const_score=TotalDistance(test_orders,dis_mat);
+    CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
+    double cross_score=TotalDistance(test_orders,dis_mat);
     //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
     util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
+    cout<<"construct:"<<const_score<<"   cross25seconds:"<<cross_score<<endl;
 
     /*==========solve problem using multiple thread==========*/
     vector<thread> threads(THREAD_SIZE);
@@ -177,6 +181,10 @@ void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>
         }
         
     } while (IsExistUnvisited(orders,weights,n));
+
+    for(auto& order: orders){
+        TwoOpt(order,dis_mat);
+    }
 }
 
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
@@ -194,9 +202,6 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
     auto end=chrono::system_clock::now();
     construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
 
-    for(auto& order: orders){
-        TwoOpt(order,dis_mat);
-    }
     bef_dist=TotalDistance(orders,dis_mat);
 
     /*==========local search to improve answer==========*/

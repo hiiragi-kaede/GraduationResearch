@@ -114,7 +114,7 @@ vector<set<int>> ConstructNNList(const vector<vector<float>>& dis_mat,
                                 const vector<vector<int>>& neighbor_list)
 {
     int n=dis_mat.size();
-    int part_size=n*0.2;
+    int part_size=n*0.1;
     vector<set<int>> nn_list(n);
     for(int i=0; i<n; i++){
         //自分自身との距離が0になり、それが一番近いため、それを飛ばして構築する。

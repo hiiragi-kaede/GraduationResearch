@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static const int limit_time=300;
+static const int limit_time=25;
 
 void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
     int n=order.size();
