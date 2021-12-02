@@ -17,8 +17,9 @@ def solve_bin_packing(B, s):
     for i in range(n):
         lp += pulp.lpSum(pulp.lpDot(s, x[:,i])) <= B * y[i]
     lp.writeLP('m1.lp')
-    lp.solve()
-    print(pulp.LpStatus[lp.status], pulp.value(lp.objective))
+    solver=pulp.PULP_CBC_CMD(msg=0)
+    lp.solve(solver)
+    #print(pulp.LpStatus[lp.status], pulp.value(lp.objective))
     res = [[_.varValue * s[i] for _ in x[i]] for i in range(x.shape[0])]
     mat=[]
     for i in range(x.shape[0]):
@@ -36,7 +37,7 @@ def draw_solution(s, x):
     plt.show()
 
 if __name__ == '__main__':
-    fname="CVRP_Data/vrplib/X-n228-k23.txt"
+    fname="../CVRP_Data/vrplib/X-n228-k23.txt"
     data=[]
     with open(fname) as f:
         size=int(f.readline())
@@ -59,4 +60,5 @@ if __name__ == '__main__':
         B, s = TRUCK_CAPACITY,[i["weight"] for i in data]
         ret=solve_bin_packing(B, s)
         for i in range(len(ret)):
-            print("truck",str(i+1),":",sum([data[j]["weight"] for j in ret[i]]),"/",TRUCK_CAPACITY)
+            #print("truck",str(i+1),":",sum([data[j]["weight"] for j in ret[i]]),"/",TRUCK_CAPACITY)
+            print("truck",str(i+1),":",ret[i])
