@@ -206,10 +206,12 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
-    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //TwoOptStar(weights,orders,dis_mat,capacity);
+    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity);
     //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    //ImprovedTwoOptStar(weights,orders,dis_mat,capacity);
+    ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 

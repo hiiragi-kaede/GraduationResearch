@@ -105,14 +105,14 @@ void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<floa
 }
 
 void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
-                            const vector<vector<float>>& dis_mat,const int truck_capacity,
-                            vector<pair<int,int>>& truck_ids)
+                            const vector<vector<float>>& dis_mat,const int truck_capacity)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
         total_weight[i]=TotalWeight(orders[i],weights);
     
+    auto c=comb(truck_size,2);
     auto st=chrono::system_clock::now();
 
     while(1){
@@ -121,12 +121,10 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
         if(sec>limit_time) break;
 
         bool is_changed=false;
-        for(int i=0; i<truck_size-1; i++){
+        for(const auto& ids : c){
+            int i=ids[0]-1,j=ids[1]-1;
+            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
-            for(int j=i+1; j<truck_size; j++){
-                is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
-                if(is_changed) break;
-            }
         }
 
         if(!is_changed) break;
@@ -135,7 +133,73 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
 
 bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                const int i,const int j,vector<pair<int,int>>& truck_ids)
+                const int i,const int j)
+{
+    int fst_size=orders[i].size();
+    int sec_size=orders[j].size();
+    for(int i_st=1; i_st<fst_size-1; i_st++){
+        for(int i_end=i_st+1; i_end<fst_size; i_end++){
+            for(int j_st=1; j_st<sec_size-1; j_st++){
+                for(int j_end=j_st+1; j_end<sec_size; j_end++){
+                    int fst_weight=TotalWeight(orders[i].begin()+i_st,orders[i].begin()+i_end,weights);
+                    int sec_weight=TotalWeight(orders[j].begin()+j_st,orders[j].begin()+j_end,weights);
+
+                    if(IsValidWeight(orders[i],orders[j],weights,
+                        fst_weight,sec_weight,truck_capacity))
+                    {
+                        double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
+                        if(dif<0 && abs(dif)>0.0005){
+                            UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
+                            const vector<vector<float>>& dis_mat,const int truck_capacity)
+{
+    int truck_size=orders.size();
+    vector<int> total_weight(truck_size,0);
+    for(int i=0; i<truck_size; i++) 
+        total_weight[i]=TotalWeight(orders[i],weights);
+    
+    vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
+    auto c=comb(truck_size,2);
+    reverse(c.begin(),c.end());
+    auto st=chrono::system_clock::now();
+
+    while(1){
+        auto end=chrono::system_clock::now();
+        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
+        if(sec>limit_time) break;
+
+        bool is_changed=false;
+        for(const auto& ids : c){
+            int i=ids[0]-1,j=ids[1]-1;
+            if(tabu_list[i][j]) continue;
+            is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
+            if(is_changed){
+                for(int id=0; id<truck_size; id++){
+                    tabu_list[i][id]=false;
+                    tabu_list[id][j]=false;
+                }
+                tabu_list[i][j]=true;
+                break;
+            } 
+        }
+
+        if(!is_changed) break;
+    }
+}
+
+bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const int i,const int j)
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
@@ -228,8 +292,7 @@ bool SubFastCross(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
-                vector<pair<int,int>>& truck_ids)
+                const vector<vector<float>>& dis_mat,const int truck_capacity)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
@@ -247,7 +310,7 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         bool is_changed=false;
         for(const auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j,truck_ids);
+            is_changed=SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
         }
 
@@ -257,7 +320,7 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
 bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                     const vector<vector<float>>& dis_mat,const int truck_capacity,
-                    const int i,const int j,vector<pair<int,int>>& truck_ids)
+                    const int i,const int j)
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
@@ -335,6 +398,68 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                         UpdateTruckIds(orders[j],j,truck_ids);
                         return true;
                     }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity)
+{
+    int truck_size=orders.size();
+    vector<int> total_weight(truck_size,0);
+    for(int i=0; i<truck_size; i++) 
+        total_weight[i]=TotalWeight(orders[i],weights);
+    
+    vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
+    auto c=comb(truck_size,2);
+    auto st=chrono::system_clock::now();
+
+    while(1){
+        auto end=chrono::system_clock::now();
+        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
+        if(sec>limit_time) break;
+
+        bool is_changed=false;
+        for(const auto& ids : c){
+            int i=ids[0]-1,j=ids[1]-1;
+            if(tabu_list[i][j]) continue;
+            is_changed=SubImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
+            if(is_changed){
+                for(int id=0; id<truck_size; id++){
+                    tabu_list[i][id]=false;
+                    tabu_list[id][j]=false;
+                }
+                tabu_list[i][j]=true;
+                break;
+            } 
+        }
+
+        if(!is_changed) break;
+    }
+}
+
+bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const int i,const int j)
+{
+    int fst_size=orders[i].size();
+    int sec_size=orders[j].size();
+    for(int i_id=fst_size-2; i_id>=1; i_id--){
+        for(int j_id=sec_size-2; j_id>=1; j_id--){
+            int i_dif=fst_size-i_id,j_dif=sec_size-j_id;
+            int fst_weights=TotalWeight(orders[i].begin()+i_id,orders[i].end(),weights);
+            int sec_weights=TotalWeight(orders[j].begin()+j_id,orders[j].end(),weights);
+
+            if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
+                double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
+                
+                if(dif<0 && abs(dif)>0.0001){
+                    UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
+                                        i_dif,j_dif,i_id,j_id);
+                    return true;
                 }
             }
         }
