@@ -17,6 +17,15 @@ int TotalWeight(const vector<int>& order,const vector<int>& weights){
     return total;
 }
 
+int TotalWeight(vector<int>::iterator first,vector<int>::iterator last,const vector<int>& weights)
+{
+    int total=0;
+    for(auto itr=first; itr!=last; itr++){
+        total+=weights[*itr];
+    }
+    return total;
+}
+
 double TotalDistance(const vector<vector<int>>& orders,
                     const vector<vector<float>>& dis_mat)
 {

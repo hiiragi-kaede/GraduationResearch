@@ -75,22 +75,22 @@ int main(void){
     vector<int> all;
     for(int i=0; i<n; i++) all.push_back(i);
     int total_weight=TotalWeight(all,weights);
-    //cout<<"total_weight:"<<total_weight<<endl;
+    cout<<"total_weight:"<<total_weight<<endl;
     int truck_size=ceil((double)total_weight/capacity);
-    //cout<<"truck_size:"<<truck_size<<endl;
+    cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========check difference between normal method and fast method==========*/
-    vector<vector<int>> test_orders;
-    vector<pair<int,int>> truck_ids(n);
+    // vector<vector<int>> test_orders;
+    // vector<pair<int,int>> truck_ids(n);
     
-    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
-    cout<<test_orders.size()<<endl;
-    double const_score=TotalDistance(test_orders,dis_mat);
-    CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
-    double cross_score=TotalDistance(test_orders,dis_mat);
-    //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
-    util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
-    cout<<"construct:"<<const_score<<"   cross25seconds:"<<cross_score<<endl;
+    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    // cout<<test_orders.size()<<endl;
+    // double const_score=TotalDistance(test_orders,dis_mat);
+    // CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
+    // double cross_score=TotalDistance(test_orders,dis_mat);
+    // //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
+    // util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
+    // cout<<"construct:"<<const_score<<"   cross25seconds:"<<cross_score<<endl;
 
     /*==========solve problem using multiple thread==========*/
     vector<thread> threads(THREAD_SIZE);
@@ -207,8 +207,8 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
     //TwoOptStar(weights,orders,dis_mat,capacity,truck_ids);
-    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
-    FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+    CrossExchangeNeighbor(weights,orders,dis_mat,capacity,truck_ids);
+    //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
@@ -229,7 +229,7 @@ void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>
         cout<<"time info"<<endl;
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
-        ShowOrdersInfo(thread_orders[i],weights,capacity,n);
+        //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
         cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
         cout<<endl;
     }

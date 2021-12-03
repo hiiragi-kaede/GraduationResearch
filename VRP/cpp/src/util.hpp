@@ -16,6 +16,8 @@ double TotalDistance(const vector<int>& order,
 
 int TotalWeight(const vector<int>& order,const vector<int>& weights);
 
+int TotalWeight(vector<int>::iterator first,vector<int>::iterator last,const vector<int>& weights);
+
 void ShowUnvisited(const vector<vector<int>>& orders,const vector<int>& weights,int n);
 
 bool IsExistUnvisited(const vector<vector<int>>& orders,const vector<int>& weights,int n);

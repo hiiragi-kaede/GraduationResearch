@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static const int limit_time=25;
+static const int limit_time=50;
 
 void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
     int n=order.size();
@@ -143,12 +143,8 @@ bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
         for(int i_end=i_st+1; i_end<fst_size; i_end++){
             for(int j_st=1; j_st<sec_size-1; j_st++){
                 for(int j_end=j_st+1; j_end<sec_size; j_end++){
-                    vector<int> fst_ord(i_end-i_st),sec_ord(j_end-j_st);
-                    copy(orders[i].begin()+i_st,orders[i].begin()+i_end,fst_ord.begin());
-                    copy(orders[j].begin()+j_st,orders[j].begin()+j_end,sec_ord.begin());
-
-                    int fst_weight=TotalWeight(fst_ord,weights);
-                    int sec_weight=TotalWeight(sec_ord,weights);
+                    int fst_weight=TotalWeight(orders[i].begin()+i_st,orders[i].begin()+i_end,weights);
+                    int sec_weight=TotalWeight(orders[j].begin()+j_st,orders[j].begin()+j_end,weights);
 
                     if(IsValidWeight(orders[i],orders[j],weights,
                         fst_weight,sec_weight,truck_capacity))
@@ -211,11 +207,8 @@ bool SubFastCross(const vector<int>& weights,vector<vector<int>>& orders,
 
         for(int i_end=i_st+1; i_end<fst_size-1; i_end++){
             for(int j_end=j_st+1; j_end<sec_size-1; j_end++){
-                vector<int> fst_ord(i_end-i_st),sec_ord(j_end-j_st);
-                copy(orders[i].begin()+i_st,orders[i].begin()+i_end,fst_ord.begin());
-                copy(orders[j].begin()+j_st,orders[j].begin()+j_end,sec_ord.begin());
-                int fst_weights=TotalWeight(fst_ord,weights);
-                int sec_weights=TotalWeight(sec_ord,weights);
+                int fst_weights=TotalWeight(orders[i].begin()+i_st,orders[i].begin()+i_end,weights);
+                int sec_weights=TotalWeight(orders[j].begin()+j_st,orders[j].begin()+j_end,weights);
 
                 if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity))
                 {
@@ -271,11 +264,8 @@ bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
     for(int i_id=fst_size-2; i_id>=1; i_id--){
         for(int j_id=sec_size-2; j_id>=1; j_id--){
             int i_dif=fst_size-i_id,j_dif=sec_size-j_id;
-            vector<int> fst_ord(i_dif),sec_ord(j_dif);
-            copy(orders[i].begin()+i_id,orders[i].end(),fst_ord.begin());
-            copy(orders[j].begin()+j_id,orders[j].end(),sec_ord.begin());
-            int fst_weights=TotalWeight(fst_ord,weights);
-            int sec_weights=TotalWeight(sec_ord,weights);
+            int fst_weights=TotalWeight(orders[i].begin()+i_id,orders[i].end(),weights);
+            int sec_weights=TotalWeight(orders[j].begin()+j_id,orders[j].end(),weights);
 
             if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
                 double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
@@ -331,11 +321,8 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 int i_dif=fst_size-fst_id,j_dif=sec_size-sec_id;
                 if(i_dif<2 || j_dif<2) continue;
 
-                vector<int> fst_ord(i_dif),sec_ord(j_dif);
-                copy(orders[i].begin()+fst_id,orders[i].end(),fst_ord.begin());
-                copy(orders[j].begin()+sec_id,orders[j].end(),sec_ord.begin());
-                int fst_weights=TotalWeight(fst_ord,weights);
-                int sec_weights=TotalWeight(sec_ord,weights);
+                int fst_weights=TotalWeight(orders[i].begin()+fst_id,orders[i].end(),weights);
+                int sec_weights=TotalWeight(orders[j].begin()+sec_id,orders[j].end(),weights);
 
                 if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
                     double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,fst_id,sec_id);
