@@ -203,16 +203,24 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
+    int total_truck_i=TotalWeight(orders[i],weights);
+    int total_truck_j=TotalWeight(orders[j],weights);
     for(int i_st=1; i_st<fst_size-1; i_st++){
+        //変化分だけ重量を足すことで高速化。最初のi_endのループでi_stの重量が追加されるため
+        //ここは0で、足すのは添字番号i_end-1のものになる
+        int fst_weight=0;
         for(int i_end=i_st+1; i_end<fst_size; i_end++){
+            fst_weight+=weights[orders[i][i_end-1]];
             for(int j_st=1; j_st<sec_size-1; j_st++){
+                int sec_weight=0;
                 for(int j_end=j_st+1; j_end<sec_size; j_end++){
-                    int fst_weight=TotalWeight(orders[i].begin()+i_st,orders[i].begin()+i_end,weights);
-                    int sec_weight=TotalWeight(orders[j].begin()+j_st,orders[j].begin()+j_end,weights);
+                    sec_weight+=weights[orders[j][j_end-1]];
 
-                    if(IsValidWeight(orders[i],orders[j],weights,
-                        fst_weight,sec_weight,truck_capacity))
-                    {
+                    bool is_valid_truck_i=total_truck_i-fst_weight+sec_weight<=truck_capacity;
+                    bool is_valid_truck_j=total_truck_j-sec_weight+fst_weight<=truck_capacity;
+                    if(!is_valid_truck_i) break;
+                    if(!is_valid_truck_j) continue;
+                    else{
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
                         if(dif<0 && abs(dif)>0.0005){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
@@ -447,13 +455,23 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 {
     int fst_size=orders[i].size();
     int sec_size=orders[j].size();
+    int total_truck_i=TotalWeight(orders[i],weights);
+    int total_truck_j=TotalWeight(orders[j],weights);
+    int fst_weights=0;
     for(int i_id=fst_size-2; i_id>=1; i_id--){
-        for(int j_id=sec_size-2; j_id>=1; j_id--){
-            int i_dif=fst_size-i_id,j_dif=sec_size-j_id;
-            int fst_weights=TotalWeight(orders[i].begin()+i_id,orders[i].end(),weights);
-            int sec_weights=TotalWeight(orders[j].begin()+j_id,orders[j].end(),weights);
+        int i_dif=fst_size-i_id;
+        fst_weights+=weights[orders[i][i_id]];
+        int sec_weights=0;
 
-            if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
+        for(int j_id=sec_size-2; j_id>=1; j_id--){
+            int j_dif=sec_size-j_id;
+            sec_weights+=weights[orders[j][j_id]];
+
+            bool is_valid_truck_i=total_truck_i-fst_weights+sec_weights<=truck_capacity;
+            bool is_valid_truck_j=total_truck_j-sec_weights+fst_weights<=truck_capacity;
+            if(!is_valid_truck_i) break;
+            if(!is_valid_truck_j) continue;
+            else{
                 double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
                 
                 if(dif<0 && abs(dif)>0.0001){
@@ -471,7 +489,7 @@ bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
                 const vector<int>& weights,const int fst_weight,const int sec_weight,
                 const int truck_capacity)
 {
-    bool ret=(TotalWeight(order_i,weights)-fst_weight+sec_weight<truck_capacity)
-            &&(TotalWeight(order_j,weights)-sec_weight+fst_weight<truck_capacity);
+    bool ret=(TotalWeight(order_i,weights)-fst_weight+sec_weight<=truck_capacity)
+            &&(TotalWeight(order_j,weights)-sec_weight+fst_weight<=truck_capacity);
     return ret;
 }
