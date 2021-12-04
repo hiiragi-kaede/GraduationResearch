@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static const int limit_time=50;
+static const int limit_time_millisec=50*1000;
 
 void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
     int n=order.size();
@@ -117,8 +117,8 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
 
     while(1){
         auto end=chrono::system_clock::now();
-        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-        if(sec>limit_time) break;
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
         for(const auto& ids : c){
@@ -175,8 +175,8 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
 
     while(1){
         auto end=chrono::system_clock::now();
-        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-        if(sec>limit_time) break;
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
         for(const auto& ids : c){
@@ -241,8 +241,8 @@ void FastCrossExchange(const vector<int>& weights,vector<vector<int>>& orders,
         for(int i=0; i<truck_size; i++){
             for(int cus : orders[i]){
                 auto end=chrono::system_clock::now();
-                auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-                if(sec>limit_time) return;
+                auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+                if(msec>limit_time_millisec) return;
 
                 is_changed=SubFastCross(weights,orders,dis_mat,truck_capacity,
                                                 truck_ids,nn_list,i,cus);
@@ -304,8 +304,8 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
     while(1){
         auto end=chrono::system_clock::now();
-        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-        if(sec>limit_time) break;
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
         for(const auto& ids : c){
@@ -356,8 +356,8 @@ void FastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
     auto st=chrono::system_clock::now();
     while(1){
         auto end=chrono::system_clock::now();
-        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-        if(sec>limit_time) break;
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(msec>limit_time_millisec) break;
 
         bool is_changed=SubFastTwoOptStar(weights,orders,dis_mat,truck_capacity,
                                         truck_ids,nn_list);
@@ -419,8 +419,8 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
     while(1){
         auto end=chrono::system_clock::now();
-        auto sec=chrono::duration_cast<chrono::seconds>(end-st).count();
-        if(sec>limit_time) break;
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
         for(const auto& ids : c){

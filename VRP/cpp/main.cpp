@@ -218,7 +218,7 @@ void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>
 
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
-                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
+                    long long& construct_ms,long long& local_search_msec,double& bef_dist,double& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list)
 {
     /*==========construct initial answer==========*/
@@ -259,7 +259,7 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         break;
     }
     end=chrono::system_clock::now();
-    local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
+    local_search_msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
 
     aft_dist=TotalDistance(orders,dis_mat);
     ans_orders=orders;
@@ -275,10 +275,10 @@ void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>
         cout<<"Thread "<<i+1<<"\e[0m"<<endl;
         cout<<"truck size:"<<thread_orders[i].size()<<endl;
         cout<<"time info"<<endl;
-        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(s)\n";
+        cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(ms)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
         //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
-        cout<<"improve rate:"<<afts[i]/befs[i]*100<<endl;
+        cout<<"improve rate:"<<100-(afts[i]/befs[i]*100)<<endl;
         cout<<endl;
     }
 }
@@ -291,11 +291,11 @@ void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
         ls_ave+=(double)local_searches[i]/THREAD_SIZE;
         bef_ave+=befs[i]/THREAD_SIZE;
         aft_ave+=afts[i]/THREAD_SIZE;
-        imp_rate_ave+=afts[i]/befs[i]*100/THREAD_SIZE;
+        imp_rate_ave+=(100-afts[i]/befs[i]*100)/THREAD_SIZE;
     }
     cout<<"construct average score:"<<bef_ave<<endl;
     cout<<"improved average score:"<<aft_ave<<endl;
-    cout<<"local search average seconds:"<<ls_ave<<endl;
+    cout<<"local search average milliseconds:"<<ls_ave<<endl;
     cout<<"improve rate average:"<<imp_rate_ave<<endl;
     cout<<"minimum:"<<afts[minid]<<endl;
 }
