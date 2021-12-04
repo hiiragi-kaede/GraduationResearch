@@ -19,8 +19,22 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 */
 using namespace std;
 
+enum class MethodType{
+    TwoOptStar,
+    FastTwoOptStar,
+    ImprovedTwoOptStar,
+    Cross,
+    FastCross,
+    ImprovedCross
+};
+
+static const vector<string> TypeName{
+    "TwoOptStar","FastTwoOptStar","ImprovedTwoOptStar",
+    "Cross","FastCross","ImprovedCross"
+};
 static const int CONSTRUCT_LIMIT_MS=500;
 static const int THREAD_SIZE=1;
+static MethodType method_type=MethodType::TwoOptStar;
 
 void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                         const int capacity,const int truck_size,
@@ -39,7 +53,7 @@ void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>
 void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
                     const vector<double>& befs,const vector<double>& afts,int minid);
 
-int main(void){
+int main(int argc,char *argv[]){
     /*==========data input==========*/
     int n; cin>>n;
     int capacity; cin>>capacity;
@@ -59,6 +73,20 @@ int main(void){
         int tmp;
         cin>>idx>>tmp;
         weights.push_back(tmp);
+    }
+
+    if(argc>1){
+        string type=string(argv[1]);
+        if(type=="t")    method_type=MethodType::TwoOptStar;
+        else if(type=="ft")  method_type=MethodType::FastTwoOptStar;
+        else if(type=="it")  method_type=MethodType::ImprovedTwoOptStar;
+        else if(type=="c")  method_type=MethodType::Cross;
+        else if(type=="fc")  method_type=MethodType::FastCross;
+        else if(type=="ic")  method_type=MethodType::ImprovedCross;
+        else{
+            cout<<"正しい近傍タイプを指定してください\n";
+            exit(1);
+        }
     }
 
     /*==========prepare for calculation==========*/
@@ -117,6 +145,7 @@ int main(void){
             min_dist=afts[i];
         }
     }
+    cout<<"neighbor type:"<<TypeName[static_cast<int>(method_type)]<<endl;
     cout<<"thread size:"<<THREAD_SIZE<<endl;
     cout<<"use thread"<<minid+1<<"'s answer\n\n";
     auto orders=thread_orders[minid];
@@ -206,12 +235,29 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
 
     /*==========local search to improve answer==========*/
     st=chrono::system_clock::now();
-    //TwoOptStar(weights,orders,dis_mat,capacity);
-    //CrossExchangeNeighbor(weights,orders,dis_mat,capacity);
-    //FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
-    //FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
-    //ImprovedTwoOptStar(weights,orders,dis_mat,capacity);
-    ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
+    switch (method_type)
+    {
+    case MethodType::TwoOptStar:
+        TwoOptStar(weights,orders,dis_mat,capacity);
+        break;
+    case MethodType::FastTwoOptStar:
+        FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+        break;
+    case MethodType::ImprovedTwoOptStar:
+        ImprovedTwoOptStar(weights,orders,dis_mat,capacity);
+        break;
+    case MethodType::Cross:
+        CrossExchangeNeighbor(weights,orders,dis_mat,capacity);
+        break;
+    case MethodType::FastCross:
+        FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
+        break;
+    case MethodType::ImprovedCross:
+        ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
+        break;
+    default:
+        break;
+    }
     end=chrono::system_clock::now();
     local_search_sec=chrono::duration_cast<chrono::seconds>(end-st).count();
 
