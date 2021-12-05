@@ -7,10 +7,13 @@
 #include<set>
 #include<iostream>
 #include<queue>
+#include<random>
 
 using namespace std;
 
 static const int limit_time_millisec=50*1000;
+static random_device seed_gen;
+static mt19937 engine(seed_gen());
 
 void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
     int n=order.size();
@@ -38,6 +41,23 @@ void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
         }
 
         if(!is_changed) break;
+    }
+}
+
+void DoubleBridge(vector<vector<int>>& orders){
+    for(auto& order : orders){
+        int size=order.size();
+        if(size<6) continue;
+        uniform_int_distribution<> fst_dist(1,size-5);
+        int first=fst_dist(engine);
+        uniform_int_distribution<> sec_dist(first+2,size-3);
+        int second=sec_dist(engine);
+
+        int tmp[]={order[first],order[first+1]};
+        order[first]=order[second];
+        order[first+1]=order[second+1];
+        order[second]=tmp[0];
+        order[second+1]=tmp[1];
     }
 }
 
@@ -483,6 +503,50 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
         }
     }
     return false;
+}
+
+void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                int iterated_size)
+{
+    vector<long long> times(iterated_size);
+    vector<double> scores(iterated_size);
+    for(int i=0; i<iterated_size; i++){
+        auto st=chrono::system_clock::now();
+        ImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity);
+        auto end=chrono::system_clock::now();
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        times[i]=msec;
+        scores[i]=TotalDistance(orders,dis_mat);
+        if(i!=iterated_size-1)  DoubleBridge(orders);
+    }
+    cout<<"times(ms):";
+    for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
+    cout<<"\nscores:";
+    for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
+    cout<<endl;
+}
+
+void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                int iterated_size)
+{
+    vector<long long> times(iterated_size);
+    vector<double> scores(iterated_size);
+    for(int i=0; i<iterated_size; i++){
+        auto st=chrono::system_clock::now();
+        ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,truck_capacity);
+        auto end=chrono::system_clock::now();
+        auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
+        times[i]=msec;
+        scores[i]=TotalDistance(orders,dis_mat);
+        if(i!=iterated_size-1)  DoubleBridge(orders);
+    }
+    cout<<"times(ms):";
+    for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
+    cout<<"\nscores:";
+    for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
+    cout<<endl;
 }
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,

@@ -25,15 +25,19 @@ enum class MethodType{
     ImprovedTwoOptStar,
     Cross,
     FastCross,
-    ImprovedCross
+    ImprovedCross,
+    IteratedTwo,
+    IteratedCross
 };
 
 static const vector<string> TypeName{
     "TwoOptStar","FastTwoOptStar","ImprovedTwoOptStar",
-    "Cross","FastCross","ImprovedCross"
+    "Cross","FastCross","ImprovedCross",
+    "IteratedTwoOptStar","IteratedCross"
 };
 static const int CONSTRUCT_LIMIT_MS=500;
 static const int THREAD_SIZE=1;
+static const int ITERATED_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 
 void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
@@ -83,6 +87,8 @@ int main(int argc,char *argv[]){
         else if(type=="c")  method_type=MethodType::Cross;
         else if(type=="fc")  method_type=MethodType::FastCross;
         else if(type=="ic")  method_type=MethodType::ImprovedCross;
+        else if(type=="ilst") method_type=MethodType::IteratedTwo;
+        else if(type=="ilsc") method_type=MethodType::IteratedCross;
         else{
             cout<<"正しい近傍タイプを指定してください\n";
             exit(1);
@@ -146,8 +152,10 @@ int main(int argc,char *argv[]){
         }
     }
     cout<<"neighbor type:"<<TypeName[static_cast<int>(method_type)]<<endl;
-    cout<<"thread size:"<<THREAD_SIZE<<endl;
-    cout<<"use thread"<<minid+1<<"'s answer\n\n";
+    if(THREAD_SIZE!=1){
+        cout<<"thread size:"<<THREAD_SIZE<<endl;
+        cout<<"use thread"<<minid+1<<"'s answer\n\n";
+    }
     auto orders=thread_orders[minid];
 
     //各スレッドの解の性質などをログ出力する
@@ -254,6 +262,12 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         break;
     case MethodType::ImprovedCross:
         ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
+        break;
+    case MethodType::IteratedTwo:
+        IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE);
+        break;
+    case MethodType::IteratedCross:
+        IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE);
         break;
     default:
         break;
