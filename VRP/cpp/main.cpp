@@ -36,7 +36,7 @@ static const vector<string> TypeName{
     "IteratedTwoOptStar","IteratedCross"
 };
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=1;
+static const int THREAD_SIZE=4;
 static const int ITERATED_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 
@@ -264,10 +264,16 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
         break;
     case MethodType::IteratedTwo:
-        IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE);
+        if(THREAD_SIZE!=1)
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,false);
+        else
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE);
         break;
     case MethodType::IteratedCross:
-        IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE);
+        if(THREAD_SIZE!=1)
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,false);
+        else
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE);
         break;
     default:
         break;

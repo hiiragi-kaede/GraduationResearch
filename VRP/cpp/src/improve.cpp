@@ -507,7 +507,7 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 
 void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size)
+                int iterated_size,bool out)
 {
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
@@ -520,16 +520,18 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         scores[i]=TotalDistance(orders,dis_mat);
         if(i!=iterated_size-1)  DoubleBridge(orders);
     }
-    cout<<"times(ms):";
-    for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
-    cout<<"\nscores:";
-    for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
-    cout<<endl;
+    if(out){
+        cout<<"times(ms):";
+        for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
+        cout<<"\nscores:";
+        for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
+        cout<<endl;
+    }
 }
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size)
+                int iterated_size,bool out)
 {
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
@@ -542,11 +544,13 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
         scores[i]=TotalDistance(orders,dis_mat);
         if(i!=iterated_size-1)  DoubleBridge(orders);
     }
-    cout<<"times(ms):";
-    for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
-    cout<<"\nscores:";
-    for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
-    cout<<endl;
+    if(out){
+        cout<<"times(ms):";
+        for_each(times.begin(),times.end(),[](long long x){cout<<x<<"->";});
+        cout<<"\nscores:";
+        for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
+        cout<<endl;
+    }
 }
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,

@@ -69,11 +69,11 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 
 void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size);
+                int iterated_size,bool out=true);
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size);
+                int iterated_size,bool out=true);
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
                 const vector<int>& weights,const int fst_weight,const int sec_weight,
