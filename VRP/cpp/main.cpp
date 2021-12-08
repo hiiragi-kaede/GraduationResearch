@@ -36,7 +36,7 @@ static const vector<string> TypeName{
     "IteratedTwoOptStar","IteratedCross"
 };
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=4;
+static const int THREAD_SIZE=1;
 static const int ITERATED_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 

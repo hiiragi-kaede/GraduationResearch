@@ -231,23 +231,40 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
         int fst_weight=0;
         for(int i_end=i_st+1; i_end<fst_size; i_end++){
             fst_weight+=weights[orders[i][i_end-1]];
+            int sec_weight=0;
+            int j_end=1;
+            int i_weight=total_truck_i-fst_weight;
+            // cout<<"cap:"<<truck_capacity<<"    room:"<<
+            //         truck_capacity-i_weight<<endl;
             for(int j_st=1; j_st<sec_size-1; j_st++){
-                int sec_weight=0;
-                for(int j_end=j_st+1; j_end<sec_size; j_end++){
-                    sec_weight+=weights[orders[j][j_end-1]];
-
-                    bool is_valid_truck_i=total_truck_i-fst_weight+sec_weight<=truck_capacity;
+                while(j_end<sec_size-1 && 
+                i_weight+sec_weight+weights[orders[j][j_end]]<=truck_capacity)
+                {
+                    sec_weight+=weights[orders[j][j_end]];
+                    // cout<<j_st<<"~"<<j_end<<":";
+                    // for(int idx=j_st; idx<=j_end; idx++) cout<<weights[orders[j][idx]]<<",";
+                    // cout<<"(sum="<<sec_weight<<")\n";
+                    
                     bool is_valid_truck_j=total_truck_j-sec_weight+fst_weight<=truck_capacity;
-                    if(!is_valid_truck_i) break;
-                    if(!is_valid_truck_j) continue;
-                    else{
+                    if(is_valid_truck_j){
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
                         if(dif<0 && abs(dif)>0.0005){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
                             return true;
                         }
                     }
+                    j_end++;
                 }
+
+                if(j_end==j_st) j_end++;
+                else{
+                    sec_weight-=weights[orders[j][j_st]];
+                    if(j_end-1!=j_st){
+                        j_end--;
+                        sec_weight-=weights[orders[j][j_end]];
+                    }
+                }
+                
             }
         }
     }
