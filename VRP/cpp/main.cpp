@@ -37,7 +37,7 @@ static const vector<string> TypeName{
 };
 static const int CONSTRUCT_LIMIT_MS=500;
 static const int THREAD_SIZE=4;
-static const int ITERATED_SIZE=10;
+static const int ITERATED_SIZE=20;
 static MethodType method_type=MethodType::TwoOptStar;
 
 void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
@@ -112,12 +112,23 @@ int main(int argc,char *argv[]){
     cout<<"total_weight:"<<total_weight<<endl;
     int truck_size=ceil((double)total_weight/capacity);
     cout<<"truck_size:"<<truck_size<<endl;
+    if(method_type==MethodType::IteratedCross||
+        method_type==MethodType::IteratedTwo)
+    {
+        cout<<"iterated times:"<<ITERATED_SIZE<<endl;
+    }
 
     /*==========check difference between normal method and fast method==========*/
     // vector<vector<int>> test_orders;
     // vector<pair<int,int>> truck_ids(n);
     
     // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    // cout<<"construct\n";
+    // ShowOrdersInfo(test_orders,weights,capacity,n);
+    // FourOptStar(test_orders,weights,capacity);
+    // cout<<"four opt\n";
+    // ShowOrdersInfo(test_orders,weights,capacity,n);
+    // exit(1);
     // cout<<test_orders.size()<<endl;
     // double const_score=TotalDistance(test_orders,dis_mat);
     // CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
