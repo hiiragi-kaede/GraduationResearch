@@ -79,22 +79,23 @@ bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truc
 bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
                     int fst,int sec,int third,int fourth,int truck_capacity)
 {
-    uniform_int_distribution<> dist(1,orders[fst].size()-2);
+    uniform_int_distribution<> dist(1+orders[fst].size()*0.4,orders[fst].size()-2);
     int fst_id=dist(engine);
     int fst_weight=TotalWeight(orders[fst].begin()+fst_id,orders[fst].end(),weights);
-    int fst_room=truck_capacity+fst_weight
-                -TotalWeight(orders[fst].begin(),orders[fst].end(),weights);
+    int fst_total=TotalWeight(orders[fst].begin(),orders[fst].end(),weights);
     int sec_total=TotalWeight(orders[sec].begin(),orders[sec].end(),weights);
     int third_total=TotalWeight(orders[third].begin(),orders[third].end(),weights);
     int fourth_total=TotalWeight(orders[fourth].begin(),orders[fourth].end(),weights);
-
+    
     int sec_weight=0;
     int sec_id=orders[sec].size()-1;
     for(; sec_id>0; sec_id--){
-        if(sec_weight+weights[orders[sec][sec_id]]<=fst_room){
+        if(sec_weight+weights[orders[sec][sec_id]]<=truck_capacity+fst_weight-fst_total){
             sec_weight+=weights[orders[sec][sec_id]];
         }
+        else break;
     }
+    sec_id++;
     if(sec_total-sec_weight+fst_weight>truck_capacity) return false;
     
     int third_weight=0;
@@ -103,11 +104,51 @@ bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
         if(third_weight+weights[orders[third][third_id]]<=truck_capacity+sec_weight-sec_total){
             third_weight+=weights[orders[third][third_id]];
         }
+        else break;
     }
+    third_id++;
     if(third_total-third_weight+sec_weight>truck_capacity) return false;
 
+    int fourth_weight=0;
+    int fourth_id=orders[fourth].size()-1;
+    for(; fourth_id>0; fourth_id--){
+        if(fourth_weight+weights[orders[fourth][fourth_id]]<=truck_capacity+third_weight-third_total){
+            fourth_weight+=weights[orders[fourth][fourth_id]];
+        }
+        else break;
+    }
+    fourth_id++;
+    if(fourth_total-fourth_weight+third_weight>truck_capacity) return false;
 
+    if(fst_total-fst_weight+fourth_weight>truck_capacity) return false;
+
+    UpdateFourOpt(orders,fst,sec,third,fourth,fst_id,sec_id,third_id,fourth_id);
     return true;
+}
+
+void UpdateFourOpt(vector<vector<int>>& orders,int fst,int sec,
+                int third,int fourth,int fst_id,int sec_id,
+                int third_id,int fourth_id)
+{
+    vector<int> tmp_fst(fst_id+orders[fourth].size()-fourth_id);
+    vector<int> tmp_sec(sec_id+orders[fst].size()-fst_id);
+    vector<int> tmp_third(third_id+orders[sec].size()-sec_id);
+    vector<int> tmp_fourth(fourth_id+orders[third].size()-third_id);
+
+    copy(orders[fst].begin(),orders[fst].begin()+fst_id,tmp_fst.begin());
+    copy(orders[sec].begin(),orders[sec].begin()+sec_id,tmp_sec.begin());
+    copy(orders[third].begin(),orders[third].begin()+third_id,tmp_third.begin());
+    copy(orders[fourth].begin(),orders[fourth].begin()+fourth_id,tmp_fourth.begin());
+
+    copy(orders[fourth].begin()+fourth_id,orders[fourth].end(),tmp_fst.begin()+fst_id);
+    copy(orders[fst].begin()+fst_id,orders[fst].end(),tmp_sec.begin()+sec_id);
+    copy(orders[sec].begin()+sec_id,orders[sec].end(),tmp_third.begin()+third_id);
+    copy(orders[third].begin()+third_id,orders[third].end(),tmp_fourth.begin()+fourth_id);
+
+    orders[fst]=tmp_fst;
+    orders[sec]=tmp_sec;
+    orders[third]=tmp_third;
+    orders[fourth]=tmp_fourth;
 }
 
 double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
@@ -567,7 +608,9 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         times[i]=msec;
         scores[i]=TotalDistance(orders,dis_mat);
-        if(i!=iterated_size-1)  DoubleBridge(orders);
+        if(i!=iterated_size-1){
+            Kick(orders,weights,truck_capacity);
+        }  
     }
     if(out){
         cout<<"times(ms):";
@@ -591,7 +634,9 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         times[i]=msec;
         scores[i]=TotalDistance(orders,dis_mat);
-        if(i!=iterated_size-1)  DoubleBridge(orders);
+        if(i!=iterated_size-1){
+            Kick(orders,weights,truck_capacity);
+        }
     }
     if(out){
         cout<<"times(ms):";
@@ -609,4 +654,9 @@ bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
     bool ret=(TotalWeight(order_i,weights)-fst_weight+sec_weight<=truck_capacity)
             &&(TotalWeight(order_j,weights)-sec_weight+fst_weight<=truck_capacity);
     return ret;
+}
+
+void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity){
+    DoubleBridge(orders);
+    //FourOptStar(orders,weights,capacity);
 }

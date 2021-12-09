@@ -14,6 +14,10 @@ bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truc
 bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
                     int fst,int sec,int third,int fourth,int truck_capacity);
 
+void UpdateFourOpt(vector<vector<int>>& orders,int fst,int sec,
+                int third,int fourth,int fst_id,int sec_id,
+                int third_id,int fourth_id);
+
 double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
                     int i,int j,int i_st,int i_end,int j_st,int j_end);
 
@@ -83,3 +87,5 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
                 const vector<int>& weights,const int fst_weight,const int sec_weight,
                 const int truck_capacity);
+
+void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity);
