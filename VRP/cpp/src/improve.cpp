@@ -61,6 +61,55 @@ void DoubleBridge(vector<vector<int>>& orders){
     }
 }
 
+bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truck_capacity){
+    int truck_size=orders.size();
+    for(int fst=0; fst<truck_size-3; fst++){
+        for(int sec=fst+1; sec<truck_size-2; sec++){
+            for(int third=sec+1; third<truck_size-1; third++){
+                for(int fourth=third+1; fourth<truck_size; fourth++){
+                    bool isOk=SubFourOptStar(orders,weights,fst,sec,third,fourth,truck_capacity);
+                    if(isOk) return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
+                    int fst,int sec,int third,int fourth,int truck_capacity)
+{
+    uniform_int_distribution<> dist(1,orders[fst].size()-2);
+    int fst_id=dist(engine);
+    int fst_weight=TotalWeight(orders[fst].begin()+fst_id,orders[fst].end(),weights);
+    int fst_room=truck_capacity+fst_weight
+                -TotalWeight(orders[fst].begin(),orders[fst].end(),weights);
+    int sec_total=TotalWeight(orders[sec].begin(),orders[sec].end(),weights);
+    int third_total=TotalWeight(orders[third].begin(),orders[third].end(),weights);
+    int fourth_total=TotalWeight(orders[fourth].begin(),orders[fourth].end(),weights);
+
+    int sec_weight=0;
+    int sec_id=orders[sec].size()-1;
+    for(; sec_id>0; sec_id--){
+        if(sec_weight+weights[orders[sec][sec_id]]<=fst_room){
+            sec_weight+=weights[orders[sec][sec_id]];
+        }
+    }
+    if(sec_total-sec_weight+fst_weight>truck_capacity) return false;
+    
+    int third_weight=0;
+    int third_id=orders[third].size()-1;
+    for(; third_id>0; third_id--){
+        if(third_weight+weights[orders[third][third_id]]<=truck_capacity+sec_weight-sec_total){
+            third_weight+=weights[orders[third][third_id]];
+        }
+    }
+    if(third_total-third_weight+sec_weight>truck_capacity) return false;
+
+
+    return true;
+}
+
 double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
                     int i,int j,int i_st,int i_end,int j_st,int j_end)
 {

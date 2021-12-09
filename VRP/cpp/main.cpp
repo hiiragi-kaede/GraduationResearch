@@ -36,7 +36,7 @@ static const vector<string> TypeName{
     "IteratedTwoOptStar","IteratedCross"
 };
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=4;
+static const int THREAD_SIZE=1;
 static const int ITERATED_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 
@@ -114,10 +114,11 @@ int main(int argc,char *argv[]){
     cout<<"truck_size:"<<truck_size<<endl;
 
     /*==========check difference between normal method and fast method==========*/
-    // vector<vector<int>> test_orders;
-    // vector<pair<int,int>> truck_ids(n);
+    vector<vector<int>> test_orders;
+    vector<pair<int,int>> truck_ids(n);
     
-    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    FourOptStar(test_orders,weights,capacity);
     // cout<<test_orders.size()<<endl;
     // double const_score=TotalDistance(test_orders,dis_mat);
     // CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
