@@ -4,6 +4,7 @@
 #include<numeric>
 #include<utility>
 #include<set>
+#include<cmath>
 #include"util.hpp"
 #include"improve.hpp"
 
@@ -303,4 +304,25 @@ void util::SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& ord
             }
         }
     }
+}
+
+vector<int> ConstructContainingLatticeList(vector<int>& cus_x,vector<int>& cus_y,
+                                                int LatticeSize)
+{
+    int n=cus_x.size();
+    int min_x=*min_element(cus_x.begin(),cus_x.end());
+    int min_y=*min_element(cus_y.begin(),cus_y.end());
+    int max_x=*max_element(cus_x.begin(),cus_x.end());
+    int max_y=*max_element(cus_y.begin(),cus_y.end());
+
+    vector<int> ret(n);    
+    for(int i=0; i<n; i++){
+        double tmp_x=(cus_x[i]-min_x)/(double)(max_x-min_x)*LatticeSize;
+        double tmp_y=(cus_y[i]-min_y)/(double)(max_y-min_y)*LatticeSize;
+
+        int x=floor(tmp_x),y=floor(tmp_y);
+        ret[i]=x+LatticeSize*y;
+    }
+
+    return ret;
 }
