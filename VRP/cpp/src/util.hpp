@@ -60,3 +60,6 @@ namespace util{
                     const vector<vector<float>>& dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list);
 }
+
+vector<int> ConstructContainingLatticeList(vector<int>& cus_x,vector<int>& cus_y,
+                                                int LatticeSize);

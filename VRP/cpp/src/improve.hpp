@@ -39,7 +39,8 @@ bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const int i,const int j);
 
 void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
-                            const vector<vector<float>>& dis_mat,const int truck_capacity);
+                            const vector<vector<float>>& dis_mat,const int truck_capacity,
+                            const vector<int>& lattice);
 
 bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
@@ -70,7 +71,8 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                     vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list);
 
 void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity);
+                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<int>& lattice);
 
 bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                     const vector<vector<float>>& dis_mat,const int truck_capacity,
@@ -78,14 +80,19 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 
 void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size,bool out=true);
+                int iterated_size,const vector<int>& lattice,bool out=true);
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<float>>& dis_mat,const int truck_capacity,
-                int iterated_size,bool out=true);
+                int iterated_size,const vector<int>& lattice,bool out=true);
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
                 const vector<int>& weights,const int fst_weight,const int sec_weight,
                 const int truck_capacity);
 
 void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity);
+
+vector<set<int>> ConstructTruckLatticeList(const vector<vector<int>>& orders,const vector<int>& lattice);
+
+void UpdateLatticeList(const vector<vector<int>>& orders,int id,const vector<int>& lattice,
+                        vector<set<int>>& lattice_list);

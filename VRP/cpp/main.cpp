@@ -36,8 +36,10 @@ static const vector<string> TypeName{
     "IteratedTwoOptStar","IteratedCross"
 };
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=4;
-static const int ITERATED_SIZE=20;
+static const int THREAD_SIZE=1;
+static const int ITERATED_SIZE=10;
+//どれだけ顧客の存在する範囲を分割して管理するか。この値の2乗個のマスで管理。
+static const int LATTICE_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 
 void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
@@ -47,7 +49,7 @@ void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list);
+                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice);
 
 void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
                     const vector<long long>& constructs,const vector<long long>& local_searches,
@@ -117,6 +119,8 @@ int main(int argc,char *argv[]){
     {
         cout<<"iterated times:"<<ITERATED_SIZE<<endl;
     }
+    vector<int> Lattice=ConstructContainingLatticeList(cus_x,cus_y,LATTICE_SIZE);
+    cout<<"lattice size:"<<LATTICE_SIZE<<endl;
 
     /*==========check difference between normal method and fast method==========*/
     // vector<vector<int>> test_orders;
@@ -148,7 +152,7 @@ int main(int argc,char *argv[]){
     for(int i=0; i<THREAD_SIZE; i++){
         threads[i]=thread(ThreadProcess,ref(dis_mat),ref(weights),capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
-                        ref(thread_orders[i]),ref(nn_list));
+                        ref(thread_orders[i]),ref(nn_list),ref(Lattice));
     }
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();
@@ -238,7 +242,7 @@ void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>
 void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_msec,double& bef_dist,double& aft_dist,
-                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list)
+                    vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice)
 {
     /*==========construct initial answer==========*/
     int n=dis_mat.size();
@@ -263,7 +267,7 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         FastTwoOptStar(weights,orders,dis_mat,capacity,truck_ids,nn_list);
         break;
     case MethodType::ImprovedTwoOptStar:
-        ImprovedTwoOptStar(weights,orders,dis_mat,capacity);
+        ImprovedTwoOptStar(weights,orders,dis_mat,capacity,lattice);
         break;
     case MethodType::Cross:
         CrossExchangeNeighbor(weights,orders,dis_mat,capacity);
@@ -272,19 +276,19 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
         FastCrossExchange(weights,orders,dis_mat,capacity,truck_ids,nn_list);
         break;
     case MethodType::ImprovedCross:
-        ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity);
+        ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,capacity,lattice);
         break;
     case MethodType::IteratedTwo:
         if(THREAD_SIZE!=1)
-            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,false);
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,false);
         else
-            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE);
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice);
         break;
     case MethodType::IteratedCross:
         if(THREAD_SIZE!=1)
-            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,false);
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,false);
         else
-            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE);
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice);
         break;
     default:
         break;
