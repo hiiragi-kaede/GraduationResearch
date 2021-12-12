@@ -11,7 +11,7 @@
 
 using namespace std;
 
-static const int limit_time_millisec=50*1000;
+static const int limit_time_millisec=300*1000;
 static random_device seed_gen;
 static mt19937 engine(seed_gen());
 
@@ -79,7 +79,7 @@ bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truc
 bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
                     int fst,int sec,int third,int fourth,int truck_capacity)
 {
-    uniform_int_distribution<> dist(1+orders[fst].size()*0.4,orders[fst].size()-2);
+    uniform_int_distribution<> dist(2,orders[fst].size()-2);
     int fst_id=dist(engine);
     int fst_weight=TotalWeight(orders[fst].begin()+fst_id,orders[fst].end(),weights);
     int fst_total=TotalWeight(orders[fst].begin(),orders[fst].end(),weights);
@@ -233,7 +233,8 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
         bool is_changed=false;
         for(const auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
+            //is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
+            is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
         }
 
@@ -437,7 +438,8 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         bool is_changed=false;
         for(const auto& ids : c){
             int i=ids[0]-1,j=ids[1]-1;
-            is_changed=SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
+            //is_changed=SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
+            is_changed=SubImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
             if(is_changed) break;
         }
 
@@ -675,8 +677,8 @@ bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
 }
 
 void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity){
-    //DoubleBridge(orders);
-    FourOptStar(orders,weights,capacity);
+    DoubleBridge(orders);
+    //FourOptStar(orders,weights,capacity);
 }
 
 vector<set<int>> ConstructTruckLatticeList(const vector<vector<int>>& orders,const vector<int>& lattice)
