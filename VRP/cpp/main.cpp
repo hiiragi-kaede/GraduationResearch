@@ -7,6 +7,7 @@
 #include<set>
 #include"src/util.hpp"
 #include"src/tools.hpp"
+#include"src/improve.hpp"
 
 /*
 compile command
@@ -21,6 +22,8 @@ static const int ITERATED_SIZE=10;
 //どれだけ顧客の存在する範囲を分割して管理するか。この値の2乗個のマスで管理。
 static const int LATTICE_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
+KickType kick_type=KickType::DoubleBridge;
+IteratedType iterated_type=IteratedType::Improved;
 
 int main(int argc,char *argv[]){
     /*==========data input==========*/
@@ -41,6 +44,24 @@ int main(int argc,char *argv[]){
         else if(type=="ilsc") method_type=MethodType::IteratedCross;
         else{
             cout<<"正しい近傍タイプを指定してください\n";
+            exit(1);
+        }
+    }
+    if(argc>2){
+        string type=string(argv[2]);
+        if(type=="d") kick_type=KickType::DoubleBridge;
+        else if(type=="f") kick_type=KickType::FourOpt;
+        else{
+            cout<<"キックの手法を正しく指定してください\n";
+            exit(1);
+        }
+    }
+    if(argc>3){
+        string type=string(argv[3]);
+        if(type=="n") iterated_type=IteratedType::Normal;
+        else if(type=="i") iterated_type=IteratedType::Improved;
+        else{
+            cout<<"ILSの関数タイプを正しく指定してください\n";
             exit(1);
         }
     }
@@ -69,6 +90,12 @@ int main(int argc,char *argv[]){
     }
     vector<int> Lattice=ConstructContainingLatticeList(cus_x,cus_y,LATTICE_SIZE);
     cout<<"lattice size:"<<LATTICE_SIZE<<endl;
+
+    cout<<"neighbor type:"<<GetTypeNames()[static_cast<int>(method_type)]<<endl;
+    if(method_type==MethodType::IteratedCross || method_type==MethodType::IteratedTwo){
+        cout<<"kick method:"<<GetKickTypes()[static_cast<int>(kick_type)]<<endl;
+        cout<<"iterated type:"<<GetIteratedTypes()[static_cast<int>(iterated_type)]<<endl;
+    }
 
     /*==========check difference between normal method and fast method==========*/
     // vector<vector<int>> test_orders;
@@ -115,8 +142,6 @@ int main(int argc,char *argv[]){
             min_dist=afts[i];
         }
     }
-    vector<string> TypeName=GetTypeNames();
-    cout<<"neighbor type:"<<TypeName[static_cast<int>(method_type)]<<endl;
     if(THREAD_SIZE!=1){
         cout<<"thread size:"<<THREAD_SIZE<<endl;
         cout<<"use thread"<<minid+1<<"'s answer\n\n";

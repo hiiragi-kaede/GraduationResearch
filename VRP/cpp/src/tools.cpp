@@ -133,8 +133,8 @@ void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
     double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
     for(int i=0; i<THREAD_SIZE; i++){
         ls_ave+=(double)local_searches[i]/THREAD_SIZE;
-        bef_ave+=befs[i]/THREAD_SIZE;
-        aft_ave+=afts[i]/THREAD_SIZE;
+        bef_ave+=(double)befs[i]/THREAD_SIZE;
+        aft_ave+=(double)afts[i]/THREAD_SIZE;
         imp_rate_ave+=(100-(double)afts[i]/befs[i]*100)/THREAD_SIZE;
     }
     cout<<"construct average score:"<<bef_ave<<endl;

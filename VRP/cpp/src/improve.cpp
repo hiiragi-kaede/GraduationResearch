@@ -11,9 +11,27 @@
 
 using namespace std;
 
-static const int limit_time_millisec=30*1000;
+static const int limit_time_millisec=300*1000;
 static random_device seed_gen;
 static mt19937 engine(seed_gen());
+
+extern KickType kick_type;
+extern IteratedType iterated_type;
+static const vector<string> kick_types={
+    "DoubleBridge","FourOpt"
+};
+
+static const vector<string> iterated_types={
+    "Normal","Improved"
+};
+
+vector<string> GetKickTypes(){
+    return kick_types;
+}
+
+vector<string> GetIteratedTypes(){
+    return iterated_types;
+}
 
 void TwoOpt(vector<int>& order,const vector<vector<int>>& dis_mat){
     int n=order.size();

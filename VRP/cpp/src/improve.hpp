@@ -2,8 +2,23 @@
 
 #include<vector>
 #include<set>
+#include<string>
 
 using namespace std;
+
+enum class KickType{
+    DoubleBridge,
+    FourOpt
+};
+
+enum class IteratedType{
+    Normal,
+    Improved
+};
+
+vector<string> GetKickTypes();
+
+vector<string> GetIteratedTypes();
 
 void TwoOpt(vector<int>& order,const vector<vector<int>>& dis_mat);
 
