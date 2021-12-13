@@ -15,7 +15,7 @@ static const int limit_time_millisec=30*1000;
 static random_device seed_gen;
 static mt19937 engine(seed_gen());
 
-void TwoOpt(vector<int>& order,const vector<vector<float>>& dis_mat){
+void TwoOpt(vector<int>& order,const vector<vector<int>>& dis_mat){
     int n=order.size();
     
     while(true){
@@ -151,7 +151,7 @@ void UpdateFourOpt(vector<vector<int>>& orders,int fst,int sec,
     orders[fourth]=tmp_fourth;
 }
 
-double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
+double GetCrossExDiff(const vector<vector<int>>& dis_mat,const vector<vector<int>>& orders,
                     int i,int j,int i_st,int i_end,int j_st,int j_end)
 {
     double dif=-dis_mat[orders[i][i_st-1]][orders[i][i_st]]
@@ -165,7 +165,7 @@ double GetCrossExDiff(const vector<vector<float>>& dis_mat,const vector<vector<i
     return dif;
 }
 
-double GetTwoOptStarDiff(const vector<vector<float>>& dis_mat,const vector<vector<int>>& orders,
+double GetTwoOptStarDiff(const vector<vector<int>>& dis_mat,const vector<vector<int>>& orders,
                         int i,int j,int i_id,int j_id)
 {
     double dif=-dis_mat[orders[i][i_id-1]][orders[i][i_id]]
@@ -175,7 +175,7 @@ double GetTwoOptStarDiff(const vector<vector<float>>& dis_mat,const vector<vecto
     return dif;
 }
 
-void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<float>>& dis_mat,int i,int j,
+void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<int>>& dis_mat,int i,int j,
                         int i_st,int i_end,int j_st,int j_end,int fst_size,int sec_size)
 {
     int i_dif=i_end-i_st,j_dif=j_end-j_st;
@@ -197,7 +197,7 @@ void UpdateCrossOrders(vector<vector<int>>& orders,const vector<vector<float>>& 
     TwoOpt(orders[j],dis_mat);
 }
 
-void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<float>>& dis_mat,
+void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<int>>& dis_mat,
                             int i,int j,int fst_size,int sec_size,int i_dif,int j_dif,
                             int i_id,int j_id)
 {
@@ -215,7 +215,7 @@ void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<floa
 }
 
 void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
-                            const vector<vector<float>>& dis_mat,const int truck_capacity)
+                            const vector<vector<int>>& dis_mat,const int truck_capacity)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
@@ -243,7 +243,7 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
 }
 
 bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 const int i,const int j)
 {
     int fst_size=orders[i].size();
@@ -272,7 +272,7 @@ bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
-                            const vector<vector<float>>& dis_mat,const int truck_capacity,
+                            const vector<vector<int>>& dis_mat,const int truck_capacity,
                             const vector<int>& lattice)
 {
     int truck_size=orders.size();
@@ -318,7 +318,7 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
 }
 
 bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 const int i,const int j)
 {
     int fst_size=orders[i].size();
@@ -355,7 +355,7 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void FastCrossExchange(const vector<int>& weights,vector<vector<int>>& orders,
-                        const vector<vector<float>>& dis_mat,const int truck_capacity,
+                        const vector<vector<int>>& dis_mat,const int truck_capacity,
                         vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
 {
     int truck_size=orders.size();
@@ -382,7 +382,7 @@ void FastCrossExchange(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 bool SubFastCross(const vector<int>& weights,vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const vector<vector<int>>& dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list,
                     int i,int cus)
 {
@@ -420,7 +420,7 @@ bool SubFastCross(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity)
+                const vector<vector<int>>& dis_mat,const int truck_capacity)
 {
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
@@ -448,7 +448,7 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const vector<vector<int>>& dis_mat,const int truck_capacity,
                     const int i,const int j)
 {
     int fst_size=orders[i].size();
@@ -474,7 +474,7 @@ bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void FastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
 {
     int truck_size=orders.size();
@@ -495,7 +495,7 @@ void FastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const vector<vector<int>>& dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
 {
     int n=orders.size();
@@ -535,7 +535,7 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 const vector<int>& lattice)
 {
     int truck_size=orders.size();
@@ -580,7 +580,7 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const vector<vector<int>>& dis_mat,const int truck_capacity,
                     const int i,const int j)
 {
     int fst_size=orders[i].size();
@@ -616,7 +616,7 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 }
 
 void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 int iterated_size,const vector<int>& lattice,bool out)
 {
     vector<long long> times(iterated_size);
@@ -642,7 +642,7 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 }
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 int iterated_size,const vector<int>& lattice,bool out)
 {
     vector<long long> times(iterated_size);

@@ -46,10 +46,10 @@ int main(int argc,char *argv[]){
     }
 
     /*==========prepare for calculation==========*/
-    vector<vector<float>> dis_mat(n,vector<float>(n,0));
+    vector<vector<int>> dis_mat(n,vector<int>(n,0));
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            dis_mat[i][j]=hypot(cus_x[i]-cus_x[j],cus_y[i]-cus_y[j]);
+            dis_mat[i][j]=round(hypot(cus_x[i]-cus_x[j],cus_y[i]-cus_y[j]));
         }
     }
 
@@ -93,7 +93,7 @@ int main(int argc,char *argv[]){
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
     vector<long long> local_searches(THREAD_SIZE);
-    vector<double> befs(THREAD_SIZE),afts(THREAD_SIZE);
+    vector<int> befs(THREAD_SIZE),afts(THREAD_SIZE);
     vector<vector<vector<int>>> thread_orders(THREAD_SIZE);
     
     //スレッドに求解させる
@@ -108,7 +108,7 @@ int main(int argc,char *argv[]){
 
     //一番改善後の総移動距離が短いスレッドの解を採用する
     int minid=0;
-    double min_dist=afts[0];
+    int min_dist=afts[0];
     for(int i=1; i<THREAD_SIZE; i++){
         if(min_dist>afts[i]){
             minid=i;

@@ -16,24 +16,24 @@ enum class MethodType{
     IteratedCross
 };
 
-void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+void TrialInsertConstruct(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                         const int capacity,const int truck_size,
                         vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids,
                         int CONSTRUCT_LIMIT_MS,int THREAD_SIZE);
 
-void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
-                    long long& construct_ms,long long& local_search_sec,double& bef_dist,double& aft_dist,
+                    long long& construct_ms,long long& local_search_sec,int& bef_dist,int& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice,
                     MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS);
 
 void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
                     const vector<long long>& constructs,const vector<long long>& local_searches,
-                    const vector<double>& befs,const vector<double>& afts,int capacity,int n,
+                    const vector<int>& befs,const vector<int>& afts,int capacity,int n,
                     const vector<int>& weights);
 
 void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
-                    const vector<double>& befs,const vector<double>& afts,int minid);
+                    const vector<int>& befs,const vector<int>& afts,int minid);
 
 vector<string> GetTypeNames();
 

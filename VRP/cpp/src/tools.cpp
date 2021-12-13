@@ -15,7 +15,7 @@ static const vector<string> TypeName{
     "IteratedTwoOptStar","IteratedCross"
 };
 
-void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+void TrialInsertConstruct(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                         const int capacity,const int truck_size,
                         vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids,
                         int CONSTRUCT_LIMIT_MS,int THREAD_SIZE)
@@ -47,9 +47,9 @@ void TrialInsertConstruct(const vector<vector<float>>& dis_mat,const vector<int>
     }
 }
 
-void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weights,
+void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
-                    long long& construct_ms,long long& local_search_msec,double& bef_dist,double& aft_dist,
+                    long long& construct_ms,long long& local_search_msec,int& bef_dist,int& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice,
                     MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS)
 {
@@ -111,7 +111,7 @@ void ThreadProcess(const vector<vector<float>>& dis_mat,const vector<int>& weigh
 
 void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
                     const vector<long long>& constructs,const vector<long long>& local_searches,
-                    const vector<double>& befs,const vector<double>& afts,int capacity,int n,
+                    const vector<int>& befs,const vector<int>& afts,int capacity,int n,
                     const vector<int>& weights)
 {
     for(int i=0; i<THREAD_SIZE; i++){
@@ -122,20 +122,20 @@ void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>
         cout<<"construct:"<<constructs[i]<<"(ms)    local search:"<<local_searches[i]<<"(ms)\n";
         cout<<"total move cost change:"<<befs[i]<<"--->"<<afts[i]<<"\n";
         //ShowOrdersInfo(thread_orders[i],weights,capacity,n);
-        cout<<"improve rate:"<<100-(afts[i]/befs[i]*100)<<endl;
+        cout<<"improve rate:"<<100-((double)afts[i]/befs[i]*100)<<endl;
         cout<<endl;
     }
 }
 
 void ShowThreadsAves(int THREAD_SIZE,const vector<long long>& local_searches,
-                    const vector<double>& befs,const vector<double>& afts,int minid)
+                    const vector<int>& befs,const vector<int>& afts,int minid)
 {
     double bef_ave=0,aft_ave=0,imp_rate_ave=0,ls_ave=0;
     for(int i=0; i<THREAD_SIZE; i++){
         ls_ave+=(double)local_searches[i]/THREAD_SIZE;
         bef_ave+=befs[i]/THREAD_SIZE;
         aft_ave+=afts[i]/THREAD_SIZE;
-        imp_rate_ave+=(100-afts[i]/befs[i]*100)/THREAD_SIZE;
+        imp_rate_ave+=(100-(double)afts[i]/befs[i]*100)/THREAD_SIZE;
     }
     cout<<"construct average score:"<<bef_ave<<endl;
     cout<<"improved average score:"<<aft_ave<<endl;

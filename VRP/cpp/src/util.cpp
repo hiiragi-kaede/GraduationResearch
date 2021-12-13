@@ -27,20 +27,20 @@ int TotalWeight(vector<int>::iterator first,vector<int>::iterator last,const vec
     return total;
 }
 
-double TotalDistance(const vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat)
+int TotalDistance(const vector<vector<int>>& orders,
+                    const vector<vector<int>>& dis_mat)
 {
-    double total=0;
+    int total=0;
     for(const auto& order : orders){
         total+=TotalDistance(order,dis_mat);
     }
     return total;
 }
 
-double TotalDistance(const vector<int>& order,
-                    const vector<vector<float>>& dis_mat)
+int TotalDistance(const vector<int>& order,
+                    const vector<vector<int>>& dis_mat)
 {
-    double total=0;
+    int total=0;
     for(auto it=order.begin(); (it+1)!=order.end(); it++){
         total+=dis_mat[*it][*(it+1)];
     }
@@ -106,7 +106,7 @@ vector<vector<int>> comb(int n, int r) {
     return combs;
 }
 
-vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>>& dis_mat){
+vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<int>>& dis_mat){
     vector<vector<int>> neighbor_list(n,vector<int>(n));
     for(int i=0; i<n; i++){
         iota(neighbor_list[i].begin(),neighbor_list[i].end(),0);
@@ -120,7 +120,7 @@ vector<vector<int>> ConstructNeighborList(const int n,const vector<vector<float>
     return neighbor_list;
 }
 
-vector<set<int>> ConstructNNList(const vector<vector<float>>& dis_mat,
+vector<set<int>> ConstructNNList(const vector<vector<int>>& dis_mat,
                                 const vector<vector<int>>& neighbor_list)
 {
     int n=dis_mat.size();
@@ -160,7 +160,7 @@ void ShowTruckIds(const vector<pair<int,int>>& truck_ids){
 }
 
 void util::ShowTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 vector<pair<int,int>>& truck_ids)
 {
     int truck_size=orders.size();
@@ -176,7 +176,7 @@ void util::ShowTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& o
 }
 
 void util::SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 const int i,const int j,vector<pair<int,int>>& truck_ids)
 {
     auto construct=orders;
@@ -246,7 +246,7 @@ void util::ShowDifInfos(int i,int j,double change_cost_dif,
 }
 
 void util::ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>>& orders,
-                const vector<vector<float>>& dis_mat,const int truck_capacity,
+                const vector<vector<int>>& dis_mat,const int truck_capacity,
                 vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
 {
     int truck_size=orders.size();
@@ -259,7 +259,7 @@ void util::ShowFastTwoOptStarDiffs(const vector<int>& weights,vector<vector<int>
 }
 
 void util::SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
-                    const vector<vector<float>>& dis_mat,const int truck_capacity,
+                    const vector<vector<int>>& dis_mat,const int truck_capacity,
                     vector<pair<int,int>>& truck_ids,const vector<set<int>>& nn_list)
 {
     int n=orders.size();
