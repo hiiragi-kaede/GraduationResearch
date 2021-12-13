@@ -306,7 +306,7 @@ void util::SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& ord
     }
 }
 
-vector<int> ConstructContainingLatticeList(vector<int>& cus_x,vector<int>& cus_y,
+vector<int> ConstructContainingLatticeList(const vector<int>& cus_x,const vector<int>& cus_y,
                                                 int LatticeSize)
 {
     int n=cus_x.size();
