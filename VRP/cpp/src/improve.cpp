@@ -639,6 +639,8 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 {
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
+    int min_score=1e9;
+    vector<vector<int>> min_orders=orders;
     for(int i=0; i<iterated_size; i++){
         auto st=chrono::system_clock::now();
         ImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,lattice);
@@ -646,6 +648,10 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         times[i]=msec;
         scores[i]=TotalDistance(orders,dis_mat);
+        if(min_score>scores[i]){
+            min_score=scores[i];
+            min_orders=orders;
+        }
         if(i!=iterated_size-1){
             Kick(orders,weights,truck_capacity);
         }  
@@ -657,6 +663,7 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
         cout<<endl;
     }
+    if(TotalDistance(orders,dis_mat)>min_score) orders=min_orders;
 }
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -665,6 +672,8 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
 {
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
+    int min_score=1e9;
+    vector<vector<int>> min_orders=orders;
     for(int i=0; i<iterated_size; i++){
         auto st=chrono::system_clock::now();
         ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,truck_capacity,lattice);
@@ -672,6 +681,10 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         times[i]=msec;
         scores[i]=TotalDistance(orders,dis_mat);
+        if(min_score>scores[i]){
+            min_score=scores[i];
+            min_orders=orders;
+        }
         if(i!=iterated_size-1){
             Kick(orders,weights,truck_capacity);
         }
@@ -683,6 +696,7 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
         for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
         cout<<endl;
     }
+    if(TotalDistance(orders,dis_mat)>min_score) orders=min_orders;
 }
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,

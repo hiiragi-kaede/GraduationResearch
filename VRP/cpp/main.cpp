@@ -89,7 +89,13 @@ int main(int argc,char *argv[]){
         cout<<"iterated times:"<<ITERATED_SIZE<<endl;
     }
     vector<int> Lattice=ConstructContainingLatticeList(cus_x,cus_y,LATTICE_SIZE);
-    cout<<"lattice size:"<<LATTICE_SIZE<<endl;
+    if(method_type==MethodType::ImprovedCross||
+        method_type==MethodType::ImprovedTwoOptStar||
+        (method_type==MethodType::IteratedCross&&iterated_type==IteratedType::Improved)||
+        (method_type==MethodType::IteratedTwo&&iterated_type==IteratedType::Improved))
+    {
+        cout<<"lattice size:"<<LATTICE_SIZE<<endl;
+    }
 
     cout<<"neighbor type:"<<GetTypeNames()[static_cast<int>(method_type)]<<endl;
     if(method_type==MethodType::IteratedCross || method_type==MethodType::IteratedTwo){
