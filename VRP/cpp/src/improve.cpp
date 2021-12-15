@@ -241,19 +241,29 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
         total_weight[i]=TotalWeight(orders[i],weights);
     
     auto c=comb(truck_size,2);
+    mt19937 engine(0);
+    shuffle(c.begin(),c.end(),engine);
+    int comb_size=c.size();
     auto st=chrono::system_clock::now();
 
+    int now_id=0,cnt=0;
     while(1){
         auto end=chrono::system_clock::now();
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
-        for(const auto& ids : c){
+        while(cnt<comb_size){
+            vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
             //is_changed=SubCross(weights,orders,dis_mat,truck_capacity,i,j);
             is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
-            if(is_changed) break;
+            now_id++;
+            if(is_changed){
+                cnt=0;
+                break;
+            }
+            cnt++;
         }
 
         if(!is_changed) break;
@@ -300,25 +310,38 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
     
     vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
     auto c=comb(truck_size,2);
-    reverse(c.begin(),c.end());
+    mt19937 engine(0);
+    shuffle(c.begin(),c.end(),engine);
+    int comb_size=c.size();
     auto truck_lattice_list=ConstructTruckLatticeList(orders,lattice);
     auto st=chrono::system_clock::now();
 
+    int now_id=0,cnt=0;
     while(1){
         auto end=chrono::system_clock::now();
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
-        for(const auto& ids : c){
+        while(cnt<comb_size){
+            vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
-            if(tabu_list[i][j]) continue;
+            if(tabu_list[i][j]){
+                now_id++;
+                cnt++;
+                continue;
+            }
             set<int> result;
             set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
                                 truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
                                 inserter(result,result.end()));
-            if(result.size()<2) continue;
+            if(result.size()<2){
+                now_id++;
+                cnt++;
+                continue;
+            }
             is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
+            now_id++;
             if(is_changed){
                 for(int id=0; id<truck_size; id++){
                     tabu_list[i][id]=false;
@@ -327,8 +350,11 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
                 tabu_list[i][j]=true;
                 UpdateLatticeList(orders,i,lattice,truck_lattice_list);
                 UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+
+                cnt=0;
                 break;
-            } 
+            }
+            cnt++;
         }
 
         if(!is_changed) break;
@@ -446,19 +472,29 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         total_weight[i]=TotalWeight(orders[i],weights);
     
     auto c=comb(truck_size,2);
+    mt19937 engine(0);
+    shuffle(c.begin(),c.end(),engine);
+    int comb_size=c.size();
     auto st=chrono::system_clock::now();
 
+    int now_id=0,cnt=0;
     while(1){
         auto end=chrono::system_clock::now();
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
-        for(const auto& ids : c){
+        while(cnt<comb_size){
+            vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
             //is_changed=SubTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
             is_changed=SubImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
-            if(is_changed) break;
+            now_id++;
+            if(is_changed){
+                cnt=0;
+                break;
+            }
+            cnt++;
         }
 
         if(!is_changed) break;
@@ -563,24 +599,38 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
     
     vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
     auto c=comb(truck_size,2);
+    mt19937 engine(0);
+    shuffle(c.begin(),c.end(),engine);
+    int comb_size=c.size();
     auto truck_lattice_list=ConstructTruckLatticeList(orders,lattice);
     auto st=chrono::system_clock::now();
 
+    int now_id=0,cnt=0;
     while(1){
         auto end=chrono::system_clock::now();
         auto msec=chrono::duration_cast<chrono::milliseconds>(end-st).count();
         if(msec>limit_time_millisec) break;
 
         bool is_changed=false;
-        for(const auto& ids : c){
+        while(cnt<comb_size){
+            vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
-            if(tabu_list[i][j]) continue;
+            if(tabu_list[i][j]){
+                now_id++;
+                cnt++;
+                continue;
+            }
             set<int> result;
             set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
                                 truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
                                 inserter(result,result.end()));
-            if(result.size()<2) continue;
+            if(result.size()<2){
+                now_id++;
+                cnt++;
+                continue;
+            }
             is_changed=SubImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
+            now_id++;
             if(is_changed){
                 for(int id=0; id<truck_size; id++){
                     tabu_list[i][id]=false;
@@ -589,8 +639,11 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 tabu_list[i][j]=true;
                 UpdateLatticeList(orders,i,lattice,truck_lattice_list);
                 UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+
+                cnt=0;
                 break;
             } 
+            cnt++;
         }
 
         if(!is_changed) break;
