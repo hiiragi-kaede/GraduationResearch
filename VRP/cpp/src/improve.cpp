@@ -241,8 +241,8 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
         total_weight[i]=TotalWeight(orders[i],weights);
     
     auto c=comb(truck_size,2);
-    mt19937 engine(0);
-    shuffle(c.begin(),c.end(),engine);
+    mt19937 comb_engine(0);
+    shuffle(c.begin(),c.end(),comb_engine);
     int comb_size=c.size();
     auto st=chrono::system_clock::now();
 
@@ -310,8 +310,8 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
     
     vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
     auto c=comb(truck_size,2);
-    mt19937 engine(0);
-    shuffle(c.begin(),c.end(),engine);
+    mt19937 comb_engine(0);
+    shuffle(c.begin(),c.end(),comb_engine);
     int comb_size=c.size();
     auto truck_lattice_list=ConstructTruckLatticeList(orders,lattice);
     auto st=chrono::system_clock::now();
@@ -472,8 +472,8 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         total_weight[i]=TotalWeight(orders[i],weights);
     
     auto c=comb(truck_size,2);
-    mt19937 engine(0);
-    shuffle(c.begin(),c.end(),engine);
+    mt19937 comb_engine(0);
+    shuffle(c.begin(),c.end(),comb_engine);
     int comb_size=c.size();
     auto st=chrono::system_clock::now();
 
@@ -599,8 +599,8 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
     
     vector<vector<bool>> tabu_list(truck_size,vector<bool>(truck_size,false));
     auto c=comb(truck_size,2);
-    mt19937 engine(0);
-    shuffle(c.begin(),c.end(),engine);
+    mt19937 comb_engine(0);
+    shuffle(c.begin(),c.end(),comb_engine);
     int comb_size=c.size();
     auto truck_lattice_list=ConstructTruckLatticeList(orders,lattice);
     auto st=chrono::system_clock::now();
