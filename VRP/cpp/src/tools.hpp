@@ -42,3 +42,6 @@ void InputData(int& n,int& capacity,vector<int>& cus_x,vector<int>& cus_y,vector
 void OutputData(int n,const vector<int>& cus_x,const vector<int>& cus_y,
                 const vector<int>& weights,const vector<vector<int>>& orders,
                 string data_fname,string order_fname);
+
+void OutputLattice(const vector<int> lattice,int LatticeSize,
+                    const string lattice_fname);

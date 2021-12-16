@@ -321,6 +321,8 @@ vector<int> ConstructContainingLatticeList(const vector<int>& cus_x,const vector
         double tmp_y=(cus_y[i]-min_y)/(double)(max_y-min_y)*LatticeSize;
 
         int x=floor(tmp_x),y=floor(tmp_y);
+        if(x==LatticeSize) x--;
+        if(y==LatticeSize) y--;
         ret[i]=x+LatticeSize*y;
     }
 

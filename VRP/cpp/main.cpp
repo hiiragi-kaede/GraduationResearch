@@ -165,6 +165,9 @@ int main(int argc,char *argv[]){
     string order_fname="tmp/order.txt";
     OutputData(n,cus_x,cus_y,weights,orders,data_fname,order_fname);
 
+    string lattice_fname="tmp/lattice.txt";
+    OutputLattice(Lattice,LATTICE_SIZE,lattice_fname);
+
     /*==========matplotlib show in python==========*/
     FILE* p = popen("~/../../mnt/c/users/ASUS-DESKTOP/anaconda3/python.exe plot.py","w");
     fprintf(p,data_fname.c_str());

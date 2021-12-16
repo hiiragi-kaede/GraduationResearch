@@ -15,6 +15,7 @@ static const int limit_time_millisec=300*1000;
 static random_device seed_gen;
 static mt19937 engine(seed_gen());
 
+int search_cnt=0;
 extern KickType kick_type;
 extern IteratedType iterated_type;
 static const vector<string> kick_types={
@@ -268,6 +269,7 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
 
         if(!is_changed) break;
     }
+    cout<<"search count:"<<search_cnt<<endl;
 }
 
 bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -359,6 +361,7 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
 
         if(!is_changed) break;
     }
+    cout<<"search count:"<<search_cnt<<endl;
 }
 
 bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -385,6 +388,7 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
                     if(!is_valid_truck_i) break;
                     if(!is_valid_truck_j) continue;
                     else{
+                        search_cnt++;
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
                         if(dif<0){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);

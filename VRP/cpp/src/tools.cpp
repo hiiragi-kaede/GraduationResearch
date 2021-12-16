@@ -190,3 +190,24 @@ void OutputData(int n,const vector<int>& cus_x,const vector<int>& cus_y,
     }
     ord_output.close();
 }
+
+void OutputLattice(const vector<int> lattice,int LatticeSize,
+                    const string lattice_fname)
+{
+    ofstream output(lattice_fname);
+    output<<LatticeSize<<endl;
+    vector<vector<int>> cnt(LatticeSize,vector<int>(LatticeSize,0));
+    for(int i=0; i<lattice.size(); i++){
+        int x=lattice[i]%LatticeSize;
+        int y=lattice[i]/LatticeSize;
+        cnt[y][x]++;
+    }
+    for(int y=0; y<LatticeSize; y++){
+        for(int x=0; x<LatticeSize; x++){
+            output<<cnt[y][x]<<" ";
+        }
+        output<<endl;
+    }
+
+    output.close();
+}
