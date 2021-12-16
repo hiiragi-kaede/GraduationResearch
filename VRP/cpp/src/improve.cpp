@@ -287,7 +287,7 @@ bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
                         fst_weight,sec_weight,truck_capacity))
                     {
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
-                        if(dif<0 && abs(dif)>1e-3){
+                        if(dif<0){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
                             return true;
                         }
@@ -386,7 +386,7 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
                     if(!is_valid_truck_j) continue;
                     else{
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
-                        if(dif<0 && abs(dif)>1e-3){
+                        if(dif<0){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
                             return true;
                         }
@@ -516,7 +516,7 @@ bool SubTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
             if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
                 double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
                 
-                if(dif<0 && abs(dif)>1e-4){
+                if(dif<0){
                     UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                         i_dif,j_dif,i_id,j_id);
                     return true;
@@ -573,7 +573,7 @@ bool SubFastTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 if(IsValidWeight(orders[i],orders[j],weights,fst_weights,sec_weights,truck_capacity)){
                     double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,fst_id,sec_id);
                     
-                    if(dif<0 && abs(dif)>1e-4){
+                    if(dif<0){
                         UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                                 i_dif,j_dif,fst_id,sec_id);
 
@@ -675,7 +675,7 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
             else{
                 double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
                 
-                if(dif<0 && abs(dif)>1e-4){
+                if(dif<0){
                     UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                         i_dif,j_dif,i_id,j_id);
                     return true;
