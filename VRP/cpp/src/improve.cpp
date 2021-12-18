@@ -15,6 +15,9 @@ static const int limit_time_millisec=300*1000;
 static random_device seed_gen;
 static mt19937 engine(seed_gen());
 
+extern bool use_tabulist;
+extern bool use_lattice;
+
 int search_cnt=0;
 extern KickType kick_type;
 extern IteratedType iterated_type;
@@ -328,30 +331,40 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
         while(cnt<comb_size){
             vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
-            if(tabu_list[i][j]){
-                now_id++;
-                cnt++;
-                continue;
+            if(use_tabulist){
+                if(tabu_list[i][j]){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
             }
-            set<int> result;
-            set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
-                                truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
-                                inserter(result,result.end()));
-            if(result.size()<2){
-                now_id++;
-                cnt++;
-                continue;
+            
+            if(use_lattice){
+                set<int> result;
+                set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
+                                    truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
+                                    inserter(result,result.end()));
+                if(result.size()<2){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
             }
+
             is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
             now_id++;
             if(is_changed){
-                for(int id=0; id<truck_size; id++){
-                    tabu_list[i][id]=false;
-                    tabu_list[id][j]=false;
+                if(use_tabulist){
+                    for(int id=0; id<truck_size; id++){
+                        tabu_list[i][id]=false;
+                        tabu_list[id][j]=false;
+                    }
+                    tabu_list[i][j]=true;
                 }
-                tabu_list[i][j]=true;
-                UpdateLatticeList(orders,i,lattice,truck_lattice_list);
-                UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                if(use_lattice){
+                    UpdateLatticeList(orders,i,lattice,truck_lattice_list);
+                    UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                }
 
                 cnt=0;
                 break;
@@ -619,30 +632,40 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         while(cnt<comb_size){
             vector<int> ids=c[now_id%comb_size];
             int i=ids[0]-1,j=ids[1]-1;
-            if(tabu_list[i][j]){
-                now_id++;
-                cnt++;
-                continue;
+            if(use_tabulist){
+                if(tabu_list[i][j]){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
             }
-            set<int> result;
-            set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
-                                truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
-                                inserter(result,result.end()));
-            if(result.size()<2){
-                now_id++;
-                cnt++;
-                continue;
+            
+            if(use_lattice){
+                set<int> result;
+                set_intersection(truck_lattice_list[i].begin(),truck_lattice_list[i].end(),
+                                    truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
+                                    inserter(result,result.end()));
+                if(result.size()<2){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
             }
+            
             is_changed=SubImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,i,j);
             now_id++;
             if(is_changed){
-                for(int id=0; id<truck_size; id++){
-                    tabu_list[i][id]=false;
-                    tabu_list[id][j]=false;
+                if(use_tabulist){
+                    for(int id=0; id<truck_size; id++){
+                        tabu_list[i][id]=false;
+                        tabu_list[id][j]=false;
+                    }
+                    tabu_list[i][j]=true;
                 }
-                tabu_list[i][j]=true;
-                UpdateLatticeList(orders,i,lattice,truck_lattice_list);
-                UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                if(use_lattice){
+                    UpdateLatticeList(orders,i,lattice,truck_lattice_list);
+                    UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                }
 
                 cnt=0;
                 break;

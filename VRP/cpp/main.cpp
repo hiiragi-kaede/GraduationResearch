@@ -24,6 +24,8 @@ static const int LATTICE_SIZE=10;
 static MethodType method_type=MethodType::TwoOptStar;
 KickType kick_type=KickType::DoubleBridge;
 IteratedType iterated_type=IteratedType::Improved;
+bool use_tabulist=true;
+bool use_lattice=true;
 
 int main(int argc,char *argv[]){
     /*==========data input==========*/
@@ -32,39 +34,11 @@ int main(int argc,char *argv[]){
     vector<int> weights;
     InputData(n,capacity,cus_x,cus_y,weights);
 
-    if(argc>1){
-        string type=string(argv[1]);
-        if(type=="t")    method_type=MethodType::TwoOptStar;
-        else if(type=="ft")  method_type=MethodType::FastTwoOptStar;
-        else if(type=="it")  method_type=MethodType::ImprovedTwoOptStar;
-        else if(type=="c")  method_type=MethodType::Cross;
-        else if(type=="fc")  method_type=MethodType::FastCross;
-        else if(type=="ic")  method_type=MethodType::ImprovedCross;
-        else if(type=="ilst") method_type=MethodType::IteratedTwo;
-        else if(type=="ilsc") method_type=MethodType::IteratedCross;
-        else{
-            cout<<"正しい近傍タイプを指定してください\n";
-            exit(1);
-        }
-    }
-    if(argc>2){
-        string type=string(argv[2]);
-        if(type=="d") kick_type=KickType::DoubleBridge;
-        else if(type=="f") kick_type=KickType::FourOpt;
-        else{
-            cout<<"キックの手法を正しく指定してください\n";
-            exit(1);
-        }
-    }
-    if(argc>3){
-        string type=string(argv[3]);
-        if(type=="n") iterated_type=IteratedType::Normal;
-        else if(type=="i") iterated_type=IteratedType::Improved;
-        else{
-            cout<<"ILSの関数タイプを正しく指定してください\n";
-            exit(1);
-        }
-    }
+    SetArgs(argc,argv,method_type,kick_type,iterated_type,
+            use_tabulist,use_lattice);
+
+    cout<<"use tabu list:"<<use_tabulist<<",";
+    cout<<"use lattice:"<<use_lattice<<endl;
 
     /*==========prepare for calculation==========*/
     vector<vector<int>> dis_mat(n,vector<int>(n,0));

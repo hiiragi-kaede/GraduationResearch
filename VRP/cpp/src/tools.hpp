@@ -2,6 +2,7 @@
 
 #include<vector>
 #include<set>
+#include"improve.hpp"
 
 using namespace std;
 
@@ -45,3 +46,6 @@ void OutputData(int n,const vector<int>& cus_x,const vector<int>& cus_y,
 
 void OutputLattice(const vector<int> lattice,int LatticeSize,
                     const string lattice_fname);
+
+void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
+            IteratedType& iterated_type,bool& use_tabulist,bool& use_lattice);

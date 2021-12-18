@@ -2,10 +2,12 @@
 #include<vector>
 #include<chrono>
 #include<fstream>
+#include<string>
 #include"tools.hpp"
 #include"improve.hpp"
 #include"construct.hpp"
 #include"util.hpp"
+#include"improve.hpp"
 
 using namespace std;
 
@@ -210,4 +212,62 @@ void OutputLattice(const vector<int> lattice,int LatticeSize,
     }
 
     output.close();
+}
+
+void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
+            IteratedType& iterated_type,bool& use_tabulist,bool& use_lattice)
+{
+    if(argc>1){
+        for(int i=1; i<argc; i++){
+            string type=string(argv[i]);
+            const string neighbor=type.substr(0,3);
+            const string kick=type.substr(0,3);
+            const string iterate=type.substr(0,3);
+            const string use_t=type.substr(0,3);
+            const string use_l=type.substr(0,3);
+
+            if(neighbor=="-n="){
+                type=type.substr(3,type.size()-3);
+                if(type=="t")    method_type=MethodType::TwoOptStar;
+                else if(type=="ft")  method_type=MethodType::FastTwoOptStar;
+                else if(type=="it")  method_type=MethodType::ImprovedTwoOptStar;
+                else if(type=="c")  method_type=MethodType::Cross;
+                else if(type=="fc")  method_type=MethodType::FastCross;
+                else if(type=="ic")  method_type=MethodType::ImprovedCross;
+                else if(type=="ilst") method_type=MethodType::IteratedTwo;
+                else if(type=="ilsc") method_type=MethodType::IteratedCross;
+                else{
+                    cout<<"正しい近傍タイプを指定してください\n";
+                    exit(1);
+                }
+            }
+            else if(kick=="-k="){
+                type=type.substr(3,type.size()-3);
+                if(type=="d") kick_type=KickType::DoubleBridge;
+                else if(type=="f") kick_type=KickType::FourOpt;
+                else{
+                    cout<<"キックの手法を正しく指定してください\n";
+                    exit(1);
+                }
+            }
+            else if(iterate=="-i="){
+                type=type.substr(3,type.size()-3);
+                if(type=="n") iterated_type=IteratedType::Normal;
+                else if(type=="i") iterated_type=IteratedType::Improved;
+                else{
+                    cout<<"ILSの関数タイプを正しく指定してください\n";
+                    exit(1);
+                }
+            }
+            else if(use_t=="-t="){
+                if(type[3]=='0') use_tabulist=false;
+                else use_tabulist=true;
+            }
+            else if(use_l=="-l="){
+                if(type[3]=='0') use_lattice=false;
+                else use_lattice=true;
+            }
+        }
+        
+    }
 }
