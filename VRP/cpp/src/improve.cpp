@@ -239,6 +239,11 @@ void UpdateTwoOptStarOrders(vector<vector<int>>& orders,const vector<vector<int>
 void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& orders,
                             const vector<vector<int>>& dis_mat,const int truck_capacity)
 {
+    for(auto& order : orders){
+        if(IsCCW(order)){
+            reverse(order.begin(),order.end());
+        }
+    }
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -308,6 +313,11 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
                             const vector<vector<int>>& dis_mat,const int truck_capacity,
                             const vector<int>& lattice)
 {
+    for(auto& order : orders){
+        if(IsCCW(order)){
+            reverse(order.begin(),order.end());
+        }
+    }
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -405,6 +415,8 @@ bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
                         double dif=GetCrossExDiff(dis_mat,orders,i,j,i_st,i_end,j_st,j_end);
                         if(dif<0){
                             UpdateCrossOrders(orders,dis_mat,i,j,i_st,i_end,j_st,j_end,fst_size,sec_size);
+                            if(IsCCW(orders[i])) reverse(orders[i].begin(),orders[i].end());
+                            if(IsCCW(orders[j])) reverse(orders[j].begin(),orders[j].end());
                             return true;
                         }
                     }
@@ -483,6 +495,11 @@ bool SubFastCross(const vector<int>& weights,vector<vector<int>>& orders,
 void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity)
 {
+    for(auto& order : orders){
+        if(IsCCW(order)){
+            reverse(order.begin(),order.end());
+        }
+    }
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -609,6 +626,11 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity,
                 const vector<int>& lattice)
 {
+    for(auto& order : orders){
+        if(IsCCW(order)){
+            reverse(order.begin(),order.end());
+        }
+    }
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -705,6 +727,8 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
                 if(dif<0){
                     UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                         i_dif,j_dif,i_id,j_id);
+                    if(IsCCW(orders[i])) reverse(orders[i].begin(),orders[i].end());
+                    if(IsCCW(orders[j])) reverse(orders[j].begin(),orders[j].end());
                     return true;
                 }
             }
