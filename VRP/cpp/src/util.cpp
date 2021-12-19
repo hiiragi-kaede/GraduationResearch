@@ -10,6 +10,8 @@
 
 using namespace std;
 
+extern const vector<int> cus_x,cus_y;
+
 int TotalWeight(const vector<int>& order,const vector<int>& weights){
     int total=0;
     for(int i=0; i<order.size(); i++){
@@ -327,4 +329,43 @@ vector<int> ConstructContainingLatticeList(const vector<int>& cus_x,const vector
     }
 
     return ret;
+}
+
+bool IsCCW(const vector<int>& order){
+    int min_x=cus_x[order[0]];
+    vector<int> min_x_ids{0};
+    for(int i=1; i<order.size(); i++){
+        int x=cus_x[order[i]];
+        if(x<min_x){
+            min_x_ids={i};
+            min_x=x;
+        }
+        else if(x==min_x){
+            min_x_ids.push_back(i);
+        }
+    }
+    int min_y_id=min_x_ids[0];
+    int min_y=cus_y[order[min_x_ids[0]]];
+    //もしx座標最小の点が複数あるときは、その中でさらにy座標最小の点を求める
+    if(min_x_ids.size()>1){
+        for(int i=1; i<min_x_ids.size(); i++){
+            int y=cus_y[order[min_x_ids[i]]];
+            if(y<min_y){
+                min_y_id=min_x_ids[i];
+                min_y=y;
+            }
+        }
+    }
+
+    int min_prev=min_y_id-1;
+    if(min_prev<0) min_prev=order.size()-2;
+    int min_next=min_y_id+1;
+    if(min_next==order.size()-1) min_next=1;
+
+    int x_ab=cus_x[order[min_next]]-cus_x[order[min_y_id]];
+    int y_ab=cus_y[order[min_next]]-cus_y[order[min_y_id]];
+    int x_ac=cus_x[order[min_prev]]-cus_x[order[min_y_id]];
+    int y_ac=cus_y[order[min_prev]]-cus_y[order[min_y_id]];
+
+    return (x_ab*y_ac-x_ac*y_ab<0);
 }

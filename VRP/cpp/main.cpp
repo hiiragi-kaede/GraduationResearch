@@ -27,10 +27,11 @@ IteratedType iterated_type=IteratedType::Improved;
 bool use_tabulist=true;
 bool use_lattice=true;
 
+vector<int> cus_x,cus_y;
+
 int main(int argc,char *argv[]){
     /*==========data input==========*/
     int n,capacity;
-    vector<int> cus_x,cus_y;
     vector<int> weights;
     InputData(n,capacity,cus_x,cus_y,weights);
 

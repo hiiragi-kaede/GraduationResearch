@@ -63,3 +63,5 @@ namespace util{
 
 vector<int> ConstructContainingLatticeList(const vector<int>& cus_x,const vector<int>& cus_y,
                                                 int LatticeSize);
+
+bool IsCCW(const vector<int>& order);
