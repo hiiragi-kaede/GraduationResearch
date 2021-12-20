@@ -279,6 +279,7 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
         if(!is_changed) break;
     }
     cout<<"search count:"<<search_cnt<<endl;
+    search_cnt=0;
 }
 
 bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -394,6 +395,7 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
         if(!is_changed) break;
     }
     cout<<"search count:"<<search_cnt<<endl;
+    search_cnt=0;
 }
 
 bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -831,8 +833,10 @@ bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
 }
 
 void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity){
-    DoubleBridge(orders);
-    //FourOptStar(orders,weights,capacity);
+    if(kick_type==KickType::DoubleBridge)
+        DoubleBridge(orders);
+    if(kick_type==KickType::FourOpt)
+        FourOptStar(orders,weights,capacity);
 }
 
 vector<set<int>> ConstructTruckLatticeList(const vector<vector<int>>& orders,const vector<int>& lattice)
