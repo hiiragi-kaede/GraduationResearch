@@ -369,3 +369,56 @@ bool IsCCW(const vector<int>& order){
 
     return (x_ab*y_ac-x_ac*y_ab<0);
 }
+
+bool IsCustomerInArea(const vector<int>& order,int cus_id)
+{
+    int wn=0;
+    float vt=0;
+
+    for(int i=0; i<order.size()-2; i++){
+        int cur=order[i];
+        int next=order[i+1];
+
+        //上向きの辺。点がY軸方向に対して、始点と終点の間にある。(終点は含まない)
+        if(cus_y[cur]<=cus_y[cus_id] && cus_y[next]>cus_y[cus_id]){
+            //辺は点よりも右側にあり、重ならない
+            //辺が点と同じ高さになる位置を特定し、その時のXの値と点のXの値を比較する
+            vt=(cus_y[cus_id]-cus_y[cur])/(cus_y[next]-cus_y[cur]);
+
+            if(cus_x[cus_id]<(cus_x[cur]+(vt*(cus_x[next]-cus_x[cur])))){
+                //上向きの辺と交差した場合は+1
+                wn++;
+            }
+        }
+        else if(cus_y[cur]>cus_y[cus_id] && cus_y[next]<=cus_y[cus_id]){
+            vt=(cus_y[cus_id]-cus_y[cur])/(cus_y[next]-cus_y[cur]);
+
+            if(cus_x[cus_id]<(cus_x[cur]+(vt*(cus_x[next]-cus_x[cur])))){
+                //下向きの辺と交差した場合は-1
+                wn--;
+            }
+        }
+    }
+
+    // if(wn!=0){
+    //     cout<<"order's route\n";
+    //     for(int i=0; i<order.size(); i++){
+    //         int id=order[i];
+    //         cout<<"("<<cus_x[id]<<","<<cus_y[id]<<") ";
+    //     }
+    //     cout<<"\ncustomer:("<<cus_x[cus_id]<<","<<cus_y[cus_id]<<")\n";
+    // }
+    return wn!=0;
+}
+
+bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j){
+    for(int id=1; id<orders[i].size()-1; id++){
+        int cus_id=orders[i][id];
+        if(IsCustomerInArea(orders[j],cus_id)) return true;
+    }
+    for(int id=1; id<orders[j].size()-1; id++){
+        int cus_id=orders[j][id];
+        if(IsCustomerInArea(orders[i],cus_id)) return true;
+    }
+    return false;
+}

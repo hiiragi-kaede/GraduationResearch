@@ -17,6 +17,7 @@ static mt19937 engine(seed_gen());
 
 extern bool use_tabulist;
 extern bool use_lattice;
+extern bool use_hull;
 
 int search_cnt=0;
 extern KickType kick_type;
@@ -361,6 +362,14 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
                 }
             }
 
+            if(use_hull){
+                if(!IsOverlapOrders(orders,i,j)){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
+            }
+
             is_changed=SubImprovedCross(weights,orders,dis_mat,truck_capacity,i,j);
             now_id++;
             if(is_changed){
@@ -668,6 +677,14 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                                     truck_lattice_list[j].begin(),truck_lattice_list[j].end(),
                                     inserter(result,result.end()));
                 if(result.size()<2){
+                    now_id++;
+                    cnt++;
+                    continue;
+                }
+            }
+
+            if(use_hull){
+                if(!IsOverlapOrders(orders,i,j)){
                     now_id++;
                     cnt++;
                     continue;

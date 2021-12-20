@@ -65,3 +65,7 @@ vector<int> ConstructContainingLatticeList(const vector<int>& cus_x,const vector
                                                 int LatticeSize);
 
 bool IsCCW(const vector<int>& order);
+
+bool IsCustomerInArea(const vector<int>& order,int cus_id);
+
+bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j);

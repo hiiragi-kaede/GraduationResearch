@@ -26,6 +26,7 @@ KickType kick_type=KickType::DoubleBridge;
 IteratedType iterated_type=IteratedType::Improved;
 bool use_tabulist=true;
 bool use_lattice=true;
+bool use_hull=true;
 
 vector<int> cus_x,cus_y;
 
@@ -36,7 +37,7 @@ int main(int argc,char *argv[]){
     InputData(n,capacity,cus_x,cus_y,weights);
 
     SetArgs(argc,argv,method_type,kick_type,iterated_type,
-            use_tabulist,use_lattice);
+            use_tabulist,use_lattice,use_hull);
 
     cout<<"use tabu list:"<<use_tabulist<<",";
     cout<<"use lattice:"<<use_lattice<<endl;
@@ -70,6 +71,7 @@ int main(int argc,char *argv[]){
         (method_type==MethodType::IteratedTwo&&iterated_type==IteratedType::Improved))
     {
         cout<<"lattice size:"<<LATTICE_SIZE<<endl;
+        cout<<"use tabu,lattice,hull:"<<use_tabulist<<","<<use_lattice<<","<<use_hull<<endl;
     }
 
     cout<<"neighbor type:"<<GetTypeNames()[static_cast<int>(method_type)]<<endl;
@@ -82,7 +84,17 @@ int main(int argc,char *argv[]){
     // vector<vector<int>> test_orders;
     // vector<pair<int,int>> truck_ids(n);
     
-    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids);
+    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids,
+    //                     CONSTRUCT_LIMIT_MS,THREAD_SIZE);
+    // for(auto& order: test_orders) if(IsCCW(order)) reverse(order.begin(),order.end());
+    // for(int i=0; i<test_orders.size()-1; i++){
+    //     for(int id=1; id<test_orders[i+1].size()-1; id++){
+    //         if(IsCustomerInArea(test_orders[i],test_orders[i+1][id])){
+    //             cout<<"contain\n";
+    //             exit(1);
+    //         }
+    //     }
+    // }
     // cout<<"construct\n";
     // ShowOrdersInfo(test_orders,weights,capacity,n);
     // FourOptStar(test_orders,weights,capacity);

@@ -215,7 +215,8 @@ void OutputLattice(const vector<int> lattice,int LatticeSize,
 }
 
 void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
-            IteratedType& iterated_type,bool& use_tabulist,bool& use_lattice)
+            IteratedType& iterated_type,bool& use_tabulist,bool& use_lattice,
+            bool& use_hull)
 {
     if(argc>1){
         for(int i=1; i<argc; i++){
@@ -225,6 +226,7 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
             const string iterate=type.substr(0,3);
             const string use_t=type.substr(0,3);
             const string use_l=type.substr(0,3);
+            const string use_h=type.substr(0,3);
 
             if(neighbor=="-n="){
                 type=type.substr(3,type.size()-3);
@@ -266,6 +268,10 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
             else if(use_l=="-l="){
                 if(type[3]=='0') use_lattice=false;
                 else use_lattice=true;
+            }
+            else if(use_h=="-h="){
+                if(type[3]=='0') use_hull=false;
+                else use_hull=true;
             }
         }
         
