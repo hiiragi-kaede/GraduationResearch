@@ -742,6 +742,7 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
                 double dif=GetTwoOptStarDiff(dis_mat,orders,i,j,i_id,j_id);
                 
                 if(dif<0){
+                    search_cnt++;
                     UpdateTwoOptStarOrders(orders,dis_mat,i,j,fst_size,sec_size,
                                         i_dif,j_dif,i_id,j_id);
                     if(IsCCW(orders[i])) reverse(orders[i].begin(),orders[i].end());
