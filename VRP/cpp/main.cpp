@@ -28,6 +28,8 @@ bool use_tabulist=true;
 bool use_lattice=true;
 bool use_hull=true;
 
+extern bool show_search_cnt;
+
 vector<int> cus_x,cus_y;
 
 int main(int argc,char *argv[]){
@@ -76,6 +78,8 @@ int main(int argc,char *argv[]){
         cout<<"kick method:"<<GetKickTypes()[static_cast<int>(kick_type)]<<endl;
         cout<<"iterated type:"<<GetIteratedTypes()[static_cast<int>(iterated_type)]<<endl;
     }
+
+    if(THREAD_SIZE!=1) show_search_cnt=false;
 
     /*==========check difference between normal method and fast method==========*/
     // vector<vector<int>> test_orders;
