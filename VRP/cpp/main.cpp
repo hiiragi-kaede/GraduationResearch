@@ -17,7 +17,7 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=1;
+static const int THREAD_SIZE=8;
 static const int ITERATED_SIZE=10;
 //どれだけ顧客の存在する範囲を分割して管理するか。この値の2乗個のマスで管理。
 static const int LATTICE_SIZE=10;
@@ -38,9 +38,6 @@ int main(int argc,char *argv[]){
 
     SetArgs(argc,argv,method_type,kick_type,iterated_type,
             use_tabulist,use_lattice,use_hull);
-
-    cout<<"use tabu list:"<<use_tabulist<<",";
-    cout<<"use lattice:"<<use_lattice<<endl;
 
     /*==========prepare for calculation==========*/
     vector<vector<int>> dis_mat(n,vector<int>(n,0));

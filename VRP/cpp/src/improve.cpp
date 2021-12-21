@@ -20,6 +20,7 @@ extern bool use_lattice;
 extern bool use_hull;
 
 int search_cnt=0;
+bool show_search_cnt=true;
 extern KickType kick_type;
 extern IteratedType iterated_type;
 static const vector<string> kick_types={
@@ -278,8 +279,10 @@ void CrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>>& order
 
         if(!is_changed) break;
     }
-    cout<<"search count:"<<search_cnt<<endl;
-    search_cnt=0;
+    if(show_search_cnt){
+        cout<<"search count:"<<search_cnt<<endl;
+        search_cnt=0;
+    }
 }
 
 bool SubCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -394,8 +397,10 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
 
         if(!is_changed) break;
     }
-    cout<<"search count:"<<search_cnt<<endl;
-    search_cnt=0;
+    if(show_search_cnt){
+        cout<<"search count:"<<search_cnt<<endl;
+        search_cnt=0;
+    }
 }
 
 bool SubImprovedCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -543,6 +548,10 @@ void TwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         }
 
         if(!is_changed) break;
+    }
+    if(show_search_cnt){
+        cout<<"search count:"<<search_cnt<<endl;
+        search_cnt=0;
     }
 }
 
@@ -716,6 +725,10 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
         if(!is_changed) break;
     }
+    if(show_search_cnt){
+        cout<<"search count:"<<search_cnt<<endl;
+        search_cnt=0;
+    }
 }
 
 bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
@@ -761,6 +774,7 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity,
                 int iterated_size,const vector<int>& lattice,bool out)
 {
+    show_search_cnt=false;
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
     int min_score=1e9;
@@ -794,6 +808,7 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity,
                 int iterated_size,const vector<int>& lattice,bool out)
 {
+    show_search_cnt=false;
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
     int min_score=1e9;

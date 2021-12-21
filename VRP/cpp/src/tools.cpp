@@ -221,14 +221,9 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
     if(argc>1){
         for(int i=1; i<argc; i++){
             string type=string(argv[i]);
-            const string neighbor=type.substr(0,3);
-            const string kick=type.substr(0,3);
-            const string iterate=type.substr(0,3);
-            const string use_t=type.substr(0,3);
-            const string use_l=type.substr(0,3);
-            const string use_h=type.substr(0,3);
-
-            if(neighbor=="-n="){
+            const string option=type.substr(0,3);
+            
+            if(option=="-n="){
                 type=type.substr(3,type.size()-3);
                 if(type=="t")    method_type=MethodType::TwoOptStar;
                 else if(type=="ft")  method_type=MethodType::FastTwoOptStar;
@@ -243,7 +238,7 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
                     exit(1);
                 }
             }
-            else if(kick=="-k="){
+            else if(option=="-k="){
                 type=type.substr(3,type.size()-3);
                 if(type=="d") kick_type=KickType::DoubleBridge;
                 else if(type=="f") kick_type=KickType::FourOpt;
@@ -252,7 +247,7 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
                     exit(1);
                 }
             }
-            else if(iterate=="-i="){
+            else if(option=="-i="){
                 type=type.substr(3,type.size()-3);
                 if(type=="n") iterated_type=IteratedType::Normal;
                 else if(type=="i") iterated_type=IteratedType::Improved;
@@ -261,15 +256,15 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
                     exit(1);
                 }
             }
-            else if(use_t=="-t="){
+            else if(option=="-t="){
                 if(type[3]=='0') use_tabulist=false;
                 else use_tabulist=true;
             }
-            else if(use_l=="-l="){
+            else if(option=="-l="){
                 if(type[3]=='0') use_lattice=false;
                 else use_lattice=true;
             }
-            else if(use_h=="-h="){
+            else if(option=="-h="){
                 if(type[3]=='0') use_hull=false;
                 else use_hull=true;
             }
