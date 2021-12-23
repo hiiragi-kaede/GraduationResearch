@@ -20,13 +20,13 @@ enum class MethodType{
 void TrialInsertConstruct(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                         const int capacity,const int truck_size,
                         vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids,
-                        int CONSTRUCT_LIMIT_MS,int THREAD_SIZE);
+                        int CONSTRUCT_LIMIT_MS,int THREAD_SIZE,int seed);
 
 void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_sec,int& bef_dist,int& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice,
-                    MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS);
+                    MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS,int seed);
 
 void ShowThreadsInfos(int THREAD_SIZE,int minid,const vector<vector<vector<int>>>& thread_orders,
                     const vector<long long>& constructs,const vector<long long>& local_searches,

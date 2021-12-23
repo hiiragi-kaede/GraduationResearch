@@ -12,8 +12,6 @@
 using namespace std;
 
 static const int limit_time_millisec=300*1000;
-static random_device seed_gen;
-static mt19937 engine(seed_gen());
 
 extern bool use_tabulist;
 extern bool use_lattice;
@@ -68,7 +66,7 @@ void TwoOpt(vector<int>& order,const vector<vector<int>>& dis_mat){
     }
 }
 
-void DoubleBridge(vector<vector<int>>& orders){
+void DoubleBridge(vector<vector<int>>& orders,mt19937 engine){
     for(auto& order : orders){
         int size=order.size();
         if(size<6) continue;
@@ -85,13 +83,13 @@ void DoubleBridge(vector<vector<int>>& orders){
     }
 }
 
-bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truck_capacity){
+bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truck_capacity,mt19937 engine){
     int truck_size=orders.size();
     for(int fst=0; fst<truck_size-3; fst++){
         for(int sec=fst+1; sec<truck_size-2; sec++){
             for(int third=sec+1; third<truck_size-1; third++){
                 for(int fourth=third+1; fourth<truck_size; fourth++){
-                    bool isOk=SubFourOptStar(orders,weights,fst,sec,third,fourth,truck_capacity);
+                    bool isOk=SubFourOptStar(orders,weights,fst,sec,third,fourth,truck_capacity,engine);
                     if(isOk) return true;
                 }
             }
@@ -101,7 +99,8 @@ bool FourOptStar(vector<vector<int>>& orders,const vector<int>& weights,int truc
 }
 
 bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
-                    int fst,int sec,int third,int fourth,int truck_capacity)
+                    int fst,int sec,int third,int fourth,int truck_capacity,
+                    mt19937 engine)
 {
     uniform_int_distribution<> dist(2,orders[fst].size()-2);
     int fst_id=dist(engine);
@@ -772,13 +771,15 @@ bool SubImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& order
 
 void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity,
-                int iterated_size,const vector<int>& lattice,bool out)
+                int iterated_size,const vector<int>& lattice,int seed,
+                bool out)
 {
     show_search_cnt=false;
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
     int min_score=1e9;
     vector<vector<int>> min_orders=orders;
+    mt19937 engine(seed);
     for(int i=0; i<iterated_size; i++){
         auto st=chrono::system_clock::now();
         ImprovedTwoOptStar(weights,orders,dis_mat,truck_capacity,lattice);
@@ -791,7 +792,7 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
             min_orders=orders;
         }
         if(i!=iterated_size-1){
-            Kick(orders,weights,truck_capacity);
+            Kick(orders,weights,truck_capacity,engine);
         }  
     }
     if(out){
@@ -806,13 +807,15 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
                 const vector<vector<int>>& dis_mat,const int truck_capacity,
-                int iterated_size,const vector<int>& lattice,bool out)
+                int iterated_size,const vector<int>& lattice,int seed,
+                bool out)
 {
     show_search_cnt=false;
     vector<long long> times(iterated_size);
     vector<double> scores(iterated_size);
     int min_score=1e9;
     vector<vector<int>> min_orders=orders;
+    mt19937 engine(seed);
     for(int i=0; i<iterated_size; i++){
         auto st=chrono::system_clock::now();
         ImprovedCrossExchangeNeighbor(weights,orders,dis_mat,truck_capacity,lattice);
@@ -825,7 +828,7 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
             min_orders=orders;
         }
         if(i!=iterated_size-1){
-            Kick(orders,weights,truck_capacity);
+            Kick(orders,weights,truck_capacity,engine);
         }
     }
     if(out){
@@ -847,11 +850,13 @@ bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
     return ret;
 }
 
-void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity){
+void Kick(vector<vector<int>>& orders,const vector<int>& weights,int capacity,
+        mt19937 engine)
+{
     if(kick_type==KickType::DoubleBridge)
-        DoubleBridge(orders);
+        DoubleBridge(orders,engine);
     if(kick_type==KickType::FourOpt)
-        FourOptStar(orders,weights,capacity);
+        FourOptStar(orders,weights,capacity,engine);
 }
 
 vector<set<int>> ConstructTruckLatticeList(const vector<vector<int>>& orders,const vector<int>& lattice)

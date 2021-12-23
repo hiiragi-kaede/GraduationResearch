@@ -17,7 +17,7 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=8;
+static const int THREAD_SIZE=4;
 static const int ITERATED_SIZE=10;
 //どれだけ顧客の存在する範囲を分割して管理するか。この値の2乗個のマスで管理。
 static const int LATTICE_SIZE=10;
@@ -122,7 +122,7 @@ int main(int argc,char *argv[]){
         threads[i]=thread(ThreadProcess,ref(dis_mat),ref(weights),capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
                         ref(thread_orders[i]),ref(nn_list),ref(Lattice),method_type,
-                        THREAD_SIZE,ITERATED_SIZE,CONSTRUCT_LIMIT_MS);
+                        THREAD_SIZE,ITERATED_SIZE,CONSTRUCT_LIMIT_MS,i);
     }
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();

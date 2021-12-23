@@ -20,7 +20,7 @@ static const vector<string> TypeName{
 void TrialInsertConstruct(const vector<vector<int>>& dis_mat,const vector<int>& weights,
                         const int capacity,const int truck_size,
                         vector<vector<int>>& orders,vector<pair<int,int>>& truck_ids,
-                        int CONSTRUCT_LIMIT_MS,int THREAD_SIZE)
+                        int CONSTRUCT_LIMIT_MS,int THREAD_SIZE,int seed)
 {
     int n=dis_mat.size();
     int t_size=truck_size;
@@ -36,10 +36,11 @@ void TrialInsertConstruct(const vector<vector<int>>& dis_mat,const vector<int>& 
         }
         
         if(THREAD_SIZE==1){
-            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids);
+            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids,seed);
+            //orders=RandomConstruct(weights,capacity);
         }
         else{
-            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids,true);
+            orders=InsertConstruct(dis_mat,weights,capacity,t_size,truck_ids,seed,true);
         }
         
     } while (IsExistUnvisited(orders,weights,n));
@@ -53,7 +54,8 @@ void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights
                     const int capacity,const int truck_size,
                     long long& construct_ms,long long& local_search_msec,int& bef_dist,int& aft_dist,
                     vector<vector<int>>& ans_orders,const vector<set<int>>& nn_list,vector<int>& lattice,
-                    MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS)
+                    MethodType method_type,int THREAD_SIZE,int ITERATED_SIZE,int CONSTRUCT_LIMIT_MS,
+                    int seed)
 {
     /*==========construct initial answer==========*/
     int n=dis_mat.size();
@@ -61,7 +63,7 @@ void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights
     vector<pair<int,int>> truck_ids(n);
 
     auto st=chrono::system_clock::now();
-    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,orders,truck_ids,CONSTRUCT_LIMIT_MS,THREAD_SIZE);
+    TrialInsertConstruct(dis_mat,weights,capacity,truck_size,orders,truck_ids,CONSTRUCT_LIMIT_MS,THREAD_SIZE,seed);
     auto end=chrono::system_clock::now();
     construct_ms=chrono::duration_cast<chrono::milliseconds>(end-st).count();
 
@@ -91,15 +93,15 @@ void ThreadProcess(const vector<vector<int>>& dis_mat,const vector<int>& weights
         break;
     case MethodType::IteratedTwo:
         if(THREAD_SIZE!=1)
-            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,false);
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,seed,false);
         else
-            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice);
+            IteratedTwoOptStar(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,seed);
         break;
     case MethodType::IteratedCross:
         if(THREAD_SIZE!=1)
-            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,false);
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,seed,false);
         else
-            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice);
+            IteratedCross(weights,orders,dis_mat,capacity,ITERATED_SIZE,lattice,seed);
         break;
     default:
         break;
