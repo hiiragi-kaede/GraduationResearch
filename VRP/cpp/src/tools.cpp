@@ -218,7 +218,7 @@ void OutputLattice(const vector<int> lattice,int LatticeSize,
 
 void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
             IteratedType& iterated_type,bool& use_tabulist,bool& use_lattice,
-            bool& use_hull)
+            bool& use_hull,int& seed_offset)
 {
     if(argc>1){
         for(int i=1; i<argc; i++){
@@ -269,6 +269,10 @@ void SetArgs(int argc,char *argv[],MethodType& method_type,KickType& kick_type,
             else if(option=="-h="){
                 if(type[3]=='0') use_hull=false;
                 else use_hull=true;
+            }
+            else if(option=="-s="){
+                type=type.substr(3,type.size()-3);
+                seed_offset=atoi(type.c_str());
             }
         }
         

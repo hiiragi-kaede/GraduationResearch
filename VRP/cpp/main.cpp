@@ -27,6 +27,7 @@ IteratedType iterated_type=IteratedType::Improved;
 bool use_tabulist=true;
 bool use_lattice=true;
 bool use_hull=true;
+int seed_offset=0;
 
 extern bool show_search_cnt;
 
@@ -39,8 +40,8 @@ int main(int argc,char *argv[]){
     InputData(n,capacity,cus_x,cus_y,weights);
 
     SetArgs(argc,argv,method_type,kick_type,iterated_type,
-            use_tabulist,use_lattice,use_hull);
-
+            use_tabulist,use_lattice,use_hull,seed_offset);
+    cout<<"seed:"<<seed_offset<<endl;
     /*==========prepare for calculation==========*/
     vector<vector<int>> dis_mat(n,vector<int>(n,0));
     for(int i=0; i<n; i++){
