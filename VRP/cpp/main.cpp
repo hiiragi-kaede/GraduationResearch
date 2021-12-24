@@ -120,10 +120,11 @@ int main(int argc,char *argv[]){
     
     //スレッドに求解させる
     for(int i=0; i<THREAD_SIZE; i++){
+        int seed=i+seed_offset*THREAD_SIZE;
         threads[i]=thread(ThreadProcess,ref(dis_mat),ref(weights),capacity,truck_size,
                         ref(constructs[i]),ref(local_searches[i]),ref(befs[i]),ref(afts[i]),
                         ref(thread_orders[i]),ref(nn_list),ref(Lattice),method_type,
-                        THREAD_SIZE,ITERATED_SIZE,CONSTRUCT_LIMIT_MS,i);
+                        THREAD_SIZE,ITERATED_SIZE,CONSTRUCT_LIMIT_MS,seed);
     }
     //すべてのスレッドの処理が終わるのを待つ
     for(int i=0; i<THREAD_SIZE; i++) threads[i].join();

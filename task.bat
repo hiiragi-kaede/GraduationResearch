@@ -8,8 +8,8 @@ main.exe -n=ilsc -k=f< ../CVRP_Data/%1 > ../../research_out/%~n1_out/cross_four.
 echo; >> ../../research_out/%~n1_out/cross_bridge.txt
 echo; >> ../../research_out/%~n1_out/cross_four.txt
 for /l %%n in (1,1,3) do (
-    main.exe -n=ilsc -k=d< ../CVRP_Data/%1 >> ../../research_out/%~n1_out/cross_bridge.txt 2>NUL
-    main.exe -n=ilsc -k=f< ../CVRP_Data/%1 >> ../../research_out/%~n1_out/cross_four.txt 2>NUL
+    main.exe -n=ilsc -k=d -s=%%n< ../CVRP_Data/%1 >> ../../research_out/%~n1_out/cross_bridge.txt 2>NUL
+    main.exe -n=ilsc -k=f -s=%%n< ../CVRP_Data/%1 >> ../../research_out/%~n1_out/cross_four.txt 2>NUL
     echo; >> ../../research_out/%~n1_out/cross_bridge.txt
     echo; >> ../../research_out/%~n1_out/cross_four.txt
 )
