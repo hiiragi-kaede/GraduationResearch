@@ -17,7 +17,7 @@ g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src
 using namespace std;
 
 static const int CONSTRUCT_LIMIT_MS=500;
-static const int THREAD_SIZE=4;
+static const int THREAD_SIZE=8;
 static const int ITERATED_SIZE=10;
 //どれだけ顧客の存在する範囲を分割して管理するか。この値の2乗個のマスで管理。
 static const int LATTICE_SIZE=10;

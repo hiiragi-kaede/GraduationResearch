@@ -1,0 +1,104 @@
+seed:0
+total_weight:3632
+truck_size:26
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,1,0
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+ 
+seed:1
+total_weight:3632
+truck_size:26
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,1,0
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+ 
+seed:2
+total_weight:3632
+truck_size:26
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,1,0
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+thread size:8
+use thread1's answer
+
+[31mThread 1[0m
+truck size:29
+time info
+construct:1503(ms)    local search:19(ms)
+total move cost change:62569--->53813
+improve rate:13.9942
+
+Thread 2[0m
+truck size:29
+time info
+construct:1503(ms)    local search:12(ms)
+total move cost change:62266--->54920
+improve rate:11.7978
+
+Thread 3[0m
+truck size:30
+time info
+construct:2005(ms)    local search:12(ms)
+total move cost change:66054--->55216
+improve rate:16.4078
+
+Thread 4[0m
+truck size:30
+time info
+construct:2005(ms)    local search:10(ms)
+total move cost change:63684--->54627
+improve rate:14.2218
+
+Thread 5[0m
+truck size:30
+time info
+construct:2005(ms)    local search:14(ms)
+total move cost change:65219--->54059
+improve rate:17.1116
+
+Thread 6[0m
+truck size:30
+time info
+construct:2005(ms)    local search:9(ms)
+total move cost change:62618--->55640
+improve rate:11.1438
+
+Thread 7[0m
+truck size:31
+time info
+construct:2506(ms)    local search:8(ms)
+total move cost change:67058--->56072
+improve rate:16.3828
+
+Thread 8[0m
+truck size:29
+time info
+construct:1504(ms)    local search:15(ms)
+total move cost change:65217--->54767
+improve rate:16.0234
+
+construct average score:64335.6
+improved average score:54889.2
+local search average milliseconds:12.375
+improve rate average:14.6354
+minimum:53813
+ 
+seed:3
+total_weight:3632
+truck_size:26
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,1,0
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+ 
