@@ -13,62 +13,62 @@ use thread6's answer
 Thread 1[0m
 truck size:31
 time info
-construct:501(ms)    local search:31(ms)
+construct:501(ms)    local search:32(ms)
 total move cost change:65415--->57513
 improve rate:12.0798
 
 Thread 2[0m
 truck size:31
 time info
-construct:501(ms)    local search:26(ms)
+construct:501(ms)    local search:27(ms)
 total move cost change:65535--->57795
 improve rate:11.8105
 
 Thread 3[0m
 truck size:32
 time info
-construct:1002(ms)    local search:14(ms)
+construct:1003(ms)    local search:14(ms)
 total move cost change:67017--->57976
 improve rate:13.4906
 
 Thread 4[0m
 truck size:31
 time info
-construct:501(ms)    local search:32(ms)
+construct:501(ms)    local search:35(ms)
 total move cost change:66906--->57505
 improve rate:14.0511
 
 Thread 5[0m
 truck size:31
 time info
-construct:501(ms)    local search:32(ms)
+construct:501(ms)    local search:31(ms)
 total move cost change:67600--->57414
 improve rate:15.068
 
 [31mThread 6[0m
 truck size:31
 time info
-construct:501(ms)    local search:33(ms)
+construct:501(ms)    local search:36(ms)
 total move cost change:67321--->57351
 improve rate:14.8096
 
 Thread 7[0m
 truck size:31
 time info
-construct:501(ms)    local search:33(ms)
+construct:501(ms)    local search:34(ms)
 total move cost change:65588--->57708
 improve rate:12.0144
 
 Thread 8[0m
 truck size:31
 time info
-construct:501(ms)    local search:29(ms)
+construct:503(ms)    local search:34(ms)
 total move cost change:67402--->57373
 improve rate:14.8794
 
 construct average score:66598
 improved average score:57579.4
-local search average milliseconds:28.75
+local search average milliseconds:30.375
 improve rate average:13.5254
 minimum:57351
  
@@ -87,62 +87,62 @@ use thread3's answer
 Thread 1[0m
 truck size:31
 time info
-construct:501(ms)    local search:34(ms)
+construct:501(ms)    local search:38(ms)
 total move cost change:68524--->57789
 improve rate:15.666
 
 Thread 2[0m
 truck size:31
 time info
-construct:501(ms)    local search:17(ms)
+construct:501(ms)    local search:20(ms)
 total move cost change:66250--->57813
 improve rate:12.7351
 
 [31mThread 3[0m
 truck size:31
 time info
-construct:501(ms)    local search:30(ms)
+construct:501(ms)    local search:28(ms)
 total move cost change:65405--->57192
 improve rate:12.5571
 
 Thread 4[0m
 truck size:31
 time info
-construct:501(ms)    local search:23(ms)
+construct:501(ms)    local search:24(ms)
 total move cost change:66526--->57575
 improve rate:13.4549
 
 Thread 5[0m
 truck size:31
 time info
-construct:501(ms)    local search:30(ms)
+construct:501(ms)    local search:25(ms)
 total move cost change:67602--->57435
 improve rate:15.0395
 
 Thread 6[0m
 truck size:31
 time info
-construct:501(ms)    local search:30(ms)
+construct:501(ms)    local search:31(ms)
 total move cost change:65925--->57276
 improve rate:13.1195
 
 Thread 7[0m
 truck size:32
 time info
-construct:1002(ms)    local search:20(ms)
+construct:1003(ms)    local search:21(ms)
 total move cost change:68143--->58030
 improve rate:14.8408
 
 Thread 8[0m
 truck size:32
 time info
-construct:1002(ms)    local search:15(ms)
+construct:1003(ms)    local search:18(ms)
 total move cost change:68265--->58219
 improve rate:14.7162
 
 construct average score:67080
 improved average score:57666.1
-local search average milliseconds:24.875
+local search average milliseconds:25.625
 improve rate average:14.0161
 minimum:57192
  
@@ -155,6 +155,70 @@ use tabu,lattice,hull:0,0,0
 neighbor type:IteratedCross
 kick method:FourOpt
 iterated type:Improved
+thread size:8
+use thread1's answer
+
+[31mThread 1[0m
+truck size:31
+time info
+construct:501(ms)    local search:28(ms)
+total move cost change:63809--->57378
+improve rate:10.0785
+
+Thread 2[0m
+truck size:32
+time info
+construct:1003(ms)    local search:26(ms)
+total move cost change:68671--->57743
+improve rate:15.9136
+
+Thread 3[0m
+truck size:31
+time info
+construct:501(ms)    local search:30(ms)
+total move cost change:67904--->57410
+improve rate:15.4542
+
+Thread 4[0m
+truck size:32
+time info
+construct:1003(ms)    local search:24(ms)
+total move cost change:67837--->57973
+improve rate:14.5407
+
+Thread 5[0m
+truck size:32
+time info
+construct:1003(ms)    local search:21(ms)
+total move cost change:67107--->57654
+improve rate:14.0865
+
+Thread 6[0m
+truck size:32
+time info
+construct:1003(ms)    local search:28(ms)
+total move cost change:66405--->57912
+improve rate:12.7897
+
+Thread 7[0m
+truck size:32
+time info
+construct:1003(ms)    local search:27(ms)
+total move cost change:65334--->57792
+improve rate:11.5438
+
+Thread 8[0m
+truck size:31
+time info
+construct:501(ms)    local search:28(ms)
+total move cost change:65198--->57416
+improve rate:11.9359
+
+construct average score:66533.1
+improved average score:57659.8
+local search average milliseconds:26.5
+improve rate average:13.2929
+minimum:57378
  
 seed:3
 total_weight:5536
@@ -171,62 +235,62 @@ use thread5's answer
 Thread 1[0m
 truck size:31
 time info
-construct:501(ms)    local search:32(ms)
+construct:502(ms)    local search:31(ms)
 total move cost change:65373--->57378
 improve rate:12.2298
 
 Thread 2[0m
 truck size:31
 time info
-construct:501(ms)    local search:26(ms)
+construct:501(ms)    local search:31(ms)
 total move cost change:67341--->57676
 improve rate:14.3523
 
 Thread 3[0m
 truck size:31
 time info
-construct:501(ms)    local search:38(ms)
+construct:501(ms)    local search:43(ms)
 total move cost change:66294--->57360
 improve rate:13.4763
 
 Thread 4[0m
 truck size:31
 time info
-construct:501(ms)    local search:34(ms)
+construct:501(ms)    local search:35(ms)
 total move cost change:64411--->57329
 improve rate:10.995
 
 [31mThread 5[0m
 truck size:31
 time info
-construct:501(ms)    local search:33(ms)
+construct:502(ms)    local search:38(ms)
 total move cost change:64622--->56679
 improve rate:12.2915
 
 Thread 6[0m
 truck size:31
 time info
-construct:501(ms)    local search:27(ms)
+construct:502(ms)    local search:27(ms)
 total move cost change:66954--->57569
 improve rate:14.0171
 
 Thread 7[0m
 truck size:33
 time info
-construct:1512(ms)    local search:18(ms)
+construct:1505(ms)    local search:17(ms)
 total move cost change:69967--->59330
 improve rate:15.2029
 
 Thread 8[0m
 truck size:32
 time info
-construct:1003(ms)    local search:16(ms)
+construct:1003(ms)    local search:20(ms)
 total move cost change:65936--->58223
 improve rate:11.6977
 
 construct average score:66362.2
 improved average score:57693
-local search average milliseconds:28
+local search average milliseconds:30.25
 improve rate average:13.0328
 minimum:56679
  

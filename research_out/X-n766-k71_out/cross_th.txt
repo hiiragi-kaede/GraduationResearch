@@ -1,0 +1,296 @@
+seed:0
+total_weight:11695
+truck_size:71
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,0,1
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+thread size:8
+use thread7's answer
+
+Thread 1[0m
+truck size:71
+time info
+construct:2(ms)    local search:2859(ms)
+total move cost change:187505--->122160
+improve rate:34.8497
+
+Thread 2[0m
+truck size:71
+time info
+construct:2(ms)    local search:2836(ms)
+total move cost change:186557--->124028
+improve rate:33.5174
+
+Thread 3[0m
+truck size:71
+time info
+construct:2(ms)    local search:2534(ms)
+total move cost change:180461--->123199
+improve rate:31.731
+
+Thread 4[0m
+truck size:71
+time info
+construct:2(ms)    local search:2829(ms)
+total move cost change:177005--->123703
+improve rate:30.1133
+
+Thread 5[0m
+truck size:72
+time info
+construct:502(ms)    local search:2815(ms)
+total move cost change:183966--->123830
+improve rate:32.6886
+
+Thread 6[0m
+truck size:71
+time info
+construct:0(ms)    local search:2552(ms)
+total move cost change:175653--->122530
+improve rate:30.2431
+
+[31mThread 7[0m
+truck size:72
+time info
+construct:502(ms)    local search:2426(ms)
+total move cost change:184108--->121968
+improve rate:33.7519
+
+Thread 8[0m
+truck size:71
+time info
+construct:0(ms)    local search:1848(ms)
+total move cost change:172169--->123314
+improve rate:28.3762
+
+construct average score:180928
+improved average score:123092
+local search average milliseconds:2587.38
+improve rate average:31.9089
+minimum:121968
+ 
+seed:1
+total_weight:11695
+truck_size:71
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,0,1
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+thread size:8
+use thread2's answer
+
+Thread 1[0m
+truck size:71
+time info
+construct:2(ms)    local search:2479(ms)
+total move cost change:176290--->122738
+improve rate:30.3772
+
+[31mThread 2[0m
+truck size:72
+time info
+construct:502(ms)    local search:2644(ms)
+total move cost change:186723--->122300
+improve rate:34.5019
+
+Thread 3[0m
+truck size:71
+time info
+construct:2(ms)    local search:2889(ms)
+total move cost change:182684--->122494
+improve rate:32.9476
+
+Thread 4[0m
+truck size:71
+time info
+construct:2(ms)    local search:1959(ms)
+total move cost change:180940--->122990
+improve rate:32.0272
+
+Thread 5[0m
+truck size:72
+time info
+construct:501(ms)    local search:2565(ms)
+total move cost change:180659--->123316
+improve rate:31.741
+
+Thread 6[0m
+truck size:72
+time info
+construct:501(ms)    local search:2403(ms)
+total move cost change:178144--->122624
+improve rate:31.1658
+
+Thread 7[0m
+truck size:71
+time info
+construct:1(ms)    local search:3203(ms)
+total move cost change:180866--->122958
+improve rate:32.0171
+
+Thread 8[0m
+truck size:72
+time info
+construct:503(ms)    local search:2654(ms)
+total move cost change:184344--->123419
+improve rate:33.0496
+
+construct average score:181331
+improved average score:122855
+local search average milliseconds:2599.5
+improve rate average:32.2284
+minimum:122300
+ 
+seed:2
+total_weight:11695
+truck_size:71
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,0,1
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+thread size:8
+use thread5's answer
+
+Thread 1[0m
+truck size:72
+time info
+construct:502(ms)    local search:2160(ms)
+total move cost change:183785--->123324
+improve rate:32.8977
+
+Thread 2[0m
+truck size:72
+time info
+construct:503(ms)    local search:3109(ms)
+total move cost change:185327--->123252
+improve rate:33.4948
+
+Thread 3[0m
+truck size:72
+time info
+construct:502(ms)    local search:2613(ms)
+total move cost change:189442--->122202
+improve rate:35.4937
+
+Thread 4[0m
+truck size:71
+time info
+construct:2(ms)    local search:2506(ms)
+total move cost change:177259--->123499
+improve rate:30.3285
+
+[31mThread 5[0m
+truck size:72
+time info
+construct:503(ms)    local search:2856(ms)
+total move cost change:174815--->121440
+improve rate:30.5323
+
+Thread 6[0m
+truck size:72
+time info
+construct:502(ms)    local search:1835(ms)
+total move cost change:175486--->123047
+improve rate:29.8822
+
+Thread 7[0m
+truck size:71
+time info
+construct:2(ms)    local search:2704(ms)
+total move cost change:171065--->123842
+improve rate:27.6053
+
+Thread 8[0m
+truck size:72
+time info
+construct:502(ms)    local search:3009(ms)
+total move cost change:177687--->122984
+improve rate:30.7862
+
+construct average score:179358
+improved average score:122949
+local search average milliseconds:2599
+improve rate average:31.3776
+minimum:121440
+ 
+seed:3
+total_weight:11695
+truck_size:71
+iterated times:10
+lattice size:10
+use tabu,lattice,hull:1,0,1
+neighbor type:IteratedCross
+kick method:FourOpt
+iterated type:Improved
+thread size:8
+use thread2's answer
+
+Thread 1[0m
+truck size:71
+time info
+construct:2(ms)    local search:2014(ms)
+total move cost change:183073--->123578
+improve rate:32.498
+
+[31mThread 2[0m
+truck size:71
+time info
+construct:2(ms)    local search:2240(ms)
+total move cost change:172140--->121999
+improve rate:29.128
+
+Thread 3[0m
+truck size:72
+time info
+construct:503(ms)    local search:2910(ms)
+total move cost change:182851--->123664
+improve rate:32.369
+
+Thread 4[0m
+truck size:71
+time info
+construct:0(ms)    local search:3156(ms)
+total move cost change:184780--->123949
+improve rate:32.9208
+
+Thread 5[0m
+truck size:72
+time info
+construct:503(ms)    local search:2649(ms)
+total move cost change:178766--->122702
+improve rate:31.3617
+
+Thread 6[0m
+truck size:72
+time info
+construct:503(ms)    local search:2811(ms)
+total move cost change:179130--->122489
+improve rate:31.6201
+
+Thread 7[0m
+truck size:72
+time info
+construct:502(ms)    local search:2497(ms)
+total move cost change:176951--->122996
+improve rate:30.4915
+
+Thread 8[0m
+truck size:71
+time info
+construct:0(ms)    local search:2567(ms)
+total move cost change:171685--->123649
+improve rate:27.9791
+
+construct average score:178672
+improved average score:123128
+local search average milliseconds:2605.5
+improve rate average:31.046
+minimum:121999
+ 

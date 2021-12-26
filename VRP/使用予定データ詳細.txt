@@ -1,7 +1,6 @@
 顧客数-車両数:デポ分布、顧客分布
 110-13:cent,rand
 125-30:rand,cluster
-139-10:cent,rand
 176-26:corner,rand
 204-19:cent,rc
 223-34:rand,rc
@@ -27,4 +26,3 @@
 979-58:corner,cluster
 1001-43:rand,rand
 Leuven3000:cent,cluster
-Leuven4000:rand,cluster

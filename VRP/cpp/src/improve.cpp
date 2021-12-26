@@ -11,7 +11,7 @@
 
 using namespace std;
 
-static const int limit_time_millisec=300*1000;
+static const int limit_time_millisec=600*1000;
 
 extern bool use_tabulist;
 extern bool use_lattice;
@@ -102,6 +102,7 @@ bool SubFourOptStar(vector<vector<int>>& orders,const vector<int>& weights,
                     int fst,int sec,int third,int fourth,int truck_capacity,
                     mt19937 engine)
 {
+    if(orders[fst].size()<4) return false;
     uniform_int_distribution<> dist(2,orders[fst].size()-2);
     int fst_id=dist(engine);
     int fst_weight=TotalWeight(orders[fst].begin()+fst_id,orders[fst].end(),weights);
@@ -802,7 +803,7 @@ void IteratedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
         for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
         cout<<endl;
     }
-    if(TotalDistance(orders,dis_mat)>min_score) orders=min_orders;
+    if(scores[iterated_size-1]>min_score) orders=min_orders;
 }
 
 void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
@@ -838,7 +839,7 @@ void IteratedCross(const vector<int>& weights,vector<vector<int>>& orders,
         for_each(scores.begin(),scores.end(),[](double x){cout<<x<<"->";});
         cout<<endl;
     }
-    if(TotalDistance(orders,dis_mat)>min_score) orders=min_orders;
+    if(scores[iterated_size-1]>min_score) orders=min_orders;
 }
 
 bool IsValidWeight(const vector<int>& order_i,const vector<int>& order_j,
