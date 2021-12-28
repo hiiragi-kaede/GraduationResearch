@@ -47,7 +47,6 @@ def make_data_frame(file):
 
 def image_output(file,df):
     img_path="img"
-    os.makedirs(img_path,exist_ok=True)
     os.makedirs(img_path+"/"+file,exist_ok=True)
     out_path=img_path+"/"+file
     sns.boxplot(x="ILS_type",y="before_cost",data=df)
@@ -67,12 +66,56 @@ def image_output(file,df):
     plt.savefig(out_path+"/imp_rate.png")
     plt.clf()
 
+def info_output(file):
+    fname="info/"+file[:-4]+".txt"
+    with open(fname,"w") as f:
+        types=["normal","h","l","lh","t","th","tl","tlh"]
+        cols=["type","1st_quantile","median","3rd_quantile","mean","std","min","max"]
+        print("ILS msec infos:",file=f)
+        ms_df=pd.DataFrame(index=[],columns=cols)
+        for i in range(8):
+            data=df[df.ILS_type == types[i]]
+            ms=data["ILS_ms"]
+            tmp=pd.DataFrame(data=[[types[i],ms.quantile(0.25),ms.median(),ms.quantile(0.75),
+                                    ms.mean(),ms.std(),ms.min(),ms.max()]],columns=cols)
+            ms_df=ms_df.append(tmp,ignore_index=True)
+        print(ms_df,end="\n\n",file=f)
+        
+        print("ILS before costs:",file=f)
+        data=df[df.ILS_type == types[i]]
+        bef=data["before_cost"]    
+        bef_df=pd.DataFrame(index=[],columns=cols[1:])
+        bef_df=bef_df.append(pd.DataFrame(data=[[bef.quantile(0.25),bef.median(),bef.quantile(0.75),
+                                bef.mean(),bef.std(),bef.min(),bef.max()]],columns=cols[1:]))
+        print(bef_df,end="\n\n",file=f)
+        
+        print("ILS after costs:",file=f)
+        aft_df=pd.DataFrame(index=[],columns=cols)
+        for i in range(8):
+            data=df[df.ILS_type == types[i]]
+            aft=data["after_cost"]
+            tmp=pd.DataFrame(data=[[types[i],aft.quantile(0.25),aft.median(),aft.quantile(0.75),
+                                    aft.mean(),aft.std(),aft.min(),aft.max()]],columns=cols)
+            aft_df=aft_df.append(tmp,ignore_index=True)
+        print(aft_df,end="\n\n",file=f)
+        
+        print("ILS improvement rates:",file=f)
+        imp_df=pd.DataFrame(index=[],columns=cols)
+        for i in range(8):
+            data=df[df.ILS_type == types[i]]
+            imp=data["improve_rate"]
+            tmp=pd.DataFrame(data=[[types[i],imp.quantile(0.25),imp.median(),imp.quantile(0.75),
+                                    imp.mean(),imp.std(),imp.min(),imp.max()]],columns=cols)
+            imp_df=imp_df.append(tmp,ignore_index=True)
+        print(imp_df,end="",file=f)
+
 
 #main関数
 path="./"
 files=os.listdir(path)
+#出力フォルダのみに限定(img,infoフォルダやこのpythonファイル自体を対象にしないように)
 files=[i for i in files if "_out" in i]
 
 for file in files:
     df=make_data_frame(file)
-    image_output(file,df)
+    info_output(file)
