@@ -8,11 +8,11 @@
 303-21:cent,cluster
 359-29:corner.rc
 401-29:corner,cluster
-*411-19:rand,cluster
+411-19:rand,cluster
 449-29:corner,rand
 480-70:rand,cluster
 524-153:rand,rand
-*536-96:cent,cluster
+536-96:cent,cluster
 561-42:cent,rc
 613-62:cent,rand
 641-35:corner,rc
