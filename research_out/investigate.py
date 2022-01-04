@@ -119,3 +119,4 @@ files=[i for i in files if "_out" in i]
 for file in files:
     df=make_data_frame(file)
     info_output(file)
+    image_output(file,df)
