@@ -149,7 +149,6 @@ for cnt,file in enumerate(files):
         with open(out_dir+compare_fname,"a") as f:
             print("\\begin{table}[htbp]",file=f)
             print("\t\\centering",file=f)
-            print("    \\caption{通常手法との比較}",file=f)
             print("""\
             \\begin{tabular}{|l|l|l|l|l|}\hline
             \multicolumn{1}{|c|}{\\textbf{data}}
