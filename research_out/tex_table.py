@@ -181,18 +181,18 @@ for cnt,file in enumerate(files):
             if i!=1: print("\t",end="",file=f)
             print("& "+msecs[i][0],end=" & ",file=f)
             
-            ms_txt=str(ms_scores[i-1]) if abs(ms_scores[i-1]-min_ms)>1e-2 else "\\bm{"+str(ms_scores[i-1])+"}"
-            aft_txt=str(aft_scores[i-1]) if abs(aft_scores[i-1]-min_aft)>1e-2 else "\\bm{"+str(aft_scores[i-1])+"}"
-            imp_txt=str(imp_scores[i-1]) if abs(imp_scores[i-1]-max_imp)>1e-2 else "\\bm{"+str(imp_scores[i-1])+"}"
+            ms_txt=str(ms_scores[i-1]) if abs(ms_scores[i-1]-min_ms)>1e-4 else "\\bm{"+str(ms_scores[i-1])+"}"
+            aft_txt=str(aft_scores[i-1]) if abs(aft_scores[i-1]-min_aft)>1e-4 else "\\bm{"+str(aft_scores[i-1])+"}"
+            imp_txt=str(imp_scores[i-1]) if abs(imp_scores[i-1]-max_imp)>1e-4 else "\\bm{"+str(imp_scores[i-1])+"}"
             
             print(ms_txt,end=" & ",file=f)
             print(aft_txt,end=" & ",file=f)
             print(imp_txt,end="\\\\\\cline{2-5}\n",file=f)
         
         print("\t& "+msecs[7][0],end=" & ",file=f)
-        ms_txt=str(ms_scores[6]) if abs(ms_scores[6]-min_ms)>1e-2 else "\\bm{"+str(ms_scores[6])+"}"
-        aft_txt=str(aft_scores[6]) if abs(aft_scores[6]-min_aft)>1e-2 else "\\bm{"+str(aft_scores[6])+"}"
-        imp_txt=str(imp_scores[6]) if abs(imp_scores[6]-max_imp)>1e-2 else "\\bm{"+str(imp_scores[6])+"}"
+        ms_txt=str(ms_scores[6]) if abs(ms_scores[6]-min_ms)>1e-4 else "\\bm{"+str(ms_scores[6])+"}"
+        aft_txt=str(aft_scores[6]) if abs(aft_scores[6]-min_aft)>1e-4 else "\\bm{"+str(aft_scores[6])+"}"
+        imp_txt=str(imp_scores[6]) if abs(imp_scores[6]-max_imp)>1e-4 else "\\bm{"+str(imp_scores[6])+"}"
         print(ms_txt,end=" & ",file=f)
         print(aft_txt,end=" & ",file=f)
         print(imp_txt,end="\\\\\\hline\n",file=f)
