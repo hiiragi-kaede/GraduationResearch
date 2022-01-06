@@ -269,15 +269,28 @@ def img_out():
     
 def save_img(data_names,data,types,title,img_name):
     colors=plt.get_cmap("tab10")
-    xs=range(len(data_names))
-    plt.figure(figsize=(16,9))
-    plt.xticks(xs,data_names)
+    xs=range(len(data_names)//2)
+    plt.figure(figsize=(8,6))
+    plt.xticks(xs,data_names[:len(data_names)//2])
     plt.xlabel("customer size")
     for i in range(8):
-        plt.plot(xs,[data[id][i] for id in range(len(xs))],
-                color=colors(i),label=types[i])
+        ys=[data[id][i] for id in range(len(xs))]
+        plt.plot(xs,ys,color=colors(i),label=types[i])
     plt.title(title)
     plt.legend()
+    plt.savefig("img/comparison/"+img_name)
+    plt.clf()
+    
+    xs=range(len(data_names)-len(data_names)//2)
+    plt.figure(figsize=(8,6))
+    plt.xticks(xs,data_names[len(data_names)//2:])
+    plt.xlabel("customer size")
+    for i in range(8):
+        ys=[data[id+len(xs)][i] for id in range(len(xs))]
+        plt.plot(xs,ys,color=colors(i),label=types[i])
+    plt.title(title)
+    plt.legend()
+    img_name=img_name.replace(".","2.")
     plt.savefig("img/comparison/"+img_name)
     plt.clf()
 
