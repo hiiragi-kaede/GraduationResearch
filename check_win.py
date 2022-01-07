@@ -1,0 +1,18 @@
+with open("win_normal.txt") as f:
+    data=f.readlines()
+    types=[i.split(":")[1][1:-1] for i in data]
+    hs=len([i for i in types if i=="h"])
+    ls=len([i for i in types if i=="l"])
+    lhs=len([i for i in types if i=="lh"])
+    ts=len([i for i in types if i=="t"])
+    ths=len([i for i in types if i=="th"])
+    tls=len([i for i in types if i=="tl"])
+    tlhs=len([i for i in types if i=="tlh"])
+    print("hs:",hs)
+    print("ls:",ls)
+    print("lhs:",lhs)
+    print("ts:",ts)
+    print("ths:",ths)
+    print("tls:",tls)
+    print("tlhs:",tlhs)
+    print("sum:",len(types))

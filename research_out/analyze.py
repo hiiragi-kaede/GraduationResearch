@@ -185,16 +185,17 @@ def tex_out(out_dir,compare_fname,files):
             
             ms_scores,aft_scores,imp_scores=[],[],[]
             for i in range(1,8):
-                ms=Decimal((float(msecs[i][4])-normal_ms_ave)/normal_ms_ave*100).quantize(Decimal('0.001')
+                ms=Decimal((float(msecs[i][4]))/normal_ms_ave*100).quantize(Decimal('0.001')
                             ,rounding=ROUND_HALF_UP)
-                aft=Decimal((float(afts[i][4])-normal_aft_cos_ave)/normal_aft_cos_ave*100).quantize(Decimal('0.001')
+                aft=Decimal((float(afts[i][4]))/normal_aft_cos_ave*100).quantize(Decimal('0.001')
                             ,rounding=ROUND_HALF_UP)
-                imp=Decimal((float(imps[i][4])-normal_imp_rate_ave)/normal_imp_rate_ave*100).quantize(Decimal('0.001')
+                imp=Decimal((float(imps[i][4]))/normal_imp_rate_ave*100).quantize(Decimal('0.001')
                             ,rounding=ROUND_HALF_UP)
                 ms,aft,imp=float(ms),float(aft),float(imp)
                 ms_scores.append(ms)
                 aft_scores.append(aft)
                 imp_scores.append(imp)
+                if aft<100: print(file,":",afts[i][0],":",aft,"   win")
             
             min_ms,min_aft,max_imp = min(ms_scores),min(aft_scores),max(imp_scores)
             print("\t"+fname,end="",file=f)
