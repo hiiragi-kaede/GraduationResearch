@@ -230,8 +230,10 @@ def tex_out(out_dir,compare_fname,files):
 
     texs=os.listdir(out_dir)
     texs=sorted(texs)
-    #all.tex,compare.texを除外する
-    texs=[i for i in texs if "all" not in i and "compare" not in i]
+    #all.tex,compare.tex,rank.texを除外する
+    texs=[i for i in texs if "all" not in i and
+                            "compare" not in i and
+                            "rank" not in i]
     tmp=texs[:2]
     texs=texs[2:]
     texs=texs+tmp[::-1]
@@ -294,6 +296,93 @@ def save_img(data_names,data,types,title,img_name):
     plt.savefig("img/comparison/"+img_name)
     plt.clf()
 
+def tex_ranking(ranking_fname):
+    types=[msec_info[0][1][i][0] for i in range(8)]
+    fnames=[]
+    msecs,afts,imps=[],[],[]
+    for i in range(len(msec_info)):
+        fnames.append(msec_info[i][0])
+        ms,aft,imp=msec_info[i][1],aft_info[i][1],imp_info[i][1]
+        ms_ave=[float(ms[i][4]) for i in range(8)]
+        aft_ave=[float(aft[i][4]) for i in range(8)]
+        imp_ave=[float(imp[i][4]) for i in range(8)]
+        
+        msecs.append(ms_ave)
+        afts.append(aft_ave)
+        imps.append(imp_ave)
+    
+    ms_ranking=[0 for _ in range(8)]
+    for i in range(len(msec_info)):
+        ids=list(range(8))
+        ms_ids=sorted(ids,key=lambda x: msecs[i][x])
+        for cnt,id in enumerate(ms_ids): ms_ranking[id]+=(cnt+1)
+    ms_ranking=[i/len(msec_info) for i in ms_ranking]
+    ms_ranking=[float(Decimal(i).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP))
+                for i in ms_ranking]
+    
+    aft_ranking=[0 for _ in range(8)]
+    for i in range(len(msec_info)):
+        ids=list(range(8))
+        aft_ids=sorted(ids,key=lambda x: afts[i][x])
+        for cnt,id in enumerate(aft_ids): aft_ranking[id]+=(cnt+1)
+    aft_ranking=[i/len(msec_info) for i in aft_ranking]
+    aft_ranking=[float(Decimal(i).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP))
+                for i in aft_ranking]
+    
+    imp_ranking=[0 for _ in range(8)]
+    for i in range(len(msec_info)):
+        ids=list(range(8))
+        imp_ids=sorted(ids,key=lambda x: imps[i][x],reverse=True)
+        for cnt,id in enumerate(imp_ids): imp_ranking[id]+=(cnt+1)
+    imp_ranking=[i/len(msec_info) for i in imp_ranking]
+    imp_ranking=[float(Decimal(i).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP))
+                for i in imp_ranking]
+    
+    with open(ranking_fname,"w") as f:
+        print("""\
+\\begin{table}[htbp]
+    \\caption{各手法の平均ランキング比較}
+    \\begin{tabular}{|l|l|l|l|l|l|l|l|l|}\\hline
+    \multicolumn{1}{|c|}{}
+    &\multicolumn{1}{|c|}{\\textbf{n}}
+    &\multicolumn{1}{|c|}{\\textbf{h}}
+    &\multicolumn{1}{|c|}{\\textbf{l}}
+    &\multicolumn{1}{|c|}{\\textbf{lh}}
+    &\multicolumn{1}{|c|}{\\textbf{t}}
+    &\multicolumn{1}{|c|}{\\textbf{th}}
+    &\multicolumn{1}{|c|}{\\textbf{tl}}
+    &\multicolumn{1}{|c|}{\\textbf{tlh}}\\\\\\hline""",file=f)
+        print("\tms &",end="",file=f)
+        for i in ms_ranking[:-1]:
+            text=str(i)
+            if i==min(ms_ranking): text="\\textbf{"+text+"}"
+            print(text,end=" &",file=f)
+        text=str(ms_ranking[-1])
+        if ms_ranking[-1]==min(ms_ranking): text="\\textbf{"+text+"}"
+        print(text,end="\\\\\\hline\n",file=f)
+
+        print("\tafter cost &",end="",file=f)
+        for i in aft_ranking[:-1]:
+            text=str(i)
+            if i==min(aft_ranking): text="\\textbf{"+text+"}"
+            print(text,end=" &",file=f)
+        text=str(aft_ranking[-1])
+        if aft_ranking[-1]==min(aft_ranking): text="\\textbf{"+text+"}"
+        print(text,end="\\\\\\hline\n",file=f)
+        
+        print("\timprove rate &",end="",file=f)
+        for i in imp_ranking[:-1]:
+            text=str(i)
+            if i==min(imp_ranking): text="\\textbf{"+text+"}"
+            print(text,end=" &",file=f)
+        text=str(imp_ranking[-1])
+        if imp_ranking[-1]==min(imp_ranking): text="\\textbf{"+text+"}"
+        print(text,end="\\\\\\hline\n",file=f)
+        
+        print("\t\\end{tabular}",file=f)
+        print("\\end{table}",file=f)
+
+
 #main
 file_path="./info"
 
@@ -309,3 +398,6 @@ tex_out(out_dir,compare_fname,files)
 
 #pprint(msec_info,width=120)
 img_out()
+
+ranking_fname=out_dir+"rank.tex"
+tex_ranking(ranking_fname)
