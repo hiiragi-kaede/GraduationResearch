@@ -68,4 +68,14 @@ bool IsCCW(const vector<int>& order);
 
 bool IsCustomerInArea(const vector<int>& order,int cus_id);
 
-bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j);
+bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j,
+                    vector<vector<int>>& order_xs,vector<vector<int>>& order_ys);
+
+bool IsHitBoundingBox(const vector<vector<int>>& orders,int i,int j,
+                    const vector<vector<int>>& order_xs,const vector<vector<int>>& order_ys);
+
+void UpdateOrderPos(const vector<vector<int>>& orders,vector<vector<int>>& order_xs,
+                    vector<vector<int>>& order_ys);
+
+void UpdateOrderPos(const vector<vector<int>>& orders,int i,int j,
+                    vector<vector<int>>& order_xs,vector<vector<int>>& order_ys);

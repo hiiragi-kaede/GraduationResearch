@@ -323,6 +323,8 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
             reverse(order.begin(),order.end());
         }
     }
+    vector<vector<int>> order_xs,order_ys;
+    UpdateOrderPos(orders,order_xs,order_ys);
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -367,7 +369,7 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
             }
 
             if(use_hull){
-                if(!IsOverlapOrders(orders,i,j)){
+                if(!IsOverlapOrders(orders,i,j,order_xs,order_ys)){
                     now_id++;
                     cnt++;
                     continue;
@@ -387,6 +389,9 @@ void ImprovedCrossExchangeNeighbor(const vector<int>& weights,vector<vector<int>
                 if(use_lattice){
                     UpdateLatticeList(orders,i,lattice,truck_lattice_list);
                     UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                }
+                if(use_hull){
+                    UpdateOrderPos(orders,i,j,order_xs,order_ys);
                 }
 
                 cnt=0;
@@ -651,6 +656,8 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
             reverse(order.begin(),order.end());
         }
     }
+    vector<vector<int>> order_xs,order_ys;
+    UpdateOrderPos(orders,order_xs,order_ys);
     int truck_size=orders.size();
     vector<int> total_weight(truck_size,0);
     for(int i=0; i<truck_size; i++) 
@@ -695,7 +702,7 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
             }
 
             if(use_hull){
-                if(!IsOverlapOrders(orders,i,j)){
+                if(!IsOverlapOrders(orders,i,j,order_xs,order_ys)){
                     now_id++;
                     cnt++;
                     continue;
@@ -715,6 +722,9 @@ void ImprovedTwoOptStar(const vector<int>& weights,vector<vector<int>>& orders,
                 if(use_lattice){
                     UpdateLatticeList(orders,i,lattice,truck_lattice_list);
                     UpdateLatticeList(orders,j,lattice,truck_lattice_list);
+                }
+                if(use_hull){
+                    UpdateOrderPos(orders,i,j,order_xs,order_ys);
                 }
 
                 cnt=0;

@@ -411,14 +411,102 @@ bool IsCustomerInArea(const vector<int>& order,int cus_id)
     return wn!=0;
 }
 
-bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j){
+bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j,
+                    vector<vector<int>>& order_xs,vector<vector<int>>& order_ys){
+    //バウンディングボックスが接触していなければ詳しく調査をさせない
+    string status=IsHitBoundingBox(orders,i,j,order_xs,order_ys)?"true":"false";
+    cout<<status;
+
     for(int id=1; id<orders[i].size()-1; id++){
         int cus_id=orders[i][id];
-        if(IsCustomerInArea(orders[j],cus_id)) return true;
+        if(IsCustomerInArea(orders[j],cus_id)){
+            cout<<":true\n";
+            return true;
+        }
     }
     for(int id=1; id<orders[j].size()-1; id++){
         int cus_id=orders[j][id];
-        if(IsCustomerInArea(orders[i],cus_id)) return true;
+        if(IsCustomerInArea(orders[i],cus_id)){
+            cout<<":true\n";
+            return true;
+        }
     }
+    cout<<":false\n";
     return false;
+}
+
+bool IsHitBoundingBox(const vector<vector<int>>& orders,int i,int j,
+                    const vector<vector<int>>& order_xs,const vector<vector<int>>& order_ys){
+    int i_min_x=*min_element(order_xs[i].begin()+1,order_xs[i].end()-1);
+    int i_max_x=*max_element(order_xs[i].begin()+1,order_xs[i].end()-1);
+    int j_min_x=*min_element(order_xs[j].begin()+1,order_xs[j].end()-1);
+    int j_max_x=*max_element(order_xs[j].begin()+1,order_xs[j].end()-1);
+    int i_min_y=*min_element(order_ys[i].begin()+1,order_ys[i].end()-1);
+    int i_max_y=*max_element(order_ys[i].begin()+1,order_ys[i].end()-1);
+    int j_min_y=*min_element(order_ys[j].begin()+1,order_ys[j].end()-1);
+    int j_max_y=*max_element(order_ys[j].begin()+1,order_ys[j].end()-1);
+
+    // cout<<"i_x:"<<i_min_x<<"~"<<i_max_x<<endl;
+    // cout<<"i_y:"<<i_min_y<<"~"<<i_max_y<<endl;
+    // cout<<"j_x:"<<j_min_x<<"~"<<j_max_x<<endl;
+    // cout<<"j_y:"<<j_min_y<<"~"<<j_max_y<<endl;
+    // cout<<"depo:"<<order_xs[i][0]<<","<<order_ys[i][0]<<endl;
+
+    //iにデポを含めた場合
+    int tmp_min_x=min(i_min_x,order_xs[i][0]);
+    int tmp_max_x=max(i_max_x,order_xs[i][0]);
+    int tmp_min_y=min(i_min_y,order_ys[i][0]);
+    int tmp_max_y=max(i_max_y,order_ys[i][0]);
+
+    if(tmp_min_x>j_max_x && tmp_max_x<j_min_x) return false;
+    if(tmp_min_y>j_max_y && tmp_max_y<j_min_y) return false;
+    
+    //jにデポを含めた場合
+    tmp_min_x=min(j_min_x,order_xs[j][0]);
+    tmp_max_x=max(j_max_x,order_xs[j][0]);
+    tmp_min_y=min(j_min_y,order_ys[j][0]);
+    tmp_max_y=max(j_max_y,order_ys[j][0]);
+    
+    if(tmp_min_x>i_max_x && tmp_max_x<i_min_x) return false;
+    if(tmp_min_y>i_max_y && tmp_max_y<i_min_y) return false;
+
+    return true;
+}
+
+//order_xsとorder_ysをordersに合わせて更新する
+void UpdateOrderPos(const vector<vector<int>>& orders,vector<vector<int>>& order_xs,
+                    vector<vector<int>>& order_ys){
+    order_xs.resize(orders.size());
+    order_ys.resize(orders.size());
+
+    for(int i=0; i<orders.size(); i++){
+        vector<int> tmp_xs(orders[i].size()),tmp_ys(orders[i].size());
+        for(int j=0; j<orders[i].size(); j++){
+            tmp_xs[j]=cus_x[orders[i][j]];
+            tmp_ys[j]=cus_y[orders[i][j]];
+        }
+        order_xs[i]=tmp_xs;
+        order_ys[i]=tmp_ys;
+    }
+}
+
+//order_xsとorder_ysをordersに合わせて更新する。
+//添字で渡したi,jのみを更新する高速版
+void UpdateOrderPos(const vector<vector<int>>& orders,int i,int j,
+                    vector<vector<int>>& order_xs,vector<vector<int>>& order_ys){
+    vector<int> tmp_xs(orders[i].size()),tmp_ys(orders[i].size());
+    for(int id=0; id<orders[i].size(); id++){
+        tmp_xs[id]=cus_x[orders[i][id]];
+        tmp_ys[id]=cus_y[orders[i][id]];
+    }
+    order_xs[i]=tmp_xs;
+    order_ys[i]=tmp_ys;
+
+    vector<int> tmp_xs2(orders[j].size()),tmp_ys2(orders[j].size());
+    for(int id=0; id<orders[j].size(); id++){
+        tmp_xs2[id]=cus_x[orders[j][id]];
+        tmp_ys2[id]=cus_y[orders[j][id]];
+    }
+    order_xs[j]=tmp_xs2;
+    order_ys[j]=tmp_ys2;
 }
