@@ -414,24 +414,25 @@ bool IsCustomerInArea(const vector<int>& order,int cus_id)
 bool IsOverlapOrders(const vector<vector<int>>& orders,int i,int j,
                     vector<vector<int>>& order_xs,vector<vector<int>>& order_ys){
     //バウンディングボックスが接触していなければ詳しく調査をさせない
-    string status=IsHitBoundingBox(orders,i,j,order_xs,order_ys)?"true":"false";
-    cout<<status;
+    //string status=IsHitBoundingBox(orders,i,j,order_xs,order_ys)?"true":"false";
+    //cout<<status;
+    //if(!IsHitBoundingBox(orders,i,j,order_xs,order_ys)) return false;
 
     for(int id=1; id<orders[i].size()-1; id++){
         int cus_id=orders[i][id];
         if(IsCustomerInArea(orders[j],cus_id)){
-            cout<<":true\n";
+            //cout<<":true\n";
             return true;
         }
     }
     for(int id=1; id<orders[j].size()-1; id++){
         int cus_id=orders[j][id];
         if(IsCustomerInArea(orders[i],cus_id)){
-            cout<<":true\n";
+            //cout<<":true\n";
             return true;
         }
     }
-    cout<<":false\n";
+    //cout<<":false\n";
     return false;
 }
 
@@ -458,19 +459,17 @@ bool IsHitBoundingBox(const vector<vector<int>>& orders,int i,int j,
     int tmp_min_y=min(i_min_y,order_ys[i][0]);
     int tmp_max_y=max(i_max_y,order_ys[i][0]);
 
-    if(tmp_min_x>j_max_x && tmp_max_x<j_min_x) return false;
-    if(tmp_min_y>j_max_y && tmp_max_y<j_min_y) return false;
+    if((tmp_min_x<=j_max_x && tmp_max_x>=j_min_x) && (tmp_min_y<=j_max_y && tmp_max_y>=j_min_y)) return true;
     
     //jにデポを含めた場合
-    tmp_min_x=min(j_min_x,order_xs[j][0]);
-    tmp_max_x=max(j_max_x,order_xs[j][0]);
-    tmp_min_y=min(j_min_y,order_ys[j][0]);
-    tmp_max_y=max(j_max_y,order_ys[j][0]);
+    int tmp_min_x2=min(j_min_x,order_xs[j][0]);
+    int tmp_max_x2=max(j_max_x,order_xs[j][0]);
+    int tmp_min_y2=min(j_min_y,order_ys[j][0]);
+    int tmp_max_y2=max(j_max_y,order_ys[j][0]);
     
-    if(tmp_min_x>i_max_x && tmp_max_x<i_min_x) return false;
-    if(tmp_min_y>i_max_y && tmp_max_y<i_min_y) return false;
+    if((tmp_min_x2<=i_max_x && tmp_max_x2>=i_min_x) && (tmp_min_y2<=i_max_y && tmp_max_y2>=i_min_y)) return true;
 
-    return true;
+    return false;
 }
 
 //order_xsとorder_ysをordersに合わせて更新する
