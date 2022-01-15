@@ -1,7 +1,7 @@
 import os
 from decimal import Decimal,ROUND_HALF_UP
 from pprint import pprint
-from matplotlib.colors import same_color
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 msec_info,bef_info,aft_info,imp_info=[],[],[],[]
@@ -23,6 +23,7 @@ def tex_out(out_dir,compare_fname,files):
     &\multicolumn{1}{c|}{\\textbf{after}}
     &\multicolumn{1}{c|}{\\textbf{improve}}\\\\\\hline""",file=f)
 
+    ave_scores=[]
     for cnt,file in enumerate(files):
         with open(file_path+"/"+file) as f:
             for _ in range(2): f.readline()
@@ -197,6 +198,7 @@ def tex_out(out_dir,compare_fname,files):
                 imp_scores.append(imp)
                 if aft<100: print(file,":",afts[i][0],":",aft,"   win")
             
+            ave_scores.append(aft_scores)
             min_ms,min_aft,max_imp = min(ms_scores),min(aft_scores),max(imp_scores)
             print("\t"+fname,end="",file=f)
             for i in range(1,7):
@@ -229,6 +231,16 @@ def tex_out(out_dir,compare_fname,files):
             print("\t\\end{tabular}",file=f)
             print("\\end{table}",file=f)
 
+    types=["h","l","lh","t","th","tl","tlh"]
+    #pprint(ave_scores)
+    aves=[[] for _ in range(7)]
+    for i in range(7): aves[i]=[ele[i]for ele in ave_scores]
+    sns.boxplot(types,aves)
+    plt.xlabel("手法",fontname="MS Gothic")
+    plt.ylabel("対手法n 評価値比(%)",fontname="MS Gothic")
+    plt.show()
+    plt.close()
+    
     texs=os.listdir(out_dir)
     texs=sorted(texs)
     #all.tex,compare.tex,rank.texを除外する
