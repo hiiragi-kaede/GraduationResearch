@@ -28,4 +28,4 @@ with open(order_fname) as f:
     #     plt.title("truck "+str(id))
     #     plt.show()
     #     plt.clf()
-    mod.draw_graphs(vrp_data,orders,title="cpp_insert")
+    mod.draw_graphs(vrp_data,orders,title="truck routes")

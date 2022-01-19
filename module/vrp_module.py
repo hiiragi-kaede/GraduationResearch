@@ -37,7 +37,7 @@ def draw_graphs(data,orders,title="default_title"):
     util.check_unvisit(data,orders)
     plt.scatter(data[0]["x"],data[0]["y"],label="depo")
     plt.title(title,fontname="MS Gothic")
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.01,1),loc='upper left')
     plt.show()
 
 def two_opt_method(dis_mat,order):
