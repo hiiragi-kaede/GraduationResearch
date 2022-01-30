@@ -82,35 +82,6 @@ int main(int argc,char *argv[]){
 
     if(THREAD_SIZE!=1) show_search_cnt=false;
 
-    /*==========check difference between normal method and fast method==========*/
-    // vector<vector<int>> test_orders;
-    // vector<pair<int,int>> truck_ids(n);
-    
-    // TrialInsertConstruct(dis_mat,weights,capacity,truck_size,test_orders,truck_ids,
-    //                     CONSTRUCT_LIMIT_MS,THREAD_SIZE);
-    // for(auto& order: test_orders) if(IsCCW(order)) reverse(order.begin(),order.end());
-    // for(int i=0; i<test_orders.size()-1; i++){
-    //     for(int id=1; id<test_orders[i+1].size()-1; id++){
-    //         if(IsCustomerInArea(test_orders[i],test_orders[i+1][id])){
-    //             cout<<"contain\n";
-    //             exit(1);
-    //         }
-    //     }
-    // }
-    // cout<<"construct\n";
-    // ShowOrdersInfo(test_orders,weights,capacity,n);
-    // FourOptStar(test_orders,weights,capacity);
-    // cout<<"four opt\n";
-    // ShowOrdersInfo(test_orders,weights,capacity,n);
-    // exit(1);
-    // cout<<test_orders.size()<<endl;
-    // double const_score=TotalDistance(test_orders,dis_mat);
-    // CrossExchangeNeighbor(weights,test_orders,dis_mat,capacity,truck_ids);
-    // double cross_score=TotalDistance(test_orders,dis_mat);
-    // //util::ShowTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids);
-    // util::ShowFastTwoOptStarDiffs(weights,test_orders,dis_mat,capacity,truck_ids,nn_list);
-    // cout<<"construct:"<<const_score<<"   cross25seconds:"<<cross_score<<endl;
-
     /*==========solve problem using multiple thread==========*/
     vector<thread> threads(THREAD_SIZE);
     vector<long long> constructs(THREAD_SIZE);
