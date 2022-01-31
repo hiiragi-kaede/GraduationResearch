@@ -71,6 +71,7 @@ def tex_out(out_dir,compare_fname,files):
             fname=file[:-4]
             #texではアンダーバーは特殊文字なので、ファイル名に含まれる場合はエスケープ処理
             if "_" in fname: fname=fname.replace("_","\_")
+            print("    \\centering",file=f)
             print("    \\caption{"+fname+" 探索前評価値}",file=f)
             print("""\
     \\begin{tabular}{|l|l|l|l|l|l|l|l|}\hline
@@ -95,6 +96,7 @@ def tex_out(out_dir,compare_fname,files):
             
             #探索後出力
             print("\\begin{table}[htbp]",file=f)
+            print("    \\centering",file=f)
             print("    \\caption{"+fname+" 探索後評価値}",file=f)
             print("""\
     \\begin{tabular}{|l|l|l|l|l|l|l|l|l|}\hline
@@ -121,6 +123,7 @@ def tex_out(out_dir,compare_fname,files):
             
             #改善率出力
             print("\\begin{table}[htbp]",file=f)
+            print("    \\centering",file=f)
             print("    \\caption{"+fname+" 改善率(\\%)}",file=f)
             print("""\
     \\begin{tabular}{|l|l|l|l|l|l|l|l|l|}\hline
@@ -138,12 +141,14 @@ def tex_out(out_dir,compare_fname,files):
                 for i in range(1,len(imps[j])-1):
                     print(Decimal(imps[j][i]).quantize(Decimal('0.001'),
                         rounding=ROUND_HALF_UP),end=" & ",file=f)
-                print(imps[j][-1]+"\\\\\\hline",file=f)
+                print(str(Decimal(imps[j][-1]).quantize(Decimal('0.001'),
+                        rounding=ROUND_HALF_UP))+"\\\\\\hline",file=f)
             print("\t\\end{tabular}",file=f)
             print("\\end{table}",file=f)
             
             #探索時間出力
             print("\\begin{table}[htbp]",file=f)
+            print("    \\centering",file=f)
             print("    \\caption{"+fname+" 探索時間(ms)}",file=f)
             print("""\
     \\begin{tabular}{|l|l|l|l|l|l|l|l|l|}\hline
