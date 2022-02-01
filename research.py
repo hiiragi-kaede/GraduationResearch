@@ -29,6 +29,7 @@ fnames=["vrplib/X-n110-k13.txt",
         "vrplib/X-n979-k58.txt",
         "vrplib/X-n1001-k43.txt",
         "large/Leuven_3001.txt"]
+
 #batファイルに入力データ名を渡してコンパイルから書き出しまでを自動で行わせる
 for id,fname in enumerate(fnames):
     print(fname,end="",flush=True)
