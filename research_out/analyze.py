@@ -23,7 +23,7 @@ def tex_out(out_dir,compare_fname,files):
     &\multicolumn{1}{c|}{\\textbf{after}}
     &\multicolumn{1}{c|}{\\textbf{improve}}\\\\\\hline""",file=f)
 
-    ave_scores=[]
+    ave_scores,ave_times=[],[]
     for cnt,file in enumerate(files):
         with open(file_path+"/"+file) as f:
             for _ in range(2): f.readline()
@@ -204,6 +204,7 @@ def tex_out(out_dir,compare_fname,files):
                 if aft<100: print(file,":",afts[i][0],":",aft,"   win")
             
             ave_scores.append(aft_scores)
+            ave_times.append(ms_scores)
             min_ms,min_aft,max_imp = min(ms_scores),min(aft_scores),max(imp_scores)
             print("\t"+fname,end="",file=f)
             for i in range(1,7):
@@ -239,10 +240,18 @@ def tex_out(out_dir,compare_fname,files):
     types=["h","l","lh","t","th","tl","tlh"]
     #pprint(ave_scores)
     aves=[[] for _ in range(7)]
-    for i in range(7): aves[i]=[ele[i]for ele in ave_scores]
+    for i in range(7): aves[i]=[ele[i] for ele in ave_scores]
     sns.boxplot(types,aves)
     plt.xlabel("手法",fontname="MS Gothic")
     plt.ylabel("対手法n 評価値比(%)",fontname="MS Gothic")
+    plt.show()
+    plt.close()
+    
+    aves=[[] for _ in range(7)]
+    for i in range(7): aves[i]=[ele[i] for ele in ave_times]
+    sns.boxplot(types,aves)
+    plt.xlabel("手法",fontname="MS Gothic")
+    plt.ylabel("対手法n 探索時間比(%)",fontname="MS Gothic")
     plt.show()
     plt.close()
     
