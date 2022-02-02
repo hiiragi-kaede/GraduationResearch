@@ -42,7 +42,7 @@ VRP/CVRP_Data/largeにはArnold, Gendreau and Sörensen (2017)のデータが格
 まず最初に、VRP/cppのディレクトリに移動して
 
 ```
-mkdir tmp
+$ mkdir tmp
 ```
 
 を実行する必要がある。これは.gitignoreでgit上に上げてはいないものの、一時データを置くためのディレクトリとして必須。
@@ -58,14 +58,14 @@ popenを使ってPythonを絶対パスで呼び出させている。
 main.cppをコンパイル実行したあとに、ディレクトリ移動をすることなく
 
 ```
-python plot.py
-tmp/data.txt
-tmp/order.txt
+$ python plot.py
+$ tmp/data.txt
+$ tmp/order.txt
 ```
 
 を入力するようにすればPython,matplotlibが使える環境ならこのようなグラフが表示される。
 
-![img](vrp/cpp/out/sample_out.png)
+![sample_out](https://user-images.githubusercontent.com/53923593/152079943-6df05016-c67e-4428-a875-75f77fc80949.png)
 
 これはお試しでVRP/CVRP_Data/vrplib/X-n303-k21.txtに対して実行して表示させたもの。
 
