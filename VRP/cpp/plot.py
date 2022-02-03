@@ -7,20 +7,22 @@ import matplotlib.pyplot as plt
 def make_grid(data):
     xs=[i[0] for i in data]
     ys=[i[1] for i in data]
-    max_x=max(xs)
-    min_x=min(xs)
-    max_y=max(ys)
-    min_y=min(ys)
-    xs=[(i-min_x)/(max_x-min_x) for i in xs]
-    ys=[(i-min_y)/(max_y-min_y) for i in ys]
-    ticks=[i*0.1 for i in range(11)]
-    plt.xticks(ticks)
-    plt.yticks(ticks)
+    # max_x=max(xs)
+    # min_x=min(xs)
+    # max_y=max(ys)
+    # min_y=min(ys)
+    # xs=[(i-min_x)/(max_x-min_x) for i in xs]
+    # ys=[(i-min_y)/(max_y-min_y) for i in ys]
+    # ticks=[i*0.1 for i in range(11)]
+    # plt.xticks(ticks)
+    # plt.yticks(ticks)
 
     plt.scatter(xs,ys)
-    plt.grid()
-    plt.xlim(min(xs),max(xs))
-    plt.ylim(min(ys),max(ys))
+    # plt.grid()
+    # plt.xlim(min(xs),max(xs))
+    # plt.ylim(min(ys),max(ys))
+    plt.xlabel("x")
+    plt.ylabel("y")
     plt.show()
     plt.clf()
 

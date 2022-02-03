@@ -47,6 +47,103 @@ $ mkdir tmp
 
 を実行する必要がある。これは.gitignoreでgit上に上げてはいないものの、一時データを置くためのディレクトリとして必須。
 
+## コンパイル
+上記と同じようにVRP/cppに移動して、
+
+```
+$g++ -Wno-format-security -O3 -o main main.cpp src/construct.cpp src/util.cpp src/improve.cpp src/tools.cpp -pthread
+```
+
+を実行する。当然だが利用するにはg++のインストールが必要。
+
+"-Wno-format-security"部分は必須ではないが、今回のプログラムには警告メッセージが出る
+部分があるため、コンパイルのたびに警告メッセージが出るのを嫌がる人は入れておいたほうがよい。
+
+
+## 実行
+上記のコンパイルを実行した後に、
+
+```
+$./main < "入力データ名"
+```
+
+で実行できる。
+入力データ名を具体的に例示する。
+
+X-n303-k21.txtを対象に実行したいのであるならば
+```
+$./main < ../CVRP_Data/vrplib/X-n303-k21.txt
+```
+として実行する。
+
+main.cppがあるディレクトリからの相対ディレクトリで入力データの位置を指定することに注意。
+
+## コマンドのオプション
+探索の効率化手法や近傍探索方法など、コマンドライン引数によって
+実行内容を切り替えることができる。
+
+これにより実行内容を切り替える際に再度コンパイルする必要がなくなる。
+
+<table>
+  <tr>
+    <th>切り替え内容</th>
+    <th>オプション</th>
+    <th>説明</th>
+    <th>注意事項</th>
+  </tr>
+  <tr>
+    <td rowspan=8>近傍探索法</td>
+    <td>-n=t</td>
+    <td>2-opt*法に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=ft</td>
+    <td>高速2-opt*法に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=it</td>
+    <td>改善型2-opt*法に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=c</td>
+    <td>クロス交換近傍に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=fc</td>
+    <td>高速クロス交換近傍に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=it</td>
+    <td>改善型クロス交換近傍に変更する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=ilst</td>
+    <td>改善型2-opt*法で反復局所探索法を実行させる</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-n=ilsc</td>
+    <td>改善型クロス交換近傍で反復局所探索法を実行させる</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td rowspan=2>キック法</td>
+    <td>-k=d</td>
+    <td>double-bridgeに変更する</td>
+    <td rowspan=2>反復局所探索法を使用していなければ<br>効果がないことに注意</td>
+  </tr>
+  <tr>
+    <td>-k=f</td>
+    <td>4-opt*法に変更する</td>
+  </tr>
+</table>
+
 ## 実行にあたっての注意
 解を求めた後、その解の可視化にVRP/cpp/plot.pyを用いているが、
 popenを使ってPythonを絶対パスで呼び出させている。

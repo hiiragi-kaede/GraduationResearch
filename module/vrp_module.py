@@ -32,6 +32,8 @@ def draw_graphs(data,orders,title="default_title"):
         ys.append(ys[0])
 
         label="truck"+str(idx+1)
+        plt.xlabel("x")
+        plt.ylabel("y")
         plt.plot(xs,ys,label=label)
     
     util.check_unvisit(data,orders)
