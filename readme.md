@@ -142,7 +142,45 @@ main.cppがあるディレクトリからの相対ディレクトリで入力デ
     <td>-k=f</td>
     <td>4-opt*法に変更する</td>
   </tr>
+  <tr>
+    <td rowspan=3>効率化手法</td>
+    <td>-t=</td>
+    <td>=の後に0でタブーリスト法を使用しない。<br>
+    指定しないなど、それ以外の場合は利用する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-l=</td>
+    <td>=の後に0で格子リスト法を使用しない。<br>
+    指定しないなど、それ以外の場合は利用する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>-h=</td>
+    <td>=の後に0で多角形判定法を使用しない。<br>
+    指定しないなど、それ以外の場合は利用する</td>
+    <td align="center">-</td>
+  </tr>
+  <tr>
+    <td>乱数の種</td>
+    <td>-s=</td>
+    <td>=の後の数字を使って乱数を初期化する。指定しないときは0を使う。</td>
+    <td>マルチスレッドの場合は0を代入した場合、0から(スレッド数-1)までの数字を使う。</td>
+  </tr>
 </table>
+
+実際に実験で使ったコマンドは以下のようになっている。
+```
+$./main -n=ilsc -k=f -t=0 -l=0 -h=0 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=0 -l=0 -h=1 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=0 -l=1 -h=0 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=0 -l=1 -h=1 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=1 -l=0 -h=0 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=1 -l=0 -h=1 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=1 -l=1 -h=0 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+$./main -n=ilsc -k=f -t=1 -l=1 -h=1 < ../CVRP_Data/vrplib/X-n1001-k43.txt
+```
+これらのコマンドをスレッド数8で-s=0から-s=2まで実行させている。
 
 ## 実行にあたっての注意
 解を求めた後、その解の可視化にVRP/cpp/plot.pyを用いているが、
