@@ -33,7 +33,7 @@ fnames=["vrplib/X-n110-k13.txt",
 caps=[66,188,142,836,585,794,68,745,216,777,52,125,371,74,
     523,1381,408,1007,166,20,44,764,1816,138,998,131,25]
 
-file_offset="VRP/CVRP_Data/"
+file_offset="../VRP/CVRP_Data/"
 cols=["data","median","mean","std","min","max"]
 df=pd.DataFrame(index=[],columns=cols)
 weight_data=[]
